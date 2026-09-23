@@ -1,0 +1,256 @@
+[
+  {
+    "id": "IF-WONEN-WMO-001",
+    "kind": "horizontal",
+    "from_chart": {
+      "id": "chart_wonen",
+      "carrier": "Woningcorporatie X",
+      "domain": "Huisvesting en Leefomgeving",
+      "clock": "omega_w"
+    },
+    "to_chart": {
+      "id": "chart_wmo",
+      "carrier": "Gemeente X (Sociaal Domein)",
+      "domain": "Zorg en Gezondheid",
+      "clock": "omega_w"
+    },
+    "anchor": {
+      "event_id": "EVT-CORP-20260715",
+      "type": "emergency_signal",
+      "description": "Schriftelijk noodsignaal woningcorporatie naar de casemanager na medische escalatie in de woning",
+      "date": "2026-07-15",
+      "witness_file": "Dossier/01_Zorg_en_Gezondheid.md",
+      "source_event_ref": "avg_corporatie"
+    },
+    "response": {
+      "event_id": "EVT-WMO-20260717",
+      "type": "denial_of_knowledge",
+      "description": "Casemanager ontkent wetenschap per e-mail: 'Dat de huishoudelijke hulp is gestopt was mij niet bekend'",
+      "date": "2026-07-17",
+      "witness_file": "Dossier/04_Bestuursrecht_en_Besluiten.md",
+      "target_formal_intake": null
+    },
+    "shared_constraint_carrier": "Hygiënische leefbaarheid en zelfredzaamheid in de woning (stoma-ondersteuning en huishoudelijke zorg)",
+    "translation": {
+      "source_representation": "Ernstig leefbaarheidssignaal / bezorgde burenmelding / 'Het gaat niet goed met meneer'",
+      "target_representation": "Ketenmelding acute zorgval conform art. 2.3.2 Wmo 2015",
+      "required_target_fields": [
+        "ketenmelding_id",
+        "registratie_gws",
+        "terugkoppeling_corporatie"
+      ],
+      "mapped_fields": []
+    },
+    "gate": {
+      "source_gate": {
+        "name": "Zorgplicht verhuurder voor veilige en leefbare woonomgeving",
+        "condition": "Noodsignaal schriftelijk geadresseerd aan casemanager",
+        "satisfied": true
+      },
+      "target_gate": {
+        "name": "Art. 2.1.1 en 2.3.2 Wmo 2015 (acute actieplicht)",
+        "condition": "Getypte intake en overbruggingszorg voor ontkenning 17 juli",
+        "satisfied": false
+      }
+    },
+    "invariants": {
+      "declared_casimirs": [
+        {
+          "id": "C_medische_urgentie_01",
+          "description": "Klinische invariant: Klinische zorgbehoefte en kwetsbaarheid bij acute situaties",
+          "in_source": true,
+          "in_target_obs": false,
+          "in_target_casimir": false
+        }
+      ],
+      "micro_observables": [
+        {
+          "id": "O_huur_stipt",
+          "description": "Feitelijke observable: Huur is 100% stipt betaald; geen financieel verzuim",
+          "in_source": true,
+          "in_target_obs": false
+        }
+      ],
+      "interface_witnesses": [
+        {
+          "id": "W_email_corporatie_avg15",
+          "description": "Schriftelijke afstemming tussen woningcorporatie en gemeente",
+          "witness_file": "Dossier/01_Zorg_en_Gezondheid.md",
+          "verified": true
+        }
+      ]
+    }
+  },
+  {
+    "id": "IF-CAK-SOZAWE-002",
+    "kind": "horizontal",
+    "from_chart": {
+      "id": "chart_cak_zorgverzekering",
+      "carrier": "CAK / Zorgverzekeraar Z",
+      "domain": "Zorgverzekering en Premieheffing",
+      "clock": "omega_w"
+    },
+    "to_chart": {
+      "id": "chart_sozawe",
+      "carrier": "Sociale Dienst Gemeente X",
+      "domain": "Financiën en Bestaanszekerheid",
+      "clock": "omega_w"
+    },
+    "anchor": {
+      "event_id": "EVT-CAK-20260101",
+      "type": "statutory_execution",
+      "description": "Bestuursrechtelijke bronheffing wanbetalerspremie CAK op bijstandsuitkering",
+      "date": "2026-01-01",
+      "witness_file": "Dossier/03_Financien_en_Bestaanszekerheid.md",
+      "source_event_ref": "avg_zorgverzekeraar"
+    },
+    "response": {
+      "event_id": "EVT-SOZAWE-20260115",
+      "type": "automated_deduction",
+      "description": "Automatische inhouding op bijstandsuitkering zonder toetsing op beslagvrije voet of minimapolis",
+      "date": "2026-01-15",
+      "witness_file": "Dossier/03_Financien_en_Bestaanszekerheid.md",
+      "target_formal_intake": "GWS_AUTOMATED_BATCH"
+    },
+    "shared_constraint_carrier": "Bestaansminimum / Beslagvrije voet onder Participatiewet (art. 475d Rv / art. 18b Zvw)",
+    "translation": {
+      "source_representation": "Automatische bronheffing wanbetalerspremie (€ 160+ ipv standaardpremie)",
+      "target_representation": "Inhouding op bijstandsnorm met toetsing op gemeentelijke minimapolis of bijzondere bijstand",
+      "required_target_fields": [
+        "beslagvrije_voet_toets",
+        "minimapolis_aanbod",
+        "signaal_schuldhulpverlening"
+      ],
+      "mapped_fields": [
+        "beslagvrije_voet_toets"
+      ]
+    },
+    "gate": {
+      "source_gate": {
+        "name": "Art. 18d Zvw (verplichte inhouding door uitkeringsorgaan)",
+        "condition": "Aanmelding wanbetalersregeling door zorgverzekeraar",
+        "satisfied": true
+      },
+      "target_gate": {
+        "name": "Art. 35 Participatiewet / Zorgplicht bestaanszekerheid SOZAWE",
+        "condition": "Actieve toeleiding naar gemeentelijke minimapolis ter voorkoming van structurele onderstand",
+        "satisfied": false
+      }
+    },
+    "invariants": {
+      "declared_casimirs": [
+        {
+          "id": "C_bestaansminimum_bescherming",
+          "description": "Wettelijke invariant: Vrijwaring van het absolute bestaansminimum ex art. 475d Rv",
+          "in_source": true,
+          "in_target_obs": false,
+          "in_target_casimir": false
+        },
+        {
+          "id": "C_zorgverzekering_continuiteit",
+          "description": "Klinische invariant: Medische noodzaak continue zorgverzekering voor medicatie- en hulpmiddelenlevering",
+          "in_source": true,
+          "in_target_obs": true,
+          "in_target_casimir": false
+        }
+      ],
+      "micro_observables": [
+        {
+          "id": "O_premie_inhouding_bedrag",
+          "description": "Feitelijke inhouding per maand op uitkeringsspecificatie",
+          "in_source": true,
+          "in_target_obs": true
+        }
+      ],
+      "interface_witnesses": [
+        {
+          "id": "W_avg_zorgverzekeraar_verzoek",
+          "description": "AVG art. 15 verzoek Menzis en CAK-beschikkingen",
+          "witness_file": "Dossier/03_Financien_en_Bestaanszekerheid.md",
+          "verified": true
+        }
+      ]
+    }
+  },
+  {
+    "id": "IF-WMO-LEEFBAARHEID-003",
+    "kind": "horizontal",
+    "from_chart": {
+      "id": "chart_wmo",
+      "carrier": "Gemeente X (Sociaal Domein)",
+      "domain": "Zorg en Gezondheid",
+      "clock": "omega_w"
+    },
+    "to_chart": {
+      "id": "chart_wonen",
+      "carrier": "Woningcorporatie X",
+      "domain": "Huisvesting en Leefomgeving",
+      "clock": "omega_w"
+    },
+    "anchor": {
+      "event_id": "EVT-WMO-20260317",
+      "type": "administrative_omission",
+      "description": "Feitelijke staking van huishoudelijke hulp (Zorgaanbieder X) zonder intrekkingsbesluit conform art. 2.3.10 Wmo",
+      "date": "2026-03-17",
+      "witness_file": "Dossier/01_Zorg_en_Gezondheid.md",
+      "source_event_ref": "melding_zorgaanbieder"
+    },
+    "response": {
+      "event_id": "EVT-CORP-20260715",
+      "type": "environmental_escalation",
+      "description": "Buren ruiken stankoverlast door acute medische escalatie en alarmeren woningcorporatie",
+      "date": "2026-07-15",
+      "witness_file": "Dossier/01_Zorg_en_Gezondheid.md",
+      "target_formal_intake": "BUURTMELDING_LEEFBAARHEID"
+    },
+    "shared_constraint_carrier": "Zelfstandig schoonhouden en verzorgen van de woning bij chronische beperking",
+    "translation": {
+      "source_representation": "Dossier 'on hold' / passieve wachtstand in zaaksysteem",
+      "target_representation": "Fysieke en hygiënische teloorgang van woonomgeving",
+      "required_target_fields": [
+        "overdracht_woningcorporatie",
+        "signaal_hygiene_veiligheid"
+      ],
+      "mapped_fields": []
+    },
+    "gate": {
+      "source_gate": {
+        "name": "Art. 2.3.5 lid 3 Wmo (compensatieplicht schoon en leefbaar huis)",
+        "condition": "Wettelijke continuïteit van de toegekende maatwerkvoorziening",
+        "satisfied": false
+      },
+      "target_gate": {
+        "name": "Leefbaarheidseisen woonomgeving (Huurrecht / Verhuurderzorg)",
+        "condition": "Voorkomen van ernstige overlast en aantasting woongenot",
+        "satisfied": false
+      }
+    },
+    "invariants": {
+      "declared_casimirs": [
+        {
+          "id": "C_langdurige_zorgbehoefte",
+          "description": "Klinische invariant: Complexe zorgbehoefte vereist continue praktische ondersteuning",
+          "in_source": true,
+          "in_target_obs": false,
+          "in_target_casimir": false
+        }
+      ],
+      "micro_observables": [
+        {
+          "id": "O_huur_stipt_betaald",
+          "description": "Feitelijke observable: Woning wordt 100% stipt betaald; geen huurschuld",
+          "in_source": true,
+          "in_target_obs": true
+        }
+      ],
+      "interface_witnesses": [
+        {
+          "id": "W_brief_casemanager_en_dossier",
+          "description": "Formele brief en dossiernotities zorgcontinuïteit",
+          "witness_file": "Dossier/01_Zorg_en_Gezondheid.md",
+          "verified": true
+        }
+      ]
+    }
+  }
+]

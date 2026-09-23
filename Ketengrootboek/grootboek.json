@@ -1,0 +1,126 @@
+[
+  {
+    "post_id": "POST-WONEN-WMO-001",
+    "naam": "Ketenmelding noodsignaal medische zorg/leefbaarheid naar Wmo",
+    "debet_rekening": "Woningcorporatie X (chart_wonen)",
+    "credit_rekening": "Gemeente X Slot Wmo (chart_wmo)",
+    "anker_feit": "EVT-CORP-20260715",
+    "tegen_feit": "EVT-WMO-20260717",
+    "sluitings_conditie": {
+      "vereist_feit_type": "intake_en_actie",
+      "tussen_anker_en_tegenfeit": true
+    },
+    "vaste_posten": [
+      {
+        "id": "C_medische_urgentie_01",
+        "omschrijving": "Klinische invariant: Klinische zorgbehoefte en kwetsbaarheid bij acute situaties",
+        "in_credit_geboekt": false
+      }
+    ],
+    "micro_observables": [
+      {
+        "id": "O_huur_stipt",
+        "omschrijving": "Feitelijke observable: Huur is 100% stipt betaald"
+      }
+    ],
+    "vereiste_velden": [
+      "ketenmelding_id",
+      "registratie_gws",
+      "terugkoppeling_corporatie"
+    ],
+    "geboekte_velden": [],
+    "poorten": {
+      "bronpoort": {
+        "naam": "Zorgplicht verhuurder veilige woonomgeving",
+        "voldaan": true
+      },
+      "doelpoort": {
+        "naam": "Art. 2.1.1 en 2.3.2 Wmo 2015 (acute actieplicht)",
+        "voldaan": false
+      }
+    }
+  },
+  {
+    "post_id": "POST-CAK-SOZAWE-002",
+    "naam": "Wanbetalersbronheffing vs Bestaansminimum en Minimapolis",
+    "debet_rekening": "CAK / Menzis (chart_cak)",
+    "credit_rekening": "Sociale Dienst Gemeente X (chart_sozawe)",
+    "anker_feit": "EVT-CAK-20260101",
+    "tegen_feit": "EVT-SOZAWE-20260115",
+    "sluitings_conditie": {
+      "vereist_feit_type": "minimapolis_toetsing",
+      "tussen_anker_en_tegenfeit": true
+    },
+    "vaste_posten": [
+      {
+        "id": "C_bestaansminimum_bescherming",
+        "omschrijving": "Wettelijke invariant: Vrijwaring beslagvrije voet ex art. 475d Rv",
+        "in_credit_geboekt": false
+      }
+    ],
+    "micro_observables": [
+      {
+        "id": "O_premie_inhouding_bedrag",
+        "omschrijving": "Feitelijke maandelijkse bronheffing op bijstandsspecificatie"
+      }
+    ],
+    "vereiste_velden": [
+      "beslagvrije_voet_toets",
+      "minimapolis_aanbod",
+      "signaal_schuldhulpverlening"
+    ],
+    "geboekte_velden": [
+      "beslagvrije_voet_toets"
+    ],
+    "poorten": {
+      "bronpoort": {
+        "naam": "Art. 18d Zvw (verplichte inhouding)",
+        "voldaan": true
+      },
+      "doelpoort": {
+        "naam": "Art. 35 Participatiewet / Zorgplicht bestaanszekerheid SOZAWE",
+        "voldaan": false
+      }
+    }
+  },
+  {
+    "post_id": "POST-WMO-LEEFBAARHEID-003",
+    "naam": "Stille beëindiging huishoudelijke hulp vs Leefbaarheid woning",
+    "debet_rekening": "Gemeente X Slot Wmo (chart_wmo)",
+    "credit_rekening": "Woningcorporatie X (chart_wonen)",
+    "anker_feit": "EVT-WMO-20260317",
+    "tegen_feit": "EVT-CORP-20260715",
+    "sluitings_conditie": {
+      "vereist_feit_type": "formeel_intrekkingsbesluit_2_3_10",
+      "tussen_anker_en_tegenfeit": true
+    },
+    "vaste_posten": [
+      {
+        "id": "C_langdurige_zorgbehoefte",
+        "omschrijving": "Klinische invariant: Complexe zorgvraag vereist continue overname",
+        "in_credit_geboekt": false
+      }
+    ],
+    "micro_observables": [
+      {
+        "id": "O_huur_stipt_betaald",
+        "omschrijving": "Feitelijke observable: Woning 100% stipt betaald"
+      }
+    ],
+    "vereiste_velden": [
+      "overdracht_woningcorporatie",
+      "signaal_hygiene_veiligheid"
+    ],
+    "geboekte_velden": [],
+    "poorten": {
+      "bronpoort": {
+        "naam": "Art. 2.3.5 lid 3 Wmo (compensatieplicht)",
+        "voldaan": false
+      },
+      "doelpoort": {
+        "naam": "Leefbaarheidseisen woonomgeving (Huurrecht)",
+        "voldaan": false
+      }
+    }
+  }
+]

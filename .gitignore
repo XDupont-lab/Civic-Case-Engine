@@ -1,0 +1,54 @@
+# ==============================================================================
+# Civic Case Engine — Git Ignore Rules
+# 100% Privacy- & Security-Guaranteed: Geen persoonsdata of sleutels naar GitHub
+# ==============================================================================
+
+# Omgevingsvariabelen & API-sleutels
+.env
+.env.*
+*.env
+
+# Persoonlijke dossierdata & profielen
+Dossier/profile.json
+Dossier/00_Master_Chronologie.*
+Dossier/PROCESBUNDEL_*
+Dossier/termijnen.json
+Dossier/*.csv
+Dossier/*.xlsx
+Dossier/*.pdf
+Dossier/*.docx
+Dossier/*.html
+WERKMODEL_CASUS_*
+
+# Ketengrootboek persoonlijke saldi
+Ketengrootboek/journaal.json
+Ketengrootboek/saldo.json
+
+# Dynamische inkomende en uitgaande post (alleen templates en .gitkeep blijven getrackt)
+Incoming_Letters/*
+!Incoming_Letters/.gitkeep
+Outgoing_Drafts/*
+!Outgoing_Drafts/.gitkeep
+
+# Bankmutaties & financiële logs
+*.csv
+*.tsv
+*.zip
+*_bank_audit_report.*
+
+# Python runtime & caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs & OS artifacts
+*.log
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
