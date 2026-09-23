@@ -6,6 +6,26 @@ Het framework is 100% geanonimiseerd, domein-agnostisch en openbaar overdraagbaa
 
 ---
 
+## 🚀 Snelle Start (1-Prompt Turnkey Replicatie)
+
+### Voor Antigravity / Agy Agents:
+Geef je agent deze prompt:
+> *"Zet de Civic Case Engine lokaal voor me op door `SETUP_ALL.cmd` (of `python setup_environment.py`) uit te voeren."*
+
+### Voor Menselijke Gebruikers (1-Klik):
+1. **Clone de repository**:
+   ```bash
+   git clone https://github.com/XDupont-lab/Civic-Case-Engine.git
+   cd Civic-Case-Engine
+   ```
+2. **Dubbelklik op `SETUP_ALL.cmd`**:
+   * Installeert automatisch Python en Git via Windows Package Manager (`winget`) indien nog niet aanwezig.
+   * Richt de virtuele AI-omgeving in (`.venv_bu`) inclusief Playwright Chromium browser voor portaal- en documentinzage.
+   * Start de interactieve 5-stappen wizard (`bootstrap.py`) om jouw dossier en rechtsdomein te selecteren.
+3. **Klaar voor actie**: Open `START.cmd` of stuur je opdrachten direct via je agent!
+
+---
+
 ## 1. De Conceptuele Taxonomie: Twee Dimensies
 
 Om categoriefouten te voorkomen, ontkoppelt de architectuur het maatschappelijke doel van de technische machinekamer. Het systeem kent twee complementaire dimensies:
