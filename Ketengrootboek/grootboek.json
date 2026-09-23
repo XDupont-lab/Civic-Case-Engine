@@ -1,0 +1,234 @@
+[
+  {
+    "post_id": "POST-WONEN-WMO-001",
+    "naam": "Ketenmelding noodsignaal medische zorg/leefbaarheid naar Wmo",
+    "debet_rekening": "Woningcorporatie X (chart_wonen)",
+    "credit_rekening": "Gemeente X Slot Wmo (chart_wmo)",
+    "anker_feit": "EVT-CORP-20310312",
+    "tegen_feit": "EVT-WMO-20310314",
+    "tafel_besluit": "TAFEL-KWALIFICATIE-WMO-NOODSIGNAAL-20310314",
+    "termijn": {
+      "grondslag": "Art. 2.3.2 lid 1 Wmo 2015 (onderzoek binnen 6 weken na melding)",
+      "start_datum": "2031-03-12",
+      "verval_datum": "2031-04-23",
+      "uiterste_datum": "2031-04-23",
+      "vervolgstap_bij_overschrijding": "Vaststelling wettelijke termijnoverschrijding en ketenbreuk Wmo-onderzoeksplicht"
+    },
+    "sluitings_conditie": {
+      "vereist_feit_type": "intake_en_actie",
+      "tussen_anker_en_tegenfeit": true
+    },
+    "vaste_posten": [
+      {
+        "id": "C_medische_urgentie_01",
+        "omschrijving": "Klinische invariant: Klinische zorgbehoefte en kwetsbaarheid bij acute situaties",
+        "in_credit_geboekt": false
+      }
+    ],
+    "micro_observables": [
+      {
+        "id": "O_huur_stipt",
+        "omschrijving": "Feitelijke observable: Huur is 100% stipt betaald"
+      }
+    ],
+    "vereiste_velden": [
+      "ketenmelding_id",
+      "registratie_gws",
+      "terugkoppeling_corporatie"
+    ],
+    "geboekte_velden": [],
+    "poorten": {
+      "bronpoort": {
+        "naam": "Zorgplicht verhuurder veilige woonomgeving",
+        "voldaan": true
+      },
+      "doelpoort": {
+        "naam": "Art. 2.1.1 en 2.3.2 Wmo 2015 (acute actieplicht)",
+        "voldaan": false
+      }
+    }
+  },
+  {
+    "post_id": "POST-CAK-BIJSTAND-002",
+    "naam": "Wanbetalersbronheffing vs Bestaansminimum en Minimapolis",
+    "debet_rekening": "CAK / zorgverzekeraar (chart_cak)",
+    "credit_rekening": "Sociale Dienst Gemeente X (chart_bijstand)",
+    "anker_feit": "EVT-CAK-20310101",
+    "tegen_feit": "EVT-BIJSTAND-20310115",
+    "tafel_besluit": "TAFEL-KWALIFICATIE-CAK-BVV-20310115",
+    "termijn": {
+      "grondslag": "Art. 475d Rv jo. Art. 35 Participatiewet (doorlopende waarborg beslagvrije voet)",
+      "start_datum": "2031-01-15",
+      "verval_datum": "2031-03-01",
+      "uiterste_datum": "2031-03-01",
+      "vervolgstap_bij_overschrijding": "Herberekening bestaansminimum en verrekening met onverschuldigde inhoudingen"
+    },
+    "sluitings_conditie": {
+      "vereist_feit_type": "minimapolis_toetsing",
+      "tussen_anker_en_tegenfeit": true
+    },
+    "vaste_posten": [
+      {
+        "id": "C_bestaansminimum_bescherming",
+        "omschrijving": "Wettelijke invariant: Vrijwaring beslagvrije voet ex art. 475d Rv",
+        "in_credit_geboekt": false
+      }
+    ],
+    "micro_observables": [
+      {
+        "id": "O_premie_inhouding_bedrag",
+        "omschrijving": "Feitelijke maandelijkse bronheffing op bijstandsspecificatie"
+      }
+    ],
+    "vereiste_velden": [
+      "beslagvrije_voet_toets",
+      "minimapolis_aanbod",
+      "signaal_schuldhulpverlening"
+    ],
+    "geboekte_velden": [
+      "beslagvrije_voet_toets"
+    ],
+    "poorten": {
+      "bronpoort": {
+        "naam": "Art. 18d Zvw (verplichte inhouding)",
+        "voldaan": true
+      },
+      "doelpoort": {
+        "naam": "Art. 35 Participatiewet / Zorgplicht bestaanszekerheid Sociale Dienst",
+        "voldaan": false
+      }
+    }
+  },
+  {
+    "post_id": "POST-WMO-LEEFBAARHEID-003",
+    "naam": "Stille beëindiging huishoudelijke hulp vs Leefbaarheid woning",
+    "debet_rekening": "Gemeente X Slot Wmo (chart_wmo)",
+    "credit_rekening": "Woningcorporatie X (chart_wonen)",
+    "anker_feit": "EVT-WMO-20310120",
+    "tegen_feit": "EVT-CORP-20310312",
+    "tafel_besluit": "TAFEL-KWALIFICATIE-WMO-STILLE-STOP-20310120",
+    "sluitings_conditie": {
+      "vereist_feit_type": "formeel_intrekkingsbesluit_2_3_10",
+      "tussen_anker_en_tegenfeit": true
+    },
+    "vaste_posten": [
+      {
+        "id": "C_langdurige_zorgbehoefte",
+        "omschrijving": "Klinische invariant: Complexe zorgvraag vereist continue overname",
+        "in_credit_geboekt": false
+      }
+    ],
+    "micro_observables": [
+      {
+        "id": "O_huur_stipt_betaald",
+        "omschrijving": "Feitelijke observable: Woning 100% stipt betaald"
+      }
+    ],
+    "vereiste_velden": [
+      "overdracht_woningcorporatie",
+      "signaal_hygiene_veiligheid"
+    ],
+    "geboekte_velden": [],
+    "poorten": {
+      "bronpoort": {
+        "naam": "Art. 2.3.5 lid 3 Wmo (compensatieplicht)",
+        "voldaan": false
+      },
+      "doelpoort": {
+        "naam": "Leefbaarheidseisen woonomgeving (Huurrecht)",
+        "voldaan": false
+      }
+    }
+  },
+  {
+    "post_id": "POST-VEKTIS-VERZEKERAAR-004",
+    "naam": "Verzekeringsstatus vs Zvw-Premieplicht & CAK-bronheffing",
+    "debet_rekening": "Uitvoeringsorgaan Toeslagen (chart_toeslagen)",
+    "credit_rekening": "Zorgverzekeraar Polisadministratie & CAK (chart_zvw)",
+    "anker_feit": "EVT-TOESLAGEN-VEKTIS-20311020",
+    "tegen_feit": "EVT-VERZEKERAAR-PREMIE-20311001",
+    "tafel_besluit": "TAFEL-KWALIFICATIE-VEKTIS-STATUS-N-20311020",
+    "termijn": {
+      "grondslag": "Art. 12 lid 3 AVG & Art. 15 AVG (inzageverzoek Vektis C.V. d.d. 23-10-2031 naar herkomst Status N, BASIC & RBVZ)",
+      "start_datum": "2031-10-23",
+      "verval_datum": "2031-11-23",
+      "uiterste_datum": "2031-11-23",
+      "vervolgstap_bij_overschrijding": "Rappel / klacht AP wegens niet-tijdig leveren herkomst Status N en UZOVI-aanlevering (01-02-2029 t/m 30-06-2030)"
+    },
+    "sluitings_conditie": {
+      "vereist_feit_type": "rectificatie_en_herziening_art16_avg",
+      "tussen_anker_en_tegenfeit": false
+    },
+    "vaste_posten": [
+      {
+        "id": "C_zvw_premieplicht_exclusie",
+        "omschrijving": "Wettelijke invariant: Art. 2 Wzt (actieve Zvw-premiebetaling sluit uitsluiting zorgtoeslag uit)",
+        "in_credit_geboekt": false
+      }
+    ],
+    "micro_observables": [
+      {
+        "id": "O_verzekeraar_premie_incasso",
+        "omschrijving": "Feitelijke premie-inhouding en CAK-bronheffing ex art. 18d Zvw in historisch premiejaar"
+      }
+    ],
+    "vereiste_velden": [
+      "vektis_brondata_herkomst",
+      "intrekking_terugvordering_periode_x",
+      "gecorrigeerde_beschikking"
+    ],
+    "geboekte_velden": [],
+    "poorten": {
+      "bronpoort": {
+        "naam": "Art. 3:2 Awb (Zorgvuldigheid & bewijslast grondslag Toeslagen)",
+        "voldaan": false
+      },
+      "doelpoort": {
+        "naam": "Art. 16 AVG / Art. 21 Awir (Recht op rectificatie en ambtshalve herziening)",
+        "voldaan": false
+      }
+    }
+  },
+  {
+    "post_id": "POST-DACAS-BANK-005",
+    "naam": "Mainframe Verrekeningen vs Bancaire Kasstroom",
+    "debet_rekening": "Uitvoeringsorgaan Verrekeningsadministratie (chart_toeslagen)",
+    "credit_rekening": "Bankadministratie Burger (chart_bank)",
+    "anker_feit": "EVT-DACAS-MAINFRAME-20311020",
+    "tegen_feit": "EVT-BANK-20311023",
+    "tafel_besluit": "TAFEL-KWALIFICATIE-DACAS-KASSTROOM-20311023",
+    "sluitings_conditie": {
+      "vereist_feit_type": "specificatie_onderliggende_beschikkingen_t8",
+      "tussen_anker_en_tegenfeit": false
+    },
+    "vaste_posten": [
+      {
+        "id": "C_bancaire_kasstroom_sluiting",
+        "omschrijving": "Forensische invariant: Mainframe-verrekeningen moeten aantoonbaar matchen met de bankmutaties",
+        "in_credit_geboekt": false
+      }
+    ],
+    "micro_observables": [
+      {
+        "id": "O_kasstroom_nulstand_fictief",
+        "omschrijving": "Geconsolideerde bancaire kasstroom versus gestelde verrekeningen"
+      }
+    ],
+    "vereiste_velden": [
+      "specificatie_onderliggende_beschikkingen",
+      "journaalspecificatie_verrekening",
+      "wettelijke_grondslag_verrekening"
+    ],
+    "geboekte_velden": [],
+    "poorten": {
+      "bronpoort": {
+        "naam": "Art. 4:89 Awb (Verplichting tot betaling / verrekening)",
+        "voldaan": false
+      },
+      "doelpoort": {
+        "naam": "Art. 7:4 Awb / Art. 15 AVG (Volledig afschrift zaakstukken)",
+        "voldaan": false
+      }
+    }
+  }
+]
