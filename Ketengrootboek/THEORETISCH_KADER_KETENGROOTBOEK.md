@@ -147,7 +147,7 @@ Ashby's wet van vereiste variëteit snijdt aan twee kanten:
 
 ### III. Asymmetrie-Borging & De Juridische Besluitregel
 
-In het bankwezen is er symmetrische wederzijdse liquiditeitsafhankelijkheid. In de zorgketen is er structurele machts- en belangen-asymmetrie:
+In het bankwezen is er symmetrische wederzijdse liquiditeitsafhankelijkheid. In de zorgketen is er structurele informatieverwerkings- en belangen-asymmetrie:
 
 - Het ziekenhuis heeft acute doorstroomdruk (bed moet vrij).
 - De gemeente heeft budgetbeheersing (elke vertraging bespaart tijdelijk Wmo-middelen).
