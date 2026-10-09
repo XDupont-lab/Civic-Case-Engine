@@ -40,7 +40,7 @@ ENV_FILE = ROOT_DIR / ".env"
 
 BANNER = """
 ================================================================================
-🏛️  CIVIC CASE ENGINE — SOVEREIGN CITIZEN EXOSKELETON
+🏛️  CIVIC CASE ENGINE — AGENTIC CITIZEN EXOSKELETON
     Interactieve Inrichtings- & Onboarding Wizard (v1.0)
 ================================================================================
 """

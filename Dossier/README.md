@@ -2,8 +2,8 @@
 
 Deze map bevat de actieve dossierbestanden en domeinanalyses van de individuele burger.
 
-## 🔒 Privacy & Lokale Soevereiniteit
-Conform de architectuur van de Civic Case Engine worden de inhoudelijke dossierbestanden in deze map **nooit gecommit of gepusht naar GitHub**. Zij blijven 100% lokaal en privé op de machine van de burger.
+## 🔒 Privacy & Lokale Zelfbeschikking (De Agentische Burger)
+Conform de architectuur van de Civic Case Engine voor de **agentische burger** worden de inhoudelijke dossierbestanden in deze map **nooit gecommit of gepusht naar GitHub**. Zij blijven 100% lokaal en privé op de machine van de burger.
 
 ## 🚀 Inrichting & Sjablonen
 Nieuwe dossiers kunnen worden geïnitialiseerd via de interactieve wizard:

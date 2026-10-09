@@ -1,6 +1,6 @@
 # Civic Case Engine (Civic Exoskeleton) — Systeemarchitectuur & Referentie
 
-> **Definitie:** Een lokaal, soeverein **Civic Exoskeleton**, aangedreven door een **Civic Legal Kernel** en een **Agentic Case Framework (Harness)**. Ontworpen als een **Externe Executieve Functie** om de structurele machtsasymmetrie tussen burger en bureaucratie op te heffen.
+> **Definitie:** Een lokaal **Civic Exoskeleton**, aangedreven door een **Civic Legal Kernel** en een **Agentic Case Framework (Harness)**. Ontworpen voor de **Agentische Burger** als een **Externe Executieve Functie** om de structurele machtsasymmetrie tussen burger en bureaucratie op te heffen.
 
 Het framework is 100% geanonimiseerd, domein-agnostisch en openbaar overdraagbaar. Het bevat géén persoonlijke dossiers; persoonlijke data en instantiespecifieke dossiers (zoals `Zaakdossier_Persoonlijk/` of `UK_Housing_Exoskeleton/`) worden separaat gekoppeld.
 
@@ -69,7 +69,7 @@ Om categoriefouten te voorkomen, ontkoppelt de architectuur het maatschappelijke
 ### B. De Technisch-Operationele Dimensie
 
 #### Pijler 3: De Civic Legal Kernel (Deterministische Machinekamer)
-* **Het fundament:** 100% Python 3 standaardbibliotheek, zero-dependency, lokaal soeverein. Geen probabilistische gissingen over fatale termijnen of integriteit.
+* **Het fundament:** 100% Python 3 standaardbibliotheek, zero-dependency, lokaal agentisch. Geen probabilistische gissingen over fatale termijnen of integriteit.
 * **Kernmodules (`_engine/`):**
   * `statutory_clock.py`: Wiskundige Awb-, Wmo-, AVG- en Woo-termijnenbewaker met automatische dwangsomteller (art. 4:17 Awb) en ingebrekestelling-generator.
   * `timeline_weaver.py`: Forensische parser voor bank-CSV's, WhatsApp-logs, call-logs en e-mails met automatische SHA-256 verificatie en zorgbreukdetectie.

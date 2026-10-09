@@ -3,7 +3,7 @@
 """
 setup_environment.py — Volledig Autonoom Inrichtingsscript voor Civic Case Engine & AI Tools.
 
-Dit script automatiseert de volledige replicatie van de soevereine werkomgeving:
+Dit script automatiseert de volledige replicatie van de agentische werkomgeving:
 1. Systeem- & Runtimecontrole (Python, Git, Winget).
 2. Virtuele Python-omgeving (.venv_bu) aanmaken.
 3. Installatie van de AI Browser Agent dependencies (browser-use, langchain-google-genai, playwright).
@@ -56,7 +56,7 @@ def get_venv_pip() -> Path:
 def main():
     print("""
 ================================================================================
-🏛️  CIVIC CASE ENGINE — SOVEREIGN ENVIRONMENT PROVISIONER v1.0
+🏛️  CIVIC CASE ENGINE — AGENTIC ENVIRONMENT PROVISIONER v1.0
     Autonome Systeem- & Gereedschapsinrichter voor Antigravity / Agy
 ================================================================================
 """)

@@ -1,6 +1,5 @@
 """
-Civic_Case_Engine / _engine / browser_agent.py
-Sovereign Civic Browser Agent — Autonome Portaal & Inzage Harvester
+Agentic Civic Browser Agent — Autonome Portaal & Inzage Harvester
 
 Functies:
 1. Portaal Navigatie & Documentenoogst:

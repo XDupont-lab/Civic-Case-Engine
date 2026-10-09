@@ -76,9 +76,9 @@ Een lokale agent is geen brievenschrijver, maar een externe executieve lus die d
 ### 4.2 De Vijf Lagen (L0 – L4) & De Gouden Invariant
 * **L0 — Cliënttoestand ($\omega_c$):** Medische en existentiële feiten als interne context. Blijft strikt intern; lekt niet standaard naar uitgaande administratieve stukken.
 * **L1 — Landschap van Entiteiten:** Slots, geen karakters. Functie, mandaat, vast vs flex, zaaksystemen, en ambtelijke `ingest-capaciteit` $\subseteq$ `{productcodes, termijnen, keten, klinisch, privacy}`. CV dient enkel om de ambtelijke bandbreedte te schatten.
-* **L2 — De Zes Soevereine Machtenflanken:** 
+* **L2 — De Zes Agentische Machtenflanken:** 
   - *Primaire Operationele As:* Uitvoerende Macht (1) $\leftrightarrow$ Medische Autoriteit (6). De medische autoriteit objectiveert en instrueert wettelijk de uitvoerder (art. 2.3.2 Wmo jo. art. 3:2 Awb).
-  - *Externe Escalatieladder:* Bij ambtelijke obstructie activeert de burger soeverein: Besluitvormend/Politiek (2), Rechterlijk (3), Academisch (5 - wetenschappelijke experts/hoogleraren), en Media (4). Kanaalzuiverheid verplicht: geen ontologische kruisbesmetting in één stuk.
+  - *Externe Escalatieladder:* Bij ambtelijke obstructie activeert de agentische burger doelgericht: Besluitvormend/Politiek (2), Rechterlijk (3), Academisch (5 - wetenschappelijke experts/hoogleraren), en Media (4). Kanaalzuiverheid verplicht: geen ontologische kruisbesmetting in één stuk.
 * **L3 — Klokken ($\omega_*$):** Wettelijke termijnen, formele $t=0$, driftbewaking (telefoon = drift $\to$ dwingt direct schriftelijke bevestiging af). Eén actieve synthetische klok tegelijk.
 * **L4 — Actie + Inhibitie (De Dispatcher):** Welk stuk, welk slot, welke toon.
   $$\mathbf{Crisiscommit} \oplus \mathbf{Saaie\ Sonde}$$
@@ -153,7 +153,7 @@ De multi-model dialectische auditor (`audit_engine.py`: Grok & DeepSeek) toetst 
 
 15. **Dissonantie-Navigatie & Diffuse Causaliteit (De Draagbare Constitutie):**
     * *Diagnose:* Dreigt de burger verstrikt te raken in verbittering, frustratie of een zoektocht naar een individuele zondebok ("zij doen dit expres"), wat leidt tot energieverlies en administratieve diskwalificatie?
-    * *Actie in concept:* Hanteer het principe van **diffuse causaliteit**: niet de individuele ambtenaar is kwaadwillend, maar het systeem is structureel disfunctioneel ontworpen. Gebruik ambtelijke frictie of tegenwerking niet als emotionele belasting, maar als een **objectieve dissonantie-sensor**: het markeert exact de kloof tussen de formele zorgplicht van de wet ($\Sigma$) en de feitelijke uitvoering ($\beta$). Houd de agency van de burger soeverein in de *Goldilocks-zone* ($w \approx 0.3 - 0.5$): noch capitulatie aan het ambtelijke narratief, noch verbitterde isolatie.
+    * *Actie in concept:* Hanteer het principe van **diffuse causaliteit**: niet de individuele ambtenaar is kwaadwillend, maar het systeem is structureel disfunctioneel ontworpen. Gebruik ambtelijke frictie of tegenwerking niet als emotionele belasting, maar als een **objectieve dissonantie-sensor**: het markeert exact de kloof tussen de formele zorgplicht van de wet ($\Sigma$) en de feitelijke uitvoering ($\beta$). Houd de agency van de burger stevig in de *Goldilocks-zone* ($w \approx 0.3 - 0.5$): noch capitulatie aan het ambtelijke narratief, noch verbitterde isolatie.
 
 16. **Dual-Layer Causaliteit (Orthogonale Koppeling van Structuur & Mechanisme):**
     * *Diagnose:* Blijft de burger ronddwalen in bureaucratische formulieren en intake-cycli (uitsluitend Laag II zonder constitutionele hefboom), OF dreigt een betoog abstract en activistisch te worden zonder juridisch afdwingbare hefboom (uitsluitend Laag I zonder formele vordering)?
