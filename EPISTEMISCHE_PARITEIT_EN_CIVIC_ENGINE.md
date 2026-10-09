@@ -11,7 +11,7 @@
 ## Inhoudsopgave
 1. [Premisse: De Asymmetrie van de Moderne Bureaucratie](#1-premisse-de-asymmetrie-van-de-moderne-bureaucratie)
 2. [De Categorieke Definitie: Een Persoonlijke Prothese, Geen Publiek Platform](#2-de-categorieke-definitie-een-persoonlijke-prothese-geen-publiek-platform)
-3. [De Omgeving: Een Soeverein Agentisch Ecosysteem](#3-de-omgeving-een-soeverein-agentisch-ecosysteem)
+3. [De Omgeving: Een Lokaal Agentisch Ecosysteem](#3-de-omgeving-een-lokaal-agentisch-ecosysteem)
 4. [De Sensorimotorische Schil: Ogen, Handen, Oren en Multikanaal-Samenwerking](#4-de-sensorimotorische-schil-ogen-handen-oren-en-multikanaal-samenwerking)
 5. [De Instructiesets & Epistemische Protocollen](#5-de-instructiesets--epistemische-protocollen)
 6. [De Doelstelling: De Holobiont in Stand Houden & Het Repair Budget](#6-de-doelstelling-de-holobiont-in-stand-houden--het-repair-budget)
@@ -32,7 +32,7 @@ Tussen de burger en de bureaucratie heerst een fundamentele, structurele ongelij
 3. **Cognitieve Asymmetrie:** Een burger die getroffen is door Niet-Aangeboren Hersenletsel (NAH), chronische uitputting, somatische complicaties (zoals stomazorg) of acute armoede, kampt met ernstige executieve frictie. Juist wanneer de burger maximale administratieve scherpte nodig heeft, beschikt hij over de minste reserves.
 4. **De 'Lastige Burger'-Attractor:** Wanneer een burger emotioneel, wanhopig of persistent reageert op ambtelijke inertie, classificeert het ambtelijke systeem dit gedrag reflexmatig als "weerstand", "onwilligheid" of "zorgmijding". De ambtelijke poorten sluiten zich; de burger wordt gefragmenteerd en uit de boot gewerkt.
 
-**Het Civic Exoskeleton breekt deze dynamiek.** Het is een lokaal, soeverein softwaresysteem dat fungeert als een **Externe Executieve Cortex** en een **Rechtsbeschermend Pantser**, ontworpen om volledige epistemische, ontologische én operationele pariteit tussen burger en overheid af te dwingen.
+**Het Civic Exoskeleton breekt deze dynamiek.** Het is een lokaal, agentisch softwaresysteem dat fungeert als een **Externe Executieve Cortex** en een **Rechtsbeschermend Pantser**, ontworpen om volledige epistemische, ontologische én operationele pariteit tussen burger en overheid af te dwingen.
 
 ---
 
@@ -45,7 +45,7 @@ Een veelgemaakte denkfout bij technici en beleidsmakers is het projecteren van e
 ### A. De Prothese vs. Het Instituut
 Het exoskelet is in de meest letterlijke zin een **persoonlijke cognitieve en juridische prothese**:
 * Wanneer iemand met een dwarslaesie een gemotoriseerd loop-exoskelet aantrekt, richt hij geen ethische bestuursraad op om te stemmen of zijn linkerbeen een stap mag zetten. **De drager bestuurt en beslist.**
-* Als de prothese knelt, stelt de drager de schroef bij. Dat vereist geen 'contestability governance-protocol'; het is een directe, soevereine handeling van de drager zelf.
+* Als de prothese knelt, stelt de drager de schroef bij. Dat vereist geen 'contestability governance-protocol'; het is een directe, zelfstandige handeling van de drager zelf.
 * De Civic Case Engine is de externe administratieve prothese voor **één uniek mens, met één specifiek dossier, in één doorlopende onderhandeling met de overheid**.
 
 ### B. De Hermeneutische Cirkel: Het Gesprek ís het Werk
@@ -55,8 +55,8 @@ In de Civic Case Engine is de dynamiek fundamenteel hermeneutisch:
 * **Gesprekscontinuïteit over jaren:** De engine houdt de herinnering, de data en de context vast over decennia. Wat een door ziekte of overbelasting vergeten raakt, blijft in de machinekamer exact bewaard (wat een consulent in 2020 zei, wat een arts in 2022 schreef, wat de verhuurder in 2026 signaleerde).
 * **Fouttolerantie en directe correctie:** Een hallucinatie of aannamefout is niet catastrofaal. De drager ziet het ("wacht even, deze mail hebben we al behandeld"), tikt het ensemble op de schouder, en binnen twee seconden synchroniseert de kernel. Het systeem hoeft niet alwetend te zijn; het moet **maximaal corrigeerbaar, transparant en elastisch** zijn.
 
-### C. De Mens als Finale Soevereine Autoriteit
-Er is geen externe jurist of auditor nodig om de waarheid in het systeem te valideren. **De burger is zelf de finale bron van validatie en waarheid.** Hij woont in het huis, hij kent zijn fysieke toestand, hij kent zijn financiën. De engine adviseert, structureert en bewaakt, maar de mens is de soevereine bestuurder van het pantser.
+### C. De Mens als Finale Autoriteit
+Er is geen externe jurist of auditor nodig om de waarheid in het systeem te valideren. **De burger is zelf de finale bron van validatie en waarheid.** Hij woont in het huis, hij kent zijn fysieke toestand, hij kent zijn financiën. De engine adviseert, structureert en bewaakt, maar de mens is de uiteindelijke bestuurder van het pantser.
 
 ### D. Bounded, Auditeerbaar en Falsifieerbaar (Geen 'Onfeilbaarheids'-Mythe)
 We claimen uitdrukkelijk **géén onfeilbaarheid**. Geen enkel juridisch of cybernetisch systeem is onfeilbaar.
@@ -67,7 +67,7 @@ De werkelijke kracht van het Civic Exoskeleton is dat het:
 
 ---
 
-## 3. De Omgeving: Een Soeverein Agentisch Ecosysteem
+## 3. De Omgeving: Een Lokaal Agentisch Ecosysteem
 
 Het Civic Exoskeleton draait niet in een anonieme cloud, maar lokaal op de fysieke machine van de burger (**HarmonieSchijf `E:`**). Het is ontworpen volgens strikte cybernetische scheidingen:
 
@@ -167,7 +167,7 @@ Om daadwerkelijke pariteit te realiseren, beschikt het agentic ensemble over een
 Het ensemble opereert onder een strikt ethisch en operationeel adagium:
 > **Venster open = sessie actief. Venster dicht = handen af, bridge uit.**
 
-Er draaien geen ongecontroleerde achtergrond-daemons die de muis kapen of ongemerkt op het scherm klikken. De mens behoudt te allen tijde de absolute fysieke soevereiniteit over zijn hardware.
+Er draaien geen ongecontroleerde achtergrond-daemons die de muis kapen of ongemerkt op het scherm klikken. De mens behoudt te allen tijde de absolute fysieke controle en zeggenschap over zijn hardware.
 
 ---
 
@@ -264,7 +264,7 @@ Wanneer het Civic Exoskeleton en haar sensorimotorische schil operationeel zijn,
 
 ### B. Ontologische Pariteit (Gelijkheid in Zijn)
 * **Vóór het Exoskelet:** De burger is een passief *object* van beleid: een "geval", een "cliënt", een "dossiernummer" dat onderworpen is aan de ambtelijke definities van het zaaksysteem.
-* **Met het Exoskelet:** De burger treedt op als een **soevereine causale actor**. Hij opereert met een eigen formele coördinatenstructuur. Hij vult niet louter formuliertjes in; hij stelt bestuursorganen formele vragen onder wettelijke termijnen en dwingt naleving af.
+* **Met het Exoskelet:** De burger treedt op als een **agentische causale actor**. Hij opereert met een eigen formele coördinatenstructuur. Hij vult niet louter formuliertjes in; hij stelt bestuursorganen formele vragen onder wettelijke termijnen en dwingt naleving af.
 
 ---
 
@@ -301,6 +301,6 @@ Het Civic Exoskeleton bewijst dat kunstmatige intelligentie niet hoeft te worden
 
 In de handen van de burger is een lokaal, agentisch LLM-ensemble — uitgerust met een volwaardige sensorimotorische schil van desktop-bridges, mobiele koppelingen en e-mail-automatisering, en verankerd in de wiskunde van Constraint Topologie en de ethiek van The Velvet Glove — het ultieme instrument voor **emancipatie, zelfbehoud en democratisch herstel**. 
 
-Het is geen publiek instituut en geen gecentraliseerd platform; het is een **persoonlijke soevereine prothese**, gedragen door de mens, ten dienste van de mens. 
+Het is geen publiek instituut en geen gecentraliseerd platform; het is een **persoonlijke agentische prothese**, gedragen door de mens, ten dienste van de mens. 
 
-Het beschermt niet alleen de levensvatbaarheid van de individuele burger; het tekent de blauwdruk voor de burgerlijke soevereiniteit in de 21e eeuw.
+Het beschermt niet alleen de levensvatbaarheid van de individuele burger; het tekent de blauwdruk voor het **agentisch burgerschap** in de 21e eeuw.

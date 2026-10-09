@@ -19,7 +19,7 @@ De **Civic Case Engine** is ontworpen als een **Civic Exoskeleton (Asymmetrie-Ni
 1. **De Grote Omkering (Lastenverschuiving & Asymmetrie-opheffing):** In plaats van smeken om zorg of kwijtschelding, schiet de burger gestandaardiseerde, wettelijke sondes af (art. 15 AVG, art. 3:2 Awb). De instantie wordt wettelijk gedwongen om binnen fatale termijnen (30 dagen) zelf het speur- en collatiewerk in haar archieven te doen en haar wettelijke onderzoeks- en motiveringsplicht na te komen.
 2. **Forensische Datakoppeling:** Wat geen sociaal advocaat kan bekostigen binnen een toevoeging: binnen seconden 10 jaar aan bankmutaties auditen, communicatielogs ontsluiten en contract- en zorgbreuken mathematisch dichtspijkeren.
 3. **The Velvet Glove (De Fluwelen Handschoen):** De engine vangt emotionele frictie op en sublimeert deze naar formele, waardige, uiterst hoffelijke, maar juridisch onwrikbare teksten.
-4. **Lokale Soevereiniteit:** Volledig lokaal op de eigen machine. Nul afhankelijkheid van commerciële cloud-diensten voor de data-opslag. 100% Python standaardbibliotheek, zero-pip installatiedruk.
+4. **Lokale Zelfbeschikking & Privacy:** Volledig lokaal op de eigen machine. Nul afhankelijkheid van commerciële cloud-diensten voor de data-opslag. 100% Python standaardbibliotheek, zero-pip installatiedruk.
 
 ### 1.1 De Conceptuele Taxonomie: Twee Complementaire Dimensies
 

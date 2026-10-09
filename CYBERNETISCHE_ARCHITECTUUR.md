@@ -124,9 +124,9 @@ Wanneer deze vijf lagen in één prompt smelten, ontstaat cognitieve en procedur
   * *Voorbeeld:* Een junior flexconsulent met een retail-achtergrond bezit uitsluitend $\{\text{productcodes}\}$. Een art. 15 AVG-sonde of complexe ketenaansprakelijkheid triggert een systeemblokkade.
   * *Voorbeeld:* Een senior beleidsmedewerker of Functionaris Gegevensbescherming (FG) bezit $\{\text{termijnen}, \text{keten}, \text{privacy}\}$. Daar hoort de juridische payload thuis.
 
-### L2 — De Zes Soevereine Machtenflanken (Topologie & Escalatieladder)
+### L2 — De Zes Agentische Machtenflanken (Topologie & Escalatieladder)
 
-In een democratische rechtsstaat staat het de burger soeverein vrij om afzonderlijke lijnen te openen naar zes fundamentele machten. De architectuur ordent deze in twee complementaire dynamieken:
+In een democratische rechtsstaat staat het de agentische burger vrij om afzonderlijke lijnen te openen naar zes fundamentele machten. De architectuur ordent deze in twee complementaire dynamieken:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -163,7 +163,7 @@ In een democratische rechtsstaat staat het de burger soeverein vrij om afzonderl
 ```
 
 * **De Cybernetische Invariant (Kanaalzuiverheid):**
-  * Het openen van een lijn naar de raad, een hoogleraar, de pers of een arts is **nooit verboden**. Het is een soeverein burgerrecht en een noodzaak bij ambtelijke blokkades.
+  * Het openen van een lijn naar de raad, een hoogleraar, de pers of een arts is **nooit verboden**. Het is een fundamenteel burgerrecht en een noodzaak bij ambtelijke blokkades.
   * **Wat wél strikt verboden is, is ontologische kruisbesmetting:** 
     - Je zet *geen* raadsleden, hoogleraren of journalisten in de CC van een administratieve Saaie Sonde of AVG-verzoek naar een uitvoerder (Macht 1). Dat lokt defensieve bureaucratische kramp uit.
     - Een gang naar Macht 2 (Politiek), Macht 5 (Academie) of Macht 4 (Media) geschiedt **altijd via een zelfstandig stuk**, geschreven in het eigen register (praktijkmunitie voor de raad, dogmatische rechtsvraag voor de hoogleraar, publiek onrecht voor de journalist).
