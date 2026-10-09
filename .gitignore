@@ -8,7 +8,7 @@
 .env.*
 *.env
 
-# Persoonlijke dossierdata & profielen
+# Persoonlijke dossierdata & profielen (Strikt Lokaal)
 Dossier/profile.json
 Dossier/00_Master_Chronologie.*
 Dossier/PROCESBUNDEL_*
@@ -18,11 +18,15 @@ Dossier/*.xlsx
 Dossier/*.pdf
 Dossier/*.docx
 Dossier/*.html
+Dossier/*.md
+!Dossier/README.md
 WERKMODEL_CASUS_*
+send_*.py
 
 # Ketengrootboek persoonlijke saldi
 Ketengrootboek/journaal.json
 Ketengrootboek/saldo.json
+
 
 # Dynamische inkomende en uitgaande post (alleen templates en .gitkeep blijven getrackt)
 Incoming_Letters/*
