@@ -131,6 +131,21 @@ Civic_Case_Engine/
   * **Twee formaten:** GitHub-flavored Markdown (`.md`) én printklare HTML (`.html`) met professionele typografie en CSS `@media print` pagina-einden (`page-break-after: always`), direct om te zetten naar PDF via de browser (Ctrl+P) zonder zware dependencies.
   * **One-Stop Hub:** `START.cmd` biedt een overzichtelijk 8-keuzemenu met alle modules binnen één handomdraai.
 
+### Batch 5: Walled-Garden Protocol Doorbraak & Zivver-Extractie — [Actief Ontwikkelpad / Te Nemen Stap]
+* **Knelpunt (De Ambtelijke Walled Garden):**  
+  Overheidsinstanties, gemeenten en zorgorganisaties hanteren eufemistisch 'veilig mailen' diensten (Zivver, SmartLockr, gesloten zorgportalen) die in de praktijk fungeren als **kunstmatige frictie en variëteitsdempers**. Ze breken open standaarden (SMTP/IMAP) en dwingen de burger in de rol van handmatige tussenpersoon: sms-codes ophalen, 2FA intikken, webpagina's openen en handmatig tekst/bijlagen copy-pasten naar het lokale dossier. Dit belemmert directe machine-to-machine ingest door lokale agents.
+* **Spoor 1 — Technisch: Geautomatiseerde Portaal- & Zivver-Harvester (`_engine/browser_agent.py`):**
+  * Uitbreiding van de `Civic Browser Harvester` (Playwright / `browser-use`) met een headless/headed sessie-bridge:
+  * Detectie van inkomende Zivver-links in notificatie-mails.
+  * Automatische afhandeling van verificatielinks of eenmalige token-injectie via de lokale agent.
+  * Autonome DOM-extractie van de volledige bericht-body en automatische download van bijlagen (.pdf) direct naar `Incoming_Letters/`.
+  * Automatische toekenning van SHA-256 hashes en melding aan `timeline_weaver.py` zonder dat de burger handmatig hoeft te kopiëren en plakken.
+* **Spoor 2 — Juridisch: Het Recht op een Open Communicatiekanaal (Art. 2:14 Awb):**
+  * Ingevolge **art. 2:14 lid 1 Awb** is elektronisch verkeer met een bestuursorgaan uitsluitend toegestaan voor zover de burger kenbaar heeft gemaakt dat hij via de elektronische weg bereikbaar is.
+  * Toevoeging van een standaard weigeringsclausule voor externe commerciële portalen in de uitgaande Civic-brieven:  
+    *"Cliënt wijst het gebruik van gesloten commerciële tussenportalen (zoals Zivver) af, aangezien deze de continuïteit, toegankelijkheid en integriteit van zijn lokale digitale dossierbeheer belemmeren. Gelieve formele besluiten en correspondentie toe te zenden via rechtstreekse e-mail dan wel per reguliere post."*
+  * Dit dwingt het bestuursorgaan om de communicatie open en direct te houden of de bewijslast van tijdige terhandstelling te dragen.
+
 ---
 
 ## 4. De Interactie met het Zorgdossier ("Living Lab")
