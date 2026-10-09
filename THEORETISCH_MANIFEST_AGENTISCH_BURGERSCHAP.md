@@ -151,13 +151,26 @@ Wij stellen voor om een open benchmarkomgeving te ontwikkelen (**`Civic-Gym`**):
 
 ---
 
-## 6. De Civic Commons Invariant: Bescherming tegen Ongelijkheid
+## 6. De Civic Commons Invariant & De Globale Commodity-Dynamiek
 
-Om te voorkomen dat de agentische burger een privilege wordt van de digitaal vermogende elite, verbindt de *Civic Case Engine* zich aan de volgende drie democratische ontwerpprincipes:
+Om te voorkomen dat de agentische burger een privilege wordt van de digitaal vermogende elite, verbindt de *Civic Case Engine* zich aan drie democratische ontwerpprincipes, verankerd in een onomkeerbare mondiale economische realiteit:
 
+### 6.1 De Drie Civic Commons Principes
 1. **Local-First & FLOSS:** Alle broncode, templates en evaluaties zijn open-source. Lokale burgers bezitten hun data; geen persoonsgegevens in commerciële clouds.
 2. **Deterministic Fallback Kernel:** Cruciale termijnen en rekenkundige reconciliaties draaien op deterministische code (Python, SQLite, Z3), zodat de burger niet afhankelijk is van dure inference-tokens voor basisrechten.
 3. **Meso-Allianties:** Het exoskelet is ontworpen om gedeeld te worden met onafhankelijke cliëntondersteuners (MEE), wijkteams en sociaal raadslieden, waardoor de technologie de kwetsbaarste burger direct versterkt.
+
+### 6.2 De Globale Commodity-Dynamiek: Waarom Overheden AI niet Lokaal kunnen 'Weg-Optimaliseren'
+
+Nationale overheidsbureaucratieën koesteren geregeld de illusie dat zij burger-technologie kunnen ontmoedigen of 'weg-optimaliseren' door gebruiksdrempels op te werpen: verplichte formulierportalen, afschaffing van open e-mailkanalen, of formele ontmoediging van geautomatiseerde communicatie. 
+
+Deze reflex miskent de geopolitieke en economische wetmatigheid van moderne frontier-AI:
+* **De Empirische Realiteit van Utility Pricing (Het '2-Cent-Effect'):**  
+  De opkomst van extreem efficiënte mondiale reasoning-architecturen (zoals gedemonstreerd door de prijsstructuur van DeepSeek) reduceert de marginale kosten van hoogwaardige juridische en administratieve intelligentie naar letterlijk **$0.02 USD (twee dollarcent)** per complete dossier-analyse en formele termijncontrole. Een burger heeft voor enkele euro's per kwartaal een continu paraat, onvermoeibaar cognitief schild ter beschikking.
+* **Globale Standaard versus Nationale Frictie:**  
+  Frontier intelligence is een grensoverschrijdende nutsvoorziening geworden. Een nationale staat heeft geen soevereine controle over de wereldwijde API-infrastructuur of open-weights modellen. Een poging van een lokale bureaucratie om het eigen burgers 'lastig te maken', stuit op een extreme kosten-asymmetrie: **het opwerpen en handhaven van een nieuwe ambtelijke drempel kost de overheid tonnen aan IT- en ambtelijke uren, terwijl de agentische burger de drempel voor $0.02 aan token-compute analyseert en pareert.**
+* **Onomkeerbare Pariteit:**  
+  Omdat de mondiale standaarden zich niet laten inperken door nationale beleidswensen, is het streven om cognitieve burger-emancipatie te beteugelen een heilloze weg. De enige rationele adaptatie voor het openbaar bestuur is niet repressie of ontmoediging, maar **het accepteren van epistemische pariteit** en het structureel decentraliseren van besluitvorming naar de mesoschaal.
 
 ---
 
