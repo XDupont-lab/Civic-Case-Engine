@@ -14,7 +14,7 @@ De moderne burger-bureaucratie interface functioneert in de praktijk op basis va
 * **Executieve frictie als poortwachter:** Formulieren zijn complex, termijnen verstopt en dossiers gefragmenteerd. Burgers met chronische multimorbiditeit, NAH of acute bestaansonzekerheid lopen vast op de administratieve rompslomp.
 * **De emotionele val:** Frustratie en angst worden door de bureaucratie direct bestempeld als "onbehoorlijk gedrag" of "weerstand", waardoor de inhoudelijke aanspraak van tafel wordt geveegd.
 
-De **Civic Case Engine** is ontworpen als een **Civic Exoskeleton (Asymmetrie-Nivelleerder)**. Het compenseert de executieve belasting en kantelt de machtsbalans via vier kernpijlers:
+De **Civic Case Engine** is ontworpen als een **Civic Exoskeleton (Asymmetrie-Nivelleerder)**. Het compenseert de executieve belasting en heft de informatieverwerkingsasymmetrie op via vier kernpijlers:
 
 1. **De Grote Omkering (Lastenverschuiving & Asymmetrie-opheffing):** In plaats van smeken om zorg of kwijtschelding, schiet de burger gestandaardiseerde, wettelijke sondes af (art. 15 AVG, art. 3:2 Awb). De instantie wordt wettelijk gedwongen om binnen fatale termijnen (30 dagen) zelf het speur- en collatiewerk in haar archieven te doen en haar wettelijke onderzoeks- en motiveringsplicht na te komen.
 2. **Forensische Datakoppeling:** Wat geen sociaal advocaat kan bekostigen binnen een toevoeging: binnen seconden 10 jaar aan bankmutaties auditen, communicatielogs ontsluiten en contract- en zorgbreuken mathematisch dichtspijkeren.

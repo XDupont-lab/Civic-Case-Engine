@@ -1,6 +1,6 @@
 # Civic Case Engine (Civic Exoskeleton) — Systeemarchitectuur & Referentie
 
-> **Definitie:** Een lokaal **Civic Exoskeleton**, aangedreven door een **Civic Legal Kernel** en een **Agentic Case Framework (Harness)**. Ontworpen voor de **Agentische Burger** als een **Externe Executieve Functie** om de structurele machtsasymmetrie tussen burger en bureaucratie op te heffen.
+> **Definitie:** Een lokaal **Civic Exoskeleton**, aangedreven door een **Civic Legal Kernel** en een **Agentic Case Framework (Harness)**. Ontworpen voor de **Agentische Burger** als een **Externe Executieve Functie** om de structurele informatieverwerkingsasymmetrie tussen burger en bureaucratie op te heffen.
 
 Het framework is 100% geanonimiseerd, domein-agnostisch en openbaar overdraagbaar. Het bevat géén persoonlijke dossiers; persoonlijke data en instantiespecifieke dossiers (zoals `Zaakdossier_Persoonlijk/` of `UK_Housing_Exoskeleton/`) worden separaat gekoppeld.
 

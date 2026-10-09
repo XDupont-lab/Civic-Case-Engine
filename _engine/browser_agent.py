@@ -1,5 +1,5 @@
 """
-Agentic Civic Browser Agent — Autonome Portaal & Inzage Harvester
+Civic Browser Harvester — Autonome Portaal & Inzage Assistent
 
 Functies:
 1. Portaal Navigatie & Documentenoogst:
@@ -83,13 +83,13 @@ async def harvest_portal_documents(portal_url: str, task_description: str, visib
         f"5. Rapporteer een overzicht van alle geopende pagina's en gedownloade documenten."
     )
 
-    print(f"[*] Civic Browser Agent gestart voor: {portal_url}")
+    print(f"[*] Civic Browser Harvester gestart voor: {portal_url}")
     agent = Agent(task=full_task, llm=llm, browser=browser)
     
     history = await agent.run(max_steps=20)
     result = history.final_result()
 
-    print("\n=== Civic Browser Agent Resultaat ===")
+    print("\n=== Civic Browser Harvester Resultaat ===")
     print(result)
 
     # Log activiteit in Ketengrootboek
@@ -109,7 +109,7 @@ async def harvest_portal_documents(portal_url: str, task_description: str, visib
 
 def run_cli():
     import argparse
-    parser = argparse.ArgumentParser(description="Civic Case Engine — Browser Agent")
+    parser = argparse.ArgumentParser(description="Civic Case Engine — Browser Harvester")
     parser.add_argument("--url", type=str, required=True, help="URL van het burgerportaal of de instantie")
     parser.add_argument("--task", type=str, required=True, help="Omschrijving van de inzage- of oogsttaak")
     parser.add_argument("--headless", action="store_true", help="Draai zonder GUI venster")

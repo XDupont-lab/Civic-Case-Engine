@@ -2,7 +2,7 @@
 setlocal
 cd /d "%~dp0"
 echo ========================================================
-echo    CIVIC CASE ENGINE -- AI BROWSER AGENT (PORTAL PILOT)
+echo    CIVIC CASE ENGINE -- CIVIC BROWSER HARVESTER (PORTAL PILOT)
 echo ========================================================
 echo.
 set /p TARGET_URL="Voer de URL van het burgerportaal in: "
