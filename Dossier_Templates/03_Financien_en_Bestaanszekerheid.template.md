@@ -1,4 +1,4 @@
-# Financiën, Inkomen & Bestaanszekerheid
+# Financi├½n, Inkomen & Bestaanszekerheid
 
 **Beschrijving:** Inkomensgeschiedenis, uitkeringen (Participatiewet/Universal Credit), toeslagen, beslagvrije voet, schulden en CAK-bijdragen.
 

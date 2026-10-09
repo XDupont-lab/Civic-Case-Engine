@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<title>Civic</title>
+<style>
+  :root {
+    --paper: #f4efe6;
+    --rail: #e8e0d2;
+    --card: #fbf8f2;
+    --ink: #241f18;
+    --soft: #5e564c;
+    --line: #d9d0c2;
+    --chrome: #ebe4d6;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    width: 1680px;
+    height: 1080px;
+    overflow: hidden;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Segoe UI", sans-serif;
+  }
+
+  .titlebar {
+    height: 44px;
+    background: var(--chrome);
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    padding: 0 16px 0 20px;
+    font-size: 14px;
+  }
+
+  .titlebar .buttons {
+    margin-left: auto;
+    display: flex;
+    gap: 18px;
+    color: var(--soft);
+  }
+
+  .context {
+    height: 64px;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    padding: 0 28px;
+    background: #f7f3eb;
+  }
+
+  .field { display: flex; flex-direction: column; gap: 2px; }
+  .field span {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--soft);
+  }
+  .field strong { font-size: 18px; font-weight: 600; }
+
+  .pick {
+    border: 1px solid #cfc6b6;
+    background: white;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 16px;
+    font-family: inherit;
+    color: var(--ink);
+  }
+
+  .frame { display: flex; height: 972px; }
+
+  nav {
+    width: 220px;
+    background: var(--rail);
+    border-right: 1px solid var(--line);
+    padding: 22px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  nav a {
+    display: block;
+    text-decoration: none;
+    color: var(--ink);
+    font-size: 16px;
+    padding: 10px 12px;
+    border-radius: 8px;
+  }
+
+  nav a.on { background: var(--paper); font-weight: 600; }
+
+  main {
+    flex: 1;
+    padding: 22px 28px 24px;
+    overflow: hidden;
+  }
+
+  h1 {
+    margin: 0 0 14px;
+    font-size: 22px;
+    font-weight: 600;
+  }
+
+  .actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .actions.two { grid-template-columns: 1fr 1fr; margin-bottom: 22px; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 16px 12px;
+    min-height: 108px;
+  }
+
+  .card h2 {
+    margin: 0 0 6px;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .card p {
+    margin: 0;
+    font-size: 14.5px;
+    line-height: 1.35;
+    color: var(--ink);
+  }
+
+  .card .where {
+    display: block;
+    margin-top: 8px;
+    font-size: 12.5px;
+    color: var(--soft);
+  }
+
+  .split {
+    display: grid;
+    grid-template-columns: 1.05fr 1.2fr;
+    gap: 18px;
+    margin-bottom: 16px;
+  }
+
+  section h3 {
+    margin: 0 0 8px;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--soft);
+    font-weight: 600;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--line);
+    font-size: 15px;
+    vertical-align: baseline;
+  }
+
+  tr:last-child td { border-bottom: 0; }
+
+  td.state { color: var(--soft); text-align: right; white-space: nowrap; width: 34%; }
+
+  .dossiers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 18px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 4px 14px;
+  }
+
+  .dossiers div {
+    padding: 6px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 15px;
+  }
+
+  .lijnen {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+  }
+
+  .lijn {
+    border-top: 1px solid var(--line);
+    padding-top: 8px;
+  }
+
+  .lijn b { display: block; font-size: 15px; font-weight: 600; }
+  .lijn span { display: block; font-size: 14px; line-height: 1.35; }
+</style>
+</head>
+<body>
+  <div class="titlebar">
+    <div>Civic</div>
+    <div class="buttons"><span>—</span><span>□</span><span>×</span></div>
+  </div>
+
+  <div class="context">
+    <div class="field">
+      <span>Instantie</span>
+      <select class="pick" aria-label="Instantie">
+        <option>Gemeente Midden-Groningen</option>
+      </select>
+    </div>
+    <div class="field">
+      <span>Thema</span>
+      <strong>Wmo</strong>
+    </div>
+    <div class="field">
+      <span>Zaak</span>
+      <strong>Sociaal Team Oost</strong>
+    </div>
+  </div>
+
+  <div class="frame">
+    <nav>
+      <a class="on" href="#">Bureau</a>
+      <a href="#">Landschap</a>
+      <a href="#">Dossiers</a>
+      <a href="#">Post</a>
+      <a href="#">Kast</a>
+    </nav>
+
+    <main>
+      <h1>Wat je kunt doen</h1>
+
+      <div class="actions">
+        <div class="card">
+          <h2>Map lokaal medialandschap</h2>
+          <p>Kranten, omroep en lokale sites rond deze instantie. Elke regel met bron en datum.</p>
+          <span class="where">Nieuwe kaart naast de politiek</span>
+        </div>
+        <div class="card">
+          <h2>Map lokale politiek</h2>
+          <p>College, coalitie en oppositie. Alleen hun eigen woorden, geen voorspelling.</p>
+          <span class="where">Landschap, blad Politiek</span>
+        </div>
+        <div class="card">
+          <h2>Organogram van deze instantie</h2>
+          <p>Wie zit waar, met welke openbare achtergrond. Lege cel blijft leeg.</p>
+          <span class="where">Landschap, blad Organisatie</span>
+        </div>
+      </div>
+
+      <div class="actions two">
+        <div class="card">
+          <h2>Leg een dossier aan</h2>
+          <p>Kies een van de twaalf bladen, of maak een blad voor een nieuwe vraag in deze zaak.</p>
+          <span class="where">Dossier</span>
+        </div>
+        <div class="card">
+          <h2>Werk alle dossiers bij</h2>
+          <p>Lees de stukken opnieuw en haal er actoren, functies en detacheerders uit.</p>
+          <span class="where">Dezelfde loop als het landschap synchroniseren</span>
+        </div>
+      </div>
+
+      <div class="split">
+        <section>
+          <h3>Landschap van deze instantie</h3>
+          <table>
+            <tr><td>Organisatie</td><td class="state">nog geen organogram</td></tr>
+            <tr><td>Politiek discours</td><td class="state">blad leeg</td></tr>
+            <tr><td>Medialandschap</td><td class="state">nog geen kaart</td></tr>
+            <tr><td>Keten en contracten</td><td class="state">blad leeg</td></tr>
+            <tr><td>Bronwijzer</td><td class="state">zoekpaden staan klaar</td></tr>
+          </table>
+        </section>
+        <section>
+          <h3>Dossiers, twaalf bladen</h3>
+          <div class="dossiers">
+            <div>01 Zorg en gezondheid</div>
+            <div>07 Jeugdzorg en gezin</div>
+            <div>02 Huisvesting en wonen</div>
+            <div>08 Werk en UWV</div>
+            <div>03 Financiën</div>
+            <div>09 Onderwijs</div>
+            <div>04 Bestuursrecht</div>
+            <div>10 Banken en BKR</div>
+            <div>05 Handhaving en politie</div>
+            <div>11 Verblijf</div>
+            <div>06 BRP en adres</div>
+            <div>12 Vergunningen</div>
+          </div>
+        </section>
+      </div>
+
+      <h3 style="margin-top:4px">Ook in de kast</h3>
+      <div class="actions" style="margin-bottom:18px">
+        <div class="card" style="min-height:0">
+          <h2>Termijnen nakijken</h2>
+          <p>Welke klok loopt, welke dag, en of een hersteltermijn al mag.</p>
+        </div>
+        <div class="card" style="min-height:0">
+          <h2>Procesbundel maken</h2>
+          <p>Chronologie, producties en hashes in één stuk.</p>
+        </div>
+        <div class="card" style="min-height:0">
+          <h2>Bankbestand nalopen</h2>
+          <p>Bronheffing en huur uit een csv van de bank.</p>
+        </div>
+      </div>
+
+      <section>
+        <h3>Lopende lijnen</h3>
+        <div class="lijnen">
+          <div class="lijn">
+            <b>Sociaal Team Oost</b>
+            <span>Wachten. Lennart stemt af. Tot donderdag 9 oktober.</span>
+          </div>
+          <div class="lijn">
+            <b>CAK</b>
+            <span>Inzage is de deur uit. Antwoord voor 1 november.</span>
+          </div>
+          <div class="lijn">
+            <b>LAVG</b>
+            <span>Dossier 216191922. Specificatie ligt nog open.</span>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

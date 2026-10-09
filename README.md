@@ -122,6 +122,7 @@ Civic_Case_Engine/
 ├── AUDIT_BANK_CSV.cmd         # Forensische bankmutatie- en huurscanner
 ├── EXPORT_BUNDEL.cmd          # Procesbundel exporteren met SHA-256 register
 ├── DOCTRINE.md                # Actief geladen juridische doctrine
+├── INTERACTIONAL_STATE_AND_OPERATOR_DISPATCH.md # v2.0 Interactionele toestand & Operator Dispatch (S_case & WAIT)
 ├── ONTWIKKELPLAN_CIVIC_EXOSKELETON.md # Het master ontwikkelplan
 ├── README.md                  # Dit architectuurdocument
 │
