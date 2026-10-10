@@ -23,9 +23,10 @@ while true; do
     echo " [4] Bank CSV Auditen op bronheffingen & huur (_engine/bank_audit.py)"
     echo " [5] Procesbundel Exporteren met SHA-256 (_engine/case_bundler.py)"
     echo " [6] Chunk-Audit v0.3 — Cognitieve Werkgeheugentoets (_engine/chunk_audit.py)"
-    echo " [7] Afsluiten"
+    echo " [7] G-TID Veld-Diagnose & Ambtelijke Agency-Hack (_engine/gtid_engine.py)"
+    echo " [8] Afsluiten"
     echo ""
-    read -p "Kies een optie (0-7): " opt
+    read -p "Kies een optie (0-8): " opt
 
     case "$opt" in
         0)
@@ -59,6 +60,9 @@ while true; do
             fi
             ;;
         7)
+            $PYTHON_BIN _engine/gtid_engine.py
+            ;;
+        8)
             echo "Tot ziens!"
             exit 0
             ;;

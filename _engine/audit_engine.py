@@ -387,6 +387,25 @@ def run_constructive_audit(draft_path, is_critical=False):
     except Exception as e:
         chunk_res = None
 
+    # 3. G-TID Institutionele Veldtoets & Ambtelijke Agency-Hack
+    try:
+        from gtid_engine import inspect_incoming_letter_for_gtid
+        field = inspect_incoming_letter_for_gtid(refined_letter)
+        diag = field.diagnose_summary()
+        gtid_summary = [
+            "\n---\n",
+            "## 🏛️ G-TID Institutionele Veldtoets (Veld-Diagnose & Agency-Hack)\n",
+            f"- **Geanalyseerde Entiteit:** {diag['entity']}  ",
+            f"- **Institutioneel Regime:** `{diag['regime']}` (Operator: `{diag['operator']}`)  ",
+            f"- **Resonantie (Psi_res):** `{diag['psi_res']}` | **Materiële Legitimiteit (L):** `{diag['material_legitimacy']}`  ",
+            f"- **Systeemimpedantie (dL):** {diag['delta_lambda']} lagen | **Ambtenaar Mandaat (w):** {diag['w_official']}  ",
+            f"- **Strategisch Advies:** {diag['rationale']}\n",
+            field.generate_ambtelijke_besluitrechtvaardiging()
+        ]
+        report_md.extend(gtid_summary)
+    except Exception as e:
+        pass
+
     with open(report_file, "w", encoding="utf-8") as f:
         f.write("\n".join(report_md))
 
