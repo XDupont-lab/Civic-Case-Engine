@@ -16,10 +16,11 @@ echo [4] Bank CSV Auditen op bronheffingen & huur (AUDIT_BANK_CSV.cmd)
 echo [5] Procesbundel Exporteren met SHA-256 (EXPORT_BUNDEL.cmd)
 echo [6] Rechtsdomein / Doctrine Wisselen (SWITCH_DOMAIN.cmd)
 echo [7] Chunk-Audit v0.3 — Cognitieve Werkgeheugentoets (CHUNK_AUDIT.cmd)
-echo [8] Mappen openen in Verkenner
-echo [9] Afsluiten
+echo [8] G-TID Veld-Diagnose & Ambtelijke Agency-Hack (GTID_FIELD_AUDIT.cmd)
+echo [9] Mappen openen in Verkenner
+echo [10] Afsluiten
 echo.
-set /p opt="Kies een optie (0-9): "
+set /p opt="Kies een optie (0-10): "
 
 if "%opt%"=="0" python bootstrap.py
 if "%opt%"=="1" call AUDIT_DRAFT.cmd
@@ -29,8 +30,9 @@ if "%opt%"=="4" call AUDIT_BANK_CSV.cmd
 if "%opt%"=="5" call EXPORT_BUNDEL.cmd
 if "%opt%"=="6" call SWITCH_DOMAIN.cmd
 if "%opt%"=="7" call CHUNK_AUDIT.cmd
-if "%opt%"=="8" explorer .
-if "%opt%"=="9" exit /b
+if "%opt%"=="8" call GTID_FIELD_AUDIT.cmd
+if "%opt%"=="9" explorer .
+if "%opt%"=="10" exit /b
 
 echo.
 pause
