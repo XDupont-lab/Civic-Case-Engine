@@ -252,5 +252,335 @@
         }
       ]
     }
+  },
+  {
+    "id": "IF-MED-TRAUMA-OOG-004",
+    "kind": "horizontal",
+    "from_chart": {
+      "id": "chart_trauma_azg",
+      "carrier": "AZG SEH / Neurotrauma (~1999)",
+      "domain": "Craniofaciaal Letsel",
+      "clock": "omega_c"
+    },
+    "to_chart": {
+      "id": "chart_oogheelkunde",
+      "carrier": "Martini Ziekenhuis (2019) / UMCG Oogheelkunde (2020)",
+      "domain": "Oogheelkunde & Visus",
+      "clock": "omega_c"
+    },
+    "anchor": {
+      "event_id": "EVT-TRAUMA-HAMER-1999",
+      "type": "mechanical_impact",
+      "description": "Meervoudige hamerslag op schedel (26-jarige leeftijd), contusio cerebri, SEH AZG hechting zonder neuro-vervolg",
+      "date": "1999-01-01",
+      "witness_file": "Zorgdossier/45_Integrale_Huisartsen_en_Zorgverleners_Chronologie_2016_2026.md",
+      "source_event_ref": "journaal_vorige_ha_20180928"
+    },
+    "response": {
+      "event_id": "EVT-OOG-LENSLUXATIE-2019_2020",
+      "type": "tissue_failure",
+      "description": "Zonulaire verzwakking OD leidt tot subluxatie (Van Arnhem 2019) en acute dropped lens (Bult-Wasmann 2020); beide oogartsen noteren 'klap tegen hoofd in verleden'",
+      "date": "2019-06-13",
+      "witness_file": "Zorgdossier/59_Dossierafschrift_Huisarts_Oosterbroek/brievenvorigehuisarts/20190614_luxatie+lens+OD__0019.txt",
+      "target_formal_intake": "VITRECTOMIE_CLAWLENS"
+    },
+    "shared_constraint_carrier": "Zonulaire en anatomische integriteit rechts-fronto-orbitaal complex",
+    "translation": {
+      "source_representation": "Kinetische schokgolf stomp schedeltrauma",
+      "target_representation": "Spontane zonulaire scheuring en lensluxatie rechteroog",
+      "required_target_fields": [
+        "etiologie_trauma",
+        "oogheelkundige_ingreep",
+        "postoperatieve_inflammatie"
+      ],
+      "mapped_fields": [
+        "etiologie_trauma",
+        "oogheelkundige_ingreep"
+      ]
+    },
+    "gate": {
+      "source_gate": {
+        "name": "Kinetische krachtinwerking rechter schedelhelft",
+        "condition": "Zwaar stomp trauma gedocumenteerd in medische historie",
+        "satisfied": true
+      },
+      "target_gate": {
+        "name": "Klinische causale correlatie door behandelend specialisten",
+        "condition": "Oogarts relateert zonulolyse expliciet aan eerdere hoofdimpact",
+        "satisfied": true
+      }
+    },
+    "invariants": {
+      "declared_casimirs": [
+        {
+          "id": "C_rechts_fronto_orbitaal",
+          "description": "Klinische invariant: Strikt ipsilaterale letselconcentratie rechterzijde aangezicht (1975 glas -> 1999 hamer -> 2020 lens)",
+          "in_source": true,
+          "in_target_obs": true,
+          "in_target_casimir": true
+        }
+      ],
+      "micro_observables": [
+        {
+          "id": "O_visus_od_uitval",
+          "description": "Feitelijke observable: Visus OD daalt abrupt naar <0.1 voor lensoperatie",
+          "in_source": true,
+          "in_target_obs": true
+        }
+      ],
+      "interface_witnesses": [
+        {
+          "id": "W_brieven_van_arnhem_en_bult_wasmann",
+          "description": "Specialistenbrieven Martini en UMCG Oogheelkunde",
+          "witness_file": "Zorgdossier/59_Dossierafschrift_Huisarts_Oosterbroek/brievenvorigehuisarts/20200129_luxatie+lens+OD_NEU_0029.txt",
+          "verified": true
+        }
+      ]
+    }
+  },
+  {
+    "id": "IF-MED-WASSIEE-GATE-005",
+    "kind": "horizontal",
+    "from_chart": {
+      "id": "chart_client_zorgvraag",
+      "carrier": "Cliënt Zorgbehoefte NAH",
+      "domain": "Neurologie & Kennisoverdracht",
+      "clock": "omega_c"
+    },
+    "to_chart": {
+      "id": "chart_huisarts_erasmus",
+      "carrier": "Huisartsenpraktijk Erasmus (Dr. Wassiee)",
+      "domain": "Eerstelijns Zorgpoort",
+      "clock": "omega_w"
+    },
+    "anchor": {
+      "event_id": "EVT-CONSULT-20180928-VRAAG",
+      "type": "care_request",
+      "description": "Patiënt meldt geheugenverlies en verdenking hersenbeschadiging na hamerslag (26 jr oud) en verzoekt doorverwijzing neuroloog",
+      "date": "2018-09-28",
+      "witness_file": "Zorgdossier/59_Dossierafschrift_Huisarts_Oosterbroek/dossiervorigeHA.pdf",
+      "source_event_ref": "journaal_vorige_ha_contact_62"
+    },
+    "response": {
+      "event_id": "EVT-CONSULT-20180928-WEIGERING",
+      "type": "gate_refusal_with_residual",
+      "description": "Huisarts weigert verwijzing neuroloog ('geen toegevoegde waarde'), maar legt wel formeel de diagnose N80.00 status na hoofdletsel vast",
+      "date": "2018-09-28",
+      "witness_file": "Zorgdossier/59_Dossierafschrift_Huisarts_Oosterbroek/dossiervorigeHA.pdf",
+      "target_formal_intake": "ICPC_N80.00"
+    },
+    "shared_constraint_carrier": "Recht op specialistische diagnostiek bij objectiveerbaar Niet-Aangeboren Hersenletsel",
+    "translation": {
+      "source_representation": "Verzoek om neurologische evaluatie wegens executieve/cognitieve uitval",
+      "target_representation": "Afwijzing verwijzing met achterlating van diagnostisch residu N80.00 in HIS",
+      "required_target_fields": [
+        "verwijsbrief_neuroloog",
+        "npo_indicatie"
+      ],
+      "mapped_fields": []
+    },
+    "gate": {
+      "source_gate": {
+        "name": "Zorgvraag patiënt bij ernstige NAH-signalen",
+        "condition": "Onderbouwd verzoek met anamnese hamertrauma",
+        "satisfied": true
+      },
+      "target_gate": {
+        "name": "Poortwachtersfunctie huisarts (WGBO / Zvw)",
+        "condition": "Doorgeleiding naar specialistische tweede lijn",
+        "satisfied": false
+      }
+    },
+    "invariants": {
+      "declared_casimirs": [
+        {
+          "id": "C_geheugen_en_dysexecutief_letsel",
+          "description": "Klinische invariant: Cognitieve en executieve uitval na trauma vereist NPO en passende begeleiding",
+          "in_source": true,
+          "in_target_obs": false,
+          "in_target_casimir": false
+        }
+      ],
+      "micro_observables": [
+        {
+          "id": "O_icpc_n80_vastgelegd",
+          "description": "Feitelijke observable: ICPC N80.00 status na hoofdletsel staat met startdatum 28-09-2018 in het HIS",
+          "in_source": true,
+          "in_target_obs": true
+        }
+      ],
+      "interface_witnesses": [
+        {
+          "id": "W_journaalregel_28_sep_2018",
+          "description": "Letterlijke SOEP-registratie Wassiee in dossiervorigeHA.pdf",
+          "witness_file": "Zorgdossier/59_Dossierafschrift_Huisarts_Oosterbroek/dossiervorigeHA.pdf",
+          "verified": true
+        }
+      ]
+    }
+  },
+  {
+    "id": "IF-MED-SEPSIS-OVERDRACHT-006",
+    "kind": "horizontal",
+    "from_chart": {
+      "id": "chart_martini_ic",
+      "carrier": "Martini Ziekenhuis (IC & Heelkunde)",
+      "domain": "Curatieve Acute Zorg (Zvw)",
+      "clock": "omega_w"
+    },
+    "to_chart": {
+      "id": "chart_sociaal_domein_wijkzorg",
+      "carrier": "Sociaal Domein & Wijkverpleging",
+      "domain": "Langdurige Nazorg & Hygiëne (Wmo/Zvw)",
+      "clock": "omega_w"
+    },
+    "anchor": {
+      "event_id": "EVT-IC-ONTSLAG-20160523",
+      "type": "hospital_discharge",
+      "description": "Ontslag na 7 dagen IC Martini wegens Fournier's gangreen, septische shock en acute dubbelloops stoma-aanleg",
+      "date": "2016-05-23",
+      "witness_file": "Zorgdossier/57_Forensisch_Verslag_Radiologie_Martini_2016_2025.md",
+      "source_event_ref": "ontslag_martini_3c"
+    },
+    "response": {
+      "event_id": "EVT-ZORGVAL-WOONWAGEN-201606",
+      "type": "gluing_failure_abandonment",
+      "description": "Patiënt zonder wijkzorg en zonder stomamaterialen teruggeplaatst op caravan; TSN meldt leveringsweigering wegens onverzekerdheid/schulden",
+      "date": "2016-07-25",
+      "witness_file": "Zorgdossier/59_Dossierafschrift_Huisarts_Oosterbroek/dossiervorigeHA.pdf",
+      "target_formal_intake": null
+    },
+    "shared_constraint_carrier": "Hygiënische overleving, stomazorg en wondgenezing na levensbedreigende sepsis",
+    "translation": {
+      "source_representation": "DBC-sluiting / ontslag naar revalidatie/woonomgeving",
+      "target_representation": "Acute zorgval: ontbreken van stomamateriaal en nazorg op woonwagenlocatie",
+      "required_target_fields": [
+        "overdracht_wijkverpleging",
+        "stoma_machtigingen_geactiveerd"
+      ],
+      "mapped_fields": []
+    },
+    "gate": {
+      "source_gate": {
+        "name": "Zorgplicht ziekenhuis voor warme overdracht",
+        "condition": "Patiënt ontslaan met veilige opvang en materialen",
+        "satisfied": false
+      },
+      "target_gate": {
+        "name": "Wmo / Zvw nazorg en leefbaarheid",
+        "condition": "Actieve toewijzing verpleging en materiële hygiëne",
+        "satisfied": false
+      }
+    },
+    "invariants": {
+      "declared_casimirs": [
+        {
+          "id": "C_stomazorg_continuiteit",
+          "description": "Klinische invariant: Open stoma en perineale wond vereisen dagelijkse materialen en steriele opvang",
+          "in_source": true,
+          "in_target_obs": false,
+          "in_target_casimir": false
+        }
+      ],
+      "micro_observables": [
+        {
+          "id": "O_tsn_leveringsstop",
+          "description": "Feitelijke observable: TSN-melding 25-07-2016 dat leverancier weigert stomamateriaal te leveren",
+          "in_source": true,
+          "in_target_obs": true
+        }
+      ],
+      "interface_witnesses": [
+        {
+          "id": "W_journaalregel_tsn_2016",
+          "description": "Journaalregistratie dr. Rykmans d.d. 25-07-2016 in dossiervorigeHA.pdf",
+          "witness_file": "Zorgdossier/59_Dossierafschrift_Huisarts_Oosterbroek/dossiervorigeHA.pdf",
+          "verified": true
+        }
+      ]
+    }
+  },
+  {
+    "id": "IF-MED-INFLAM-NEURO-007",
+    "kind": "horizontal",
+    "from_chart": {
+      "id": "chart_somatiek_ontsteking",
+      "carrier": "Somatisch Weefseldefect (Fistel / Diversie-proctitis / COPD)",
+      "domain": "Immuunsysteem & Hematologie",
+      "clock": "omega_c"
+    },
+    "to_chart": {
+      "id": "chart_centraal_zenuwstelsel",
+      "carrier": "Executieve Cortex & Breinbelastbaarheid",
+      "domain": "Neurobiologie & Cognitie",
+      "clock": "omega_c"
+    },
+    "anchor": {
+      "event_id": "EVT-LAB-PANEL-2012_2025",
+      "type": "systemic_inflammation",
+      "description": "13 jaar persistente leukocytose (10.3 - 16.7), absolute lymfocytose (tot 7.3 met plasmacellen), reactieve trombocytose (tot 777) en chronische CRP-activiteit",
+      "date": "2012-09-03",
+      "witness_file": "Zorgdossier/61_Forensische_Analyse_Laboratorium_en_Chronische_Ontsteking_2012_2025.md",
+      "source_event_ref": "longitudinale_labanalyse_61"
+    },
+    "response": {
+      "event_id": "EVT-SICKNESS-BEHAVIOR-2026",
+      "type": "neuro_inflammatory_fatigue",
+      "description": "Neuro-inflammatoire cytokinebelasting blokkeert frontale compensatiereserves ('Sickness Behavior') en maakt dysexecutief functioneren chronisch",
+      "date": "2026-09-14",
+      "witness_file": "Zorgdossier/38_Beatrixoord_Notitie_Context_bij_Vragenlijsten.md",
+      "target_formal_intake": "BEATRIXOORD_ZD209275546"
+    },
+    "shared_constraint_carrier": "Biologische energiehuishouding en neuro-inflammatoire belastbaarheid",
+    "translation": {
+      "source_representation": "Chronisch afwijkend bloedbeeld (cytokines, leukocytose, fistels)",
+      "target_representation": "Centrale uitputting, cognitieve vertraging en verlies van solitair initiatiefvermogen",
+      "required_target_fields": [
+        "erkenning_fysiologische_basis_nah",
+        "prikkelarme_begeleiding"
+      ],
+      "mapped_fields": [
+        "erkenning_fysiologische_basis_nah"
+      ]
+    },
+    "gate": {
+      "source_gate": {
+        "name": "Chronische orgaaninflammatie over decennium",
+        "condition": "100% afwijkende leukocytenmetingen in medische historie",
+        "satisfied": true
+      },
+      "target_gate": {
+        "name": "Neuropsychologische beoordeling belastbaarheid",
+        "condition": "Beatrixoord intake en NPO onder erkenning van somatische multimorbiditeit",
+        "satisfied": true
+      }
+    },
+    "invariants": {
+      "declared_casimirs": [
+        {
+          "id": "C_geen_benutbare_mogelijkheden_fysiologisch",
+          "description": "Klinische invariant: Cumulatie van weefselinflammatie en schedeltrauma resulteert in objectief fysiologisch onvermogen tot solitaire participatie",
+          "in_source": true,
+          "in_target_obs": true,
+          "in_target_casimir": true
+        }
+      ],
+      "micro_observables": [
+        {
+          "id": "O_leukocyten_altijd_verhoogd",
+          "description": "Feitelijke observable: Nul normale leukocytenmetingen in 13 jaar medisch dossier",
+          "in_source": true,
+          "in_target_obs": true
+        }
+      ],
+      "interface_witnesses": [
+        {
+          "id": "W_labtabel_2012_2025_en_grafiek",
+          "description": "Labanalyse 61 en grafiek longitudinaal_bloedbeeld_2012_2025.png",
+          "witness_file": "Zorgdossier/61_Forensische_Analyse_Laboratorium_en_Chronische_Ontsteking_2012_2025.md",
+          "verified": true
+        }
+      ]
+    }
   }
 ]
