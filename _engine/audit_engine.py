@@ -367,6 +367,26 @@ def run_constructive_audit(draft_path, is_critical=False):
         report_md.append("## 4. Kruislingse Toets: DeepSeek over Grok (Logica & Consistentie)\n")
         report_md.append(deepseek_on_grok + "\n")
 
+    # Cognitieve Impedantie-Poort: Chunk-Audit v0.3 uitvoeren op verfijnde brief
+    try:
+        from chunk_audit import ChunkAuditor
+        auditor = ChunkAuditor()
+        chunk_res = auditor.audit_text(refined_letter)
+        
+        chunk_summary = [
+            "\n---\n",
+            "## 5. Cognitieve Werkgeheugentoets (Chunk-Audit v0.3)\n",
+            f"**Toetsingslat:** ≤ 4 chunks per eenheid (Miller/Cowan werkgeheugengrens).  ",
+            f"**Uitslag:** {'✅ GESLAAGD (Uitvoerbaar & Scanbaar)' if chunk_res['is_pass'] else '🔴 HYPER-DENSIFICATION DETECTEERD'}  ",
+            f"**Verdeling:** ✅ Groen (≤4): {chunk_res['green_count']} | 🟡 Geel (5–6): {chunk_res['yellow_count']} | 🔴 Rood (≥7): {chunk_res['red_count']}\n"
+        ]
+        if not chunk_res['is_pass']:
+            chunk_summary.append("> **Let op:** De multi-LLM audit heeft de tekst juridisch aangescherpt, maar de dichtheid overschrijdt de menselijke verwerkingscapaciteit. Pas de volgorde van Chunk-Audit v0.3 toe (voorbeelden/geschiedenis naar bijlage, regels splitsen).\n")
+            
+        report_md.extend(chunk_summary)
+    except Exception as e:
+        chunk_res = None
+
     with open(report_file, "w", encoding="utf-8") as f:
         f.write("\n".join(report_md))
 
@@ -378,6 +398,11 @@ def run_constructive_audit(draft_path, is_critical=False):
     print("=" * 72)
     print(f"[+] Audit Rapport opgeslagen  : {report_file.name}")
     print(f"[+] Verzendklare brief gereed : {refined_file.name}")
+    if chunk_res:
+        if chunk_res['is_pass']:
+            print(f"[+] Chunk-Audit v0.3         : ✅ GESLAAGD ({chunk_res['green_count']}/{chunk_res['total_units']} eenheden groen)")
+        else:
+            print(f"[!] Chunk-Audit v0.3         : 🔴 WAARSCHUWING ({chunk_res['red_count']} eenheden rood - hyper-densification!)")
     print("=" * 72)
 
 def main():
