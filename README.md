@@ -1,8 +1,9 @@
-# Civic Case Engine (Civic Exoskeleton) — Systeemarchitectuur & Referentie
+# Agentische Werkomgeving Basisadministratie (AWB) — Systeemarchitectuur & Referentie
 
-> **Definitie:** Een lokaal **Civic Exoskeleton**, aangedreven door een **Civic Legal Kernel** en een **Agentic Case Framework (Harness)**. Ontworpen voor de **Agentische Burger** als een **Externe Executieve Functie** om de structurele informatieverwerkingsasymmetrie tussen burger en bureaucratie op te heffen.
+> **Definitie:** Een open-source **Agentische Werkomgeving Basisadministratie (AWB)** voor de burger als een **Externe Executieve Functie** om de structurele informatieverwerkingsasymmetrie tussen burger en bureaucratie op te heffen. Bevat instrumenten voor bestuursrechtelijke termijnbewaking, procedurele verificatie en integrale dossiervoering.  
+> *Agentic workspace for personal base administration, statutory procedural tracking, and case verification.*
 
-Het framework is 100% geanonimiseerd, domein-agnostisch en openbaar overdraagbaar. Het bevat géén persoonlijke dossiers; persoonlijke data en instantiespecifieke dossiers (zoals `Zaakdossier_Persoonlijk/` of `UK_Housing_Exoskeleton/`) worden separaat gekoppeld.
+Het framework is 100% geanonimiseerd, domein-agnostisch en openbaar overdraagbaar. Het bevat géén persoonlijke dossiers; persoonlijke data en instantiespecifieke dossiers worden separaat gekoppeld.
 
 ---
 
