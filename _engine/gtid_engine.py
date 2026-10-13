@@ -1,303 +1,331 @@
 #!/usr/bin/env python3
 """
-CIVIC CASE ENGINE — G-TID INSTITUTIONAL FIELD ENGINE (v1.0)
-Pure Python Standard Library (Zero External Dependencies).
+CIVIC CASE ENGINE — G-TID veldkaart, eerste pass.
 
-Gebaseerd op:
-General Theory of Institutional Dynamics (G-TID) & Triadisch Resonantie Framework (TRF).
+Dit is een uitlezing (Kamer 3). Geen veldvergelijking en geen nieuwe grondslag.
 
-Kernstelling:
-Instituten zijn geen monolithische objecten of statische vijanden, maar DYNAMISCHE VELDEN:
-    I = { w, Psi_res, Delta_lambda, theta, T_H, GU_ext, GU_int }
+De stapel loopt één kant op:
+  constraint-topologie → GDI-tetrade → coderingssleutel → drie kamers.
+Een groene bijnaam hier betekent niet dat de machinekamer heel is.
 
-De 'Hack':
-Binnen een bureaucratisch instituut is de individuele uitvoerder (Wmo-consulent, klantmanager,
-wijkverpleegkundige) vaak zélf gevangen in een lage-agency val (w_ambt -> 0) door zaaksystemen
-(Gws4all/Socrates), afvinkprotocollen en angst voor berisping van kwaliteitsmedewerkers.
+G-TID (concept-draft) leent zeven namen als representatie van een instituut:
+  w, Psi_res, Delta_lambda, theta, T_H, GU_ext, GU_int.
+Dat is een taal voor een casusblad. Het is geen meting uit een brief.
+De draft noemt materiële legitimiteit een integraal over een echt domein,
+en het kader een diagnose. Geen blauwdruk.
 
-Door de ambtenaar te voorzien van een kant-en-klare, juridisch gedekte
-'AMBTELIJKE BESLUITRECHTVAARDIGING' verhogen we hun eigen agency (w_ambt ^).
-Hierdoor transformeert de ambtelijke frictie in een resonante bondgenootschap (Psi_res > 0).
+E-ARM voegt hier één gezicht toe. De ruimte van de uitvoerder heeft een prijs
+(berisping, productcode, kwaliteitscontrole). De hack verlaagt die prijs
+met een zin die de behandelaar zelf tekent.
+
+Agency stemt de koppeling tussen de formele orde en de praktijk.
+De viabiliteitsruimte is iets anders. Deze module meet geen van beide.
+Een brief is een chart. Het woord "postbus" is geen schaalsprong.
 """
 
-import os
 import sys
-import json
-import re
 from pathlib import Path
-
-if sys.platform == "win32":
-    import io
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
 
 ENGINE_DIR = Path(__file__).resolve().parent
 ROOT_DIR = ENGINE_DIR.parent
 
+UNKNOWN = "niet afgelezen"
+
+# Operatoren van deze kaart. Geen tetrade-namen, en geen verzendpoort.
+VRAAG = "VRAAG"
+GIFT = "GIFT"
+WACHT = "WACHT"
+VOLGENDE_SLUITING = "VOLGENDE_SLUITING"
+
+
 class InstitutionalField:
-    """Modelleert een institutioneel veld conform G-TID."""
-    
-    def __init__(self, entity_name, w_citizen=0.4, w_official=0.2, 
-                 delta_lambda=2, t_h=0.3, theta=0.2, 
-                 gu_ext=None, gu_int=None):
-        self.entity_name = entity_name
-        self.w_citizen = max(0.0, min(1.0, float(w_citizen)))
-        self.w_official = max(0.0, min(1.0, float(w_official)))
-        self.delta_lambda = max(1, int(delta_lambda))  # 1 (direct) tot 5 (diep bureaucratisch doof)
-        self.t_h = max(0.0, min(1.0, float(t_h)))     # Harmonische temperatuur (tolerantie/maatwerk)
-        self.theta = max(0.0, min(1.0, float(theta))) # Holonomisch geheugen / bias / frictiehistorie
-        self.gu_ext = gu_ext or ["Awb", "Wmo 2015", "AVG"]
-        self.gu_int = gu_int or ["Zorgbehoefte", "Beroepsethiek", "Leefbaarheid"]
+    """Een instituut als veld, afgelezen voor zover iemand dat echt heeft gezien.
+
+    Getallen die de aanroeper meegeeft blijven opgegeven. Ze worden niet
+    omgerekend tot resonantie of legitimiteit.
+    """
+
+    def __init__(
+        self,
+        entity_name="onbekend",
+        *,
+        front_open=True,
+        conversation_live=False,
+        closure="open",
+        coupling=UNKNOWN,
+        deviation_cost=UNKNOWN,
+        gu_ext=None,
+        gu_int=None,
+        fact="",
+        w_official=None,
+        w_citizen=None,
+        hints=None,
+        witnessed=False,
+    ):
+        self.entity_name = entity_name or "onbekend"
+        self.front_open = bool(front_open)
+        self.conversation_live = bool(conversation_live)
+        self.closure = closure if closure in ("open", "zelfde", "volgende") else "open"
+        self.coupling = coupling or UNKNOWN
+        self.deviation_cost = deviation_cost or UNKNOWN
+        self.gu_ext = list(gu_ext) if gu_ext else []
+        self.gu_int = list(gu_int) if gu_int else []
+        self.fact = (fact or "").strip()
+        self.w_official = w_official
+        self.w_citizen = w_citizen
+        self.hints = list(hints or [])
+        self.witnessed = bool(witnessed)
 
     @property
-    def psi_res(self) -> float:
-        """
-        Resonantie-intensiteit Psi_res:
-        Meet de mate waarin interne beroepslogica (GU_int) en formele orde (GU_ext)
-        synchroon kunnen lopen, gecorrigeerd voor scheidingskloven (Delta_lambda) en bias (theta).
-        """
-        base_pot = (self.w_official * 0.6) + (self.t_h * 0.4)
-        friction = (0.12 * (self.delta_lambda - 1)) + (0.35 * self.theta)
-        return round(base_pot - friction, 3)
+    def operator(self) -> str:
+        """De volgende zet op deze kaart.
 
-    @property
-    def material_legitimacy(self) -> float:
+        Een lopend gesprek wacht. Een open voorkant krijgt een vraag of een
+        cadeau-zin. De volgende balie komt pas als deze sluiting de behoefte
+        niet draagt én de voorkant dicht is. Een brief alleen zet geen van
+        die twee.
         """
-        Materiële legitimiteit L = integral(Psi_res * w_citizen).
-        Formele legitimiteit (GU_ext) kan 100% zijn terwijl L < 0 is.
-        """
-        effective_res = max(0.0, self.psi_res)
-        return round(effective_res * self.w_citizen, 3)
+        if self.conversation_live:
+            return WACHT
+        if self.front_open:
+            return GIFT if self.fact else VRAAG
+        if self.closure == "volgende":
+            return VOLGENDE_SLUITING
+        return GIFT if self.fact else VRAAG
 
-    @property
-    def regime(self) -> str:
-        """Bepaalt de fasetoestand van het veld."""
-        if self.t_h <= 0.15 and self.delta_lambda >= 4 and self.theta >= 0.5:
-            return "BIFURCATIE_RISICO" # Systeem zit vast in zero-tolerance; dreigt te breken
-        elif self.psi_res <= 0.05 or self.w_official < 0.20 or self.delta_lambda >= 3:
-            return "MECHANISCHE_ORDE"  # Lage agency, hoge impedantie, ambtelijke protocol-klem
-        elif self.psi_res >= 0.35 and self.w_official >= 0.30:
-            return "HARMONISCHE_ORDE"  # Ruimte voor partnerschap en maatwerk
-        else:
-            return "VELD_TRANSITIE"    # Kantelpunt; interventie kan het systeem beide kanten op duwen
-
-    @property
-    def recommended_operator(self) -> str:
-        """Selecteert de optimale cybernetische operator voor het burger-exoskelet."""
-        r = self.regime
-        if r == "BIFURCATIE_RISICO" or self.delta_lambda >= 4:
-            return "SCHAAL_BYPASS_POLITIEK" # Ambtelijke keten is doof; spring naar Raad (art. 41 RvO) of Rechter
-        elif r == "MECHANISCHE_ORDE":
-            if self.w_official < 0.2:
-                return "SAAIE_SONDE"       # Pure Awb/AVG dwangsomklok; appelleren aan rede faalt
-            else:
-                return "AGENCY_HACK_AMBTENAAR" # Geef de ambtenaar de rugdekking om ja te zeggen!
-        elif r == "HARMONISCHE_ORDE":
-            return "VELVET_GLOVE"          # Hoffelijk, coöperatief, inhoudelijk
-        else:
-            return "AGENCY_HACK_AMBTENAAR"
-
-    def diagnose_summary(self) -> dict:
+    def coding_key(self) -> dict:
+        """⟨R | σ | τ⟩ voor de naad. σ is de zichtbaarheid van deze chart."""
         return {
-            "entity": self.entity_name,
-            "regime": self.regime,
-            "operator": self.recommended_operator,
-            "w_citizen": self.w_citizen,
-            "w_official": self.w_official,
-            "delta_lambda": self.delta_lambda,
-            "t_h": self.t_h,
-            "theta": self.theta,
-            "psi_res": self.psi_res,
-            "material_legitimacy": self.material_legitimacy,
-            "rationale": self._get_rationale()
+            "R": "de daad van de behandelaar ontmoet de constraint van de burger",
+            "sigma": "een brief of een gok is een chart, geen veld",
+            "tau": {
+                "G": "de regeltekst die de daad al toelaat",
+                "D": "de klok en de prijs van afwijken",
+                "I": "of het zaaksysteem de behoefte kan zeggen",
+            },
         }
 
-    def _get_rationale(self) -> str:
-        r = self.regime
-        if r == "MECHANISCHE_ORDE":
-            return (f"Het orgaan opereert in Mechanische Orde (Psi_res={self.psi_res}). "
-                    f"Ambtenaar heeft gering mandaat (w={self.w_official}) en impedantie is hoog (dL={self.delta_lambda}). "
-                    f"Emotie of informeel overleg leidt tot uitputting. Vereist strakke formele kaders of kant-en-klare zaaksysteem-motivering.")
-        elif r == "BIFURCATIE_RISICO":
-            return (f"Kritieke systeemklem (T_H={self.t_h}, dL={self.delta_lambda}). "
-                    f"Het orgaan tolereert geen uitzonderingen en is doof voor signalen van beneden. "
-                    f"Aanbevolen actie: Schaal-bypass naar politiek/griffie (art. 41 RvO) of formele dwangsom.")
-        elif r == "HARMONISCHE_ORDE":
-            return (f"Gunstige veldconfiguratie (Psi_res={self.psi_res}). Ambtenaar bezit maatwerkruimte. "
-                    f"Coöperatieve 'Velvet Glove' aanpak maximaliseert resultaat zonder onnodige juridische strijd.")
+    def card(self) -> dict:
+        stated = "gezien" if self.witnessed else "opgegeven" if (
+            self.w_official is not None or self.w_citizen is not None
+        ) else UNKNOWN
+        return {
+            "kamer": 3,
+            "entity": self.entity_name,
+            "coupling": self.coupling,
+            "gu_ext": self.gu_ext,
+            "gu_int": self.gu_int,
+            "closure": self.closure,
+            "front_open": self.front_open,
+            "conversation_live": self.conversation_live,
+            "deviation_cost": self.deviation_cost,
+            "w_official": self.w_official,
+            "w_citizen": self.w_citizen,
+            "w_status": stated,
+            "operator": self.operator,
+            "legitimacy": None,
+            "hints": self.hints,
+            "coding_key": self.coding_key(),
+            "regime_nickname": None,
+        }
+
+    def gift_note(self, subject=""):
+        """Interne zin voor de behandelaar. Geen beschikking, geen artikelen."""
+        onderwerp = subject.strip()
+        kosten = self.deviation_cost
+        if kosten == UNKNOWN:
+            kosten_zin = "Wat een regel buiten de standaardrekening haar kost, staat in dit stuk niet."
         else:
-            return (f"Overgangsregime. Bied de behandelend professional direct ambtelijke rugdekking "
-                    f"om het besluit in zijn/haar zaaksysteem te verankeren.")
+            kosten_zin = f"Een regel buiten de standaard kost haar nu dit: {kosten}."
 
-    def generate_ambtelijke_besluitrechtvaardiging(self, subject="Maatwerkvoorziening Wmo", 
-                                                  grounds=None, risks_averted=None) -> str:
-        """
-        DE KERN-HACK:
-        Genereert een pasklare 'Besluitrechtvaardiging' die de ambtenaar zó in
-        Gws4all / Socrates kan plakken. Hiermee verhogen we w_official.
-        """
-        grounds_list = grounds or [
-            "Art. 2.3.5 lid 3 Wmo 2015 (dwingende plicht tot passende bijdrage aan zelfredzaamheid)",
-            "Art. 3:4 lid 2 Awb (evenredigheidsbeginsel: nadelige gevolgen mogen niet onevenredig zijn)",
-            "Art. 19 VN-verdrag Handicap (recht op zelfstandig leven en inclusie in de maatschappij)",
-            "Medische objectivering conform Stuk 74 / ZorgDomein overdracht"
-        ]
-        
-        risks_list = risks_averted or [
-            "Voorkomt formele ingebrekestelling en dwangsom wegens niet tijdig beslissen (art. 4:17 Awb)",
-            "Voorkomt gegrond bezwaarschrift met ambtelijke proceskostenveroordeling (art. 7:15 Awb)",
-            "Voorkomt escalatie via politieke vragen gemeenteraad (art. 41 RvO Westerwolde)",
-            "Elimineert aansprakelijkheid van het college voor acute zorgval en woningonleefbaarheid"
-        ]
+        if self.fact:
+            behoefte = self.fact
+        else:
+            behoefte = "De post is hier nog niet ingevuld."
 
-        text = []
-        text.append(f"### 🏛️ G-TID AMBTELIJKE BESLUITRECHTVAARDIGING — INTERNE DOSSIERNOTITIE")
-        text.append(f"*Opgesteld ten behoeve van behandelend consulent / regisseur bij: {self.entity_name}*")
-        text.append(f"*Doel: Directe invoer in zaaksysteem (Gws4all / Socrates) ter ambtelijke en juridische dekking.*")
-        text.append("")
-        text.append(f"#### 1. Zaaksaanduiding & Onderwerp")
-        text.append(f"- **Onderwerp:** {subject}")
-        text.append(f"- **Veldstatus:** {self.regime} (Operator: {self.recommended_operator})")
-        text.append(f"- **Materiële Legitimiteitsindex:** L = {self.material_legitimacy} / 1.0")
-        text.append("")
-        text.append(f"#### 2. Formele Grondslagen (Wettelijke Dekking)")
-        for g in grounds_list:
-            text.append(f"- {g}")
-        text.append("")
-        text.append(f"#### 3. Toetsing Evenredigheid & Bevoegdheid (Art. 3:4 Awb)")
-        text.append(f"Toepassing van een generiek urenplafond of rigide afwijzingssjabloon is in casu strijdig met de ")
-        text.append(f"doelstelling van de wet. Door toekenning van de gevraagde ondersteuning wordt voldaan aan de ")
-        text.append(f"wettelijke compensatieplicht, terwijl het college handelt binnen zijn beleidsdiscretie.")
-        text.append("")
-        text.append(f"#### 4. Risico-analyse voor het Bestuursorgaan (Afgewende Systeemschade)")
-        text.append(f"Met deze toewijzing borgt het orgaan rechtszekerheid en worden de volgende escalaties geneutraliseerd:")
-        for r in risks_list:
-            text.append(f"- [x] {r}")
-        text.append("")
-        text.append(f"#### 5. Concept-Besluittekst (Gereed voor Overname in Beschikking)")
-        text.append(f"> \"Het college van burgemeester en wethouders van {self.entity_name} besluit, gelet op artikel 2.3.5 lid 3 ")
-        text.append(f"> van de Wet maatschappelijke ondersteuning 2015 en artikel 3:4 van de Algemene wet bestuursrecht, ")
-        text.append(f"> aan betrokkene de geïndiceerde maatwerkvoorziening toe te kennen. Uit de overgelegde objectiveerbare ")
-        text.append(f"> feiten blijkt genoegzaam dat de voorziening noodzakelijk is ter waarborging van de zelfredzaamheid.\"")
-        text.append("")
-        text.append(f"---")
-        text.append(f"*Advies: Toevoegen aan het fysieke zaaksysteem ter afsluiting van het dossier.*")
-        
-        return "\n".join(text)
+        lines = [
+            f"Memoriaal voor de behandelaar bij {self.entity_name}.",
+            "Dit is geen brief naar de burger en geen beschikking.",
+            "",
+        ]
+        if onderwerp:
+            lines.append(f"Onderwerp: {onderwerp}.")
+            lines.append("")
+        if self.conversation_live:
+            lines.append("Het journaal van dit gesprek loopt nog. Deze regel blijft in het klad.")
+            lines.append("")
+        lines.extend([
+            f"In het journaal staat dit: {behoefte}",
+            "",
+            "Haar grootboek kan op groen staan terwijl de tegenboeking ontbreekt.",
+            "Wat haar ruimte geeft, is een memoriaalregel die zij zelf tekent en die haar boek al kent.",
+            "Daarmee kan zij de open post afletteren.",
+            "Zij tekent de kwijting zelf. De verantwoordelijkheid blijft bij haar.",
+            "",
+            kosten_zin,
+            "",
+            "Of de twee boeken elkaar raken, is "
+            + (self.coupling if self.coupling != UNKNOWN else "hier niet afgelezen")
+            + ".",
+        ])
+        if self.operator == VOLGENDE_SLUITING:
+            lines.extend([
+                "",
+                "Deze rekening kan de post niet dragen.",
+                "De volgende boeking hoort in een ander boek, niet als een hardere regel in hetzelfde.",
+            ])
+        else:
+            lines.extend([
+                "",
+                "Zolang dit journaal open is, hoort hier geen artikel en geen dreigement.",
+            ])
+        return "\n".join(lines)
+
+    def generate_ambtelijke_besluitrechtvaardiging(self, subject="", grounds=None, risks_averted=None):
+        """Oude naam. Geeft de cadeau-zin terug.
+
+        grounds en risks_averted worden genegeerd. Een plakklare beschikking
+        hoort niet in deze pass. De achterzak blijft een aparte aanroep.
+        """
+        del grounds, risks_averted
+        return self.gift_note(subject=subject or "")
+
+    def back_pocket(self) -> str:
+        """De juridische achterzak. Alleen op verzoek, nooit in de kaart."""
+        return "\n".join([
+            "Achterzak, dicht.",
+            "Artikelnummers, een ingebrekestelling en een concept-beschikking",
+            "blijven hier tot de voorkant dicht is en iemand ze vraagt.",
+        ])
+
+    def diagnose_summary(self) -> dict:
+        """Platte kaart voor bestaande aanroepers. Geen Psi en geen L."""
+        card = self.card()
+        return {
+            "entity": card["entity"],
+            "regime": None,
+            "operator": card["operator"],
+            "coupling": card["coupling"],
+            "front_open": card["front_open"],
+            "closure": card["closure"],
+            "deviation_cost": card["deviation_cost"],
+            "w_citizen": card["w_citizen"],
+            "w_official": card["w_official"],
+            "psi_res": None,
+            "material_legitimacy": None,
+            "hints": card["hints"],
+            "rationale": self._rationale(),
+        }
+
+    def _rationale(self) -> str:
+        op = self.operator
+        if op == WACHT:
+            return "Het journaal van dit gesprek loopt nog. Er gaat geen afsluiting uit."
+        if op == VOLGENDE_SLUITING:
+            return "Deze rekening draagt de post niet, en het journaal is gesloten."
+        if op == GIFT:
+            return "Er ligt een memoriaalregel klaar die de behandelaar zelf kan tekenen."
+        return "Het journaal is nog open. Eerst vragen. De proefbalans is uit dit stuk niet opgemaakt."
+
+    def markdown(self) -> str:
+        card = self.card()
+        hint_line = "; ".join(card["hints"]) if card["hints"] else "geen"
+        sluiting = {"open": "nog niet gezien", "zelfde": "hetzelfde boek", "volgende": "een ander boek"}
+        zet = {
+            VRAAG: "eerst vragen",
+            GIFT: "een memoriaalregel aanreiken",
+            WACHT: "het journaal loopt nog",
+            VOLGENDE_SLUITING: "boeken in een ander boek",
+        }
+        return "\n".join([
+            "## Grootboekkaart",
+            "",
+            "Een brief is een stuk uit het journaal. Zij is de proefbalans niet.",
+            "",
+            f"- Boek: {card['entity']}",
+            f"- Tegenboeking: {card['coupling']}",
+            f"- Journaal nog open: {'ja' if card['front_open'] else 'nee'}",
+            f"- Gesprek loopt: {'ja' if card['conversation_live'] else 'nee'}",
+            f"- Waar de post hoort: {sluiting.get(card['closure'], card['closure'])}",
+            f"- Prijs van een regel buiten de standaard: {card['deviation_cost']}",
+            f"- Volgende zet: {zet.get(card['operator'], card['operator'])}",
+            "- Proefbalans voor de mens: nog niet opgemaakt",
+            f"- Hint uit het stuk: {hint_line}",
+            "",
+            self.gift_note(),
+            "",
+        ])
+
+
+def _entity_hint(text_lower: str) -> str:
+    """Een naam in de brief is een etiket. Geen diagnose."""
+    for needle, name in (
+        ("westerwolde", "Gemeente Westerwolde"),
+        ("oldambt", "Gemeente Oldambt"),
+        ("menzis", "Menzis Zorgverzekeraar"),
+        ("groninger huis", "Woningcorporatie Groninger Huis"),
+        ("uwv", "UWV"),
+    ):
+        if needle in text_lower:
+            return name
+    return "onbekend"
 
 
 def inspect_incoming_letter_for_gtid(letter_text: str) -> InstitutionalField:
+    """Lees een brief als chart.
+
+    Woorden mogen een hint geven. Ze zetten de voorkant niet dicht, ze kiezen
+    geen volgende balie, en ze vullen geen legitimiteit in.
     """
-    Scant een inkomende ambtelijke brief of afwijzing en leidt de G-TID veldparameters af.
-    """
-    text_lower = letter_text.lower()
-    
-    # Bepaal entiteit
-    entity = "Onbekend Bestuursorgaan"
-    if "westerwolde" in text_lower:
-        entity = "Gemeente Westerwolde"
-    elif "oldambt" in text_lower:
-        entity = "Gemeente Oldambt"
-    elif "menzis" in text_lower:
-        entity = "Menzis Zorgverzekeraar"
-    elif "groninger huis" in text_lower or "huur" in text_lower:
-        entity = "Woningcorporatie Groninger Huis"
-    elif "uwv" in text_lower:
-        entity = "Uitvoeringsinstituut Werknemersverzekeringen (UWV)"
-
-    # Delta lambda: lagen / afstand
-    delta_lambda = 2
-    if any(k in text_lower for k in ["juridische zaken", "bezwaarschriftencommissie", "directeur", "college van b&w"]):
-        delta_lambda = 3
-    if any(k in text_lower for k in ["klantenservice", "callcenter", "afdeling verwerking", "postbus"]):
-        delta_lambda = 4
-
-    # Harmonische temperatuur T_H: zero-tolerance vs maatwerk
-    t_h = 0.3
-    if any(k in text_lower for k in ["onverbiddelijk", "strikte voorwaarde", "niet mogelijk", "geen uitzondering", "afgewezen"]):
-        t_h = 0.1
-    elif any(k in text_lower for k in ["in overleg", "maatwerk", "bijzondere omstandigheden", "coulance"]):
-        t_h = 0.6
-
-    # Ambtenaar agency w_official
-    w_official = 0.2
-    if any(k in text_lower for k in ["het systeem laat niet toe", "productcode", "standaardprocedure", "computer"]):
-        w_official = 0.1
-    elif any(k in text_lower for k in ["ik heb besloten", "in overleg met u", "ik kan toezeggen", "aangeboden"]):
-        w_official = 0.45
-
-    # Holonomisch geheugen / bias theta
-    theta = 0.2
-    if any(k in text_lower for k in ["herhaaldelijk", "reeds eerder medegedeeld", "bekend standpunt", "dossierhistorie"]):
-        theta = 0.6
+    text_lower = (letter_text or "").lower()
+    hints = []
+    if any(k in text_lower for k in ("geen uitzondering", "strikte voorwaarde", "niet mogelijk")):
+        hints.append("de tekst verdraagt weinig variatie")
+    if any(k in text_lower for k in ("klantenservice", "callcenter", "postbus")):
+        hints.append("de afzender lijkt een loket")
+    if any(k in text_lower for k in ("productcode", "het systeem laat niet toe", "standaardprocedure")):
+        hints.append("het zaaksysteem lijkt de daad al dicht te zetten")
+    if any(k in text_lower for k in ("in overleg", "maatwerk", "ik kan toezeggen")):
+        hints.append("er is een menselijke stem in de tekst")
 
     return InstitutionalField(
-        entity_name=entity,
-        w_citizen=0.45,
-        w_official=w_official,
-        delta_lambda=delta_lambda,
-        t_h=t_h,
-        theta=theta
+        entity_name=_entity_hint(text_lower),
+        front_open=True,
+        conversation_live=False,
+        closure="open",
+        coupling=UNKNOWN,
+        deviation_cost=UNKNOWN,
+        hints=hints,
+        witnessed=False,
     )
 
 
 def main():
-    print("=" * 72)
-    print("   🏛️  CIVIC CASE ENGINE — G-TID INSTITUTIONAL FIELD DIAGNOSTICS")
-    print("=" * 72)
-    print()
-
-    # Zoek naar recente inkomende brief of concept in Outgoing_Drafts
-    incoming_dir = ROOT_DIR / "Incoming_Letters"
-    recent_files = sorted(incoming_dir.glob("*.eml")) + sorted(incoming_dir.glob("*.txt")) + sorted(incoming_dir.glob("*.md"))
-    
-    sample_text = ""
-    target_entity = "Gemeente Westerwolde (Sociaal Domein)"
-    
-    if recent_files:
-        latest = recent_files[-1]
-        print(f"[*] Analyseren van recent ontvangen stuk: {latest.name}")
+    if sys.platform == "win32":
         try:
-            with open(latest, "r", encoding="utf-8", errors="ignore") as f:
-                sample_text = f.read()
+            sys.stdout.reconfigure(encoding="utf-8", errors="replace")
         except Exception:
             pass
 
-    if sample_text:
-        field = inspect_incoming_letter_for_gtid(sample_text)
-    else:
-        # Default Wmo veldconfiguratie
-        field = InstitutionalField(
-            entity_name=target_entity,
-            w_citizen=0.45,
-            w_official=0.20,
-            delta_lambda=3,
-            t_h=0.20,
-            theta=0.40
-        )
+    print("G-TID veldkaart — eerste pass")
+    print("Kamer 3. Een brief meet het veld niet.")
+    print()
 
-    diag = field.diagnose_summary()
-    print(f"\n[+] Entiteit:              {diag['entity']}")
-    print(f"[+] G-TID Veldregime:      {diag['regime']}")
-    print(f"[+] Aanbevolen Operator:   {diag['operator']}")
-    print(f"[+] Resonantie (Psi_res):  {diag['psi_res']}")
-    print(f"[+] Materiële Legitimiteit (L): {diag['material_legitimacy']}")
-    print(f"[+] Impedantielagen (dL):  {diag['delta_lambda']}")
-    print(f"[+] Ambtenaar Agency (w):  {diag['w_official']}")
-    print(f"\n[+] Diagnose-analyse:")
-    print(f"    {diag['rationale']}\n")
+    incoming_dir = ROOT_DIR / "Incoming_Letters"
+    sample = ""
+    if incoming_dir.is_dir():
+        files = sorted(incoming_dir.glob("*.eml")) + sorted(incoming_dir.glob("*.txt")) + sorted(incoming_dir.glob("*.md"))
+        if files:
+            latest = files[-1]
+            print(f"Tekst gezien als chart: {latest.name}")
+            sample = latest.read_text(encoding="utf-8", errors="ignore")
 
-    # Genereer de ambtelijke besluitrechtvaardiging (De Hack)
-    print("-" * 72)
-    hack = field.generate_ambtelijke_besluitrechtvaardiging()
-    print(hack)
-    print("-" * 72)
-
-    # Optioneel opslaan in Outgoing_Drafts
-    out_path = ROOT_DIR / "Outgoing_Drafts" / "G_TID_BESLUITRECHTVAARDIGING_AMBTENAAR.md"
-    with open(out_path, "w", encoding="utf-8") as f:
-        f.write(hack)
-    print(f"\n[✓] Besluitrechtvaardiging opgeslagen als: {out_path.name}")
+    field = inspect_incoming_letter_for_gtid(sample) if sample else InstitutionalField(
+        entity_name="onbekend",
+        hints=["geen brief aangeboden"],
+    )
+    print(field.markdown())
+    print("Er is niets weggeschreven. De achterzak blijft dicht.")
 
 
 if __name__ == "__main__":

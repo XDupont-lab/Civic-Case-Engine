@@ -582,5 +582,180 @@
         }
       ]
     }
+  },
+  {
+    "id": "IF-MED-BEATRIXOORD-INTAKE-008",
+    "kind": "horizontal",
+    "from_chart": {
+      "id": "chart_patient_biologisch_letsel",
+      "carrier": "Patiënt Fysiologisch Substraat (Craniofaciaal letsel, loopbeperking, stoma transversum)",
+      "domain": "Fysiologie & Klinische Realiteit",
+      "clock": "omega_c"
+    },
+    "to_chart": {
+      "id": "chart_beatrixoord_revalidatie",
+      "carrier": "Centrum voor Revalidatie UMCG Beatrixoord (dr. M. Oosterhoff)",
+      "domain": "Neurorevalidatie & DBC Protocol",
+      "clock": "omega_c"
+    },
+    "anchor": {
+      "event_id": "EVT-BEATRIXOORD-INTAKE-20261012",
+      "type": "clinical_intake",
+      "description": "Fysieke intake neurorevalidatie Beatrixoord met overhandiging overdrachtsblad (schedeltrauma 1975/1999, stoma, loopuitputting 50m)",
+      "date": "2026-10-12",
+      "witness_file": "Zorgdossier/Beatrixoord_Intake_20261012/Brief_Revalidatiearts_Oosterhoff_12_oktober_2026.md",
+      "source_event_ref": "overdrachtsblad_74"
+    },
+    "response": {
+      "event_id": "EVT-BEATRIXOORD-BRIEF-20261012",
+      "type": "sensory_decoupling_and_representation_shift",
+      "description": "Revalidatiearts weigert lichamelijk onderzoek ('nu geen indicatie voor'), wijst beeldvorming af, dateert schedelletsel op intake (2026-10) en muteert colonstoma naar dunne darm",
+      "date": "2026-10-12",
+      "witness_file": "Zorgdossier/Beatrixoord_Intake_20261012/Brief_Revalidatiearts_Oosterhoff_12_oktober_2026.md",
+      "target_formal_intake": "BEATRIXOORD_ZD209275546"
+    },
+    "shared_constraint_carrier": "Neuro-anatomische integriteit en fysiologische belastbaarheid",
+    "translation": {
+      "source_representation": "Historisch ipsilateraal schedeltrauma (1975/1999), transversumstoma (2016) en actuele craniale pijnas",
+      "target_representation": "DBC-revalidatieprotocol: leefstijl, acceptatie, en NPO met ontkoppelde somatische chart",
+      "required_target_fields": [
+        "lichamelijk_onderzoek_verricht",
+        "correcte_stoma_anatomie_colon",
+        "historische_trauma_datering"
+      ],
+      "mapped_fields": []
+    },
+    "gate": {
+      "source_gate": {
+        "name": "Inbreng van geobjectiveerd letsel via klinisch overdrachtsblad",
+        "condition": "Aanwezigheid geverifieerde medische voorgeschiedenis (1975, 1999, 2016) bij intake",
+        "satisfied": true
+      },
+      "target_gate": {
+        "name": "Professionele standaard medisch specialist (WGBO art. 7:453 BW)",
+        "condition": "Uitvoeren lichamelijk onderzoek en adequate overname somatische feiten",
+        "satisfied": false
+      }
+    },
+    "invariants": {
+      "declared_casimirs": [
+        {
+          "id": "C_fysiek_schedelbotdefect_1975_1999",
+          "description": "Klinische invariant: Palpabel botdefect rechterwenkbrauw en ipsilaterale craniofaciale traumageschiedenis",
+          "in_source": true,
+          "in_target_obs": false,
+          "in_target_casimir": false
+        }
+      ],
+      "micro_observables": [
+        {
+          "id": "O_geen_lichamelijk_onderzoek",
+          "description": "Feitelijke observable: Brief Oosterhoff noteert letterlijk 'Lichamelijk onderzoek: Niet verricht, nu geen indicatie voor'",
+          "in_source": true,
+          "in_target_obs": true
+        },
+        {
+          "id": "O_orgaanmutatie_stoma",
+          "description": "Feitelijke observable: Brief Oosterhoff noteert 'dunne darm stoma' waar Martini EPD colon transversumstoma bewijst",
+          "in_source": true,
+          "in_target_obs": true
+        }
+      ],
+      "interface_witnesses": [
+        {
+          "id": "W_brief_oosterhoff_20261012",
+          "description": "Brief dr. M. Oosterhoff d.d. 12-10-2026 in Brief_Revalidatiearts_Oosterhoff_12_oktober_2026.md",
+          "witness_file": "Zorgdossier/Beatrixoord_Intake_20261012/Brief_Revalidatiearts_Oosterhoff_12_oktober_2026.md",
+          "verified": true
+        }
+      ]
+    }
+  },
+  {
+    "id": "IF-MED-KELDER-IMMUNO-009",
+    "kind": "horizontal",
+    "from_chart": {
+      "id": "chart_martini_chirurgie_ic",
+      "carrier": "Martini Ziekenhuis Heelkunde / IC (Dr. W. Kelder)",
+      "domain": "Medisch Specialistische Zorg (Chirurgie)",
+      "clock": "omega_c"
+    },
+    "to_chart": {
+      "id": "chart_eerstelijns_huisarts",
+      "carrier": "Huisartsenpraktijk Eerstelijn (dr. Rykmans en opvolgers)",
+      "domain": "Huisartsgeneeskunde & Ketenregie",
+      "clock": "omega_c"
+    },
+    "anchor": {
+      "event_id": "EVT-KELDER-ONTSLAGBRIEF-20160523",
+      "type": "statutory_discharge_order",
+      "description": "Formele ontslagopdracht chirurg Kelder aan eigen huisarts: immunoglobulines bepalen in stabiele fase wegens verdenking onderliggende immunodeficiëntie na Fournier sepsis",
+      "date": "2016-05-23",
+      "witness_file": "Zorgdossier/79_Feitenrelaas_Immuuncontinuum_en_Opdracht_Martini_2016_voor_Dr_Brand.md",
+      "source_event_ref": "ontslagbrief_1006561063"
+    },
+    "response": {
+      "event_id": "EVT-HUISARTS-VERZUIM-2016_2026",
+      "type": "order_omission",
+      "description": "Huisarts voert specialistische opdracht nimmer uit; 10 jaar ontbreken van laboratoriumonderzoek naar immunoglobulines in de stabiele fase",
+      "date": "2016-05-23",
+      "witness_file": "Zorgdossier/59_Dossierafschrift_Huisarts_Oosterbroek/dossiervorigeHA.pdf",
+      "target_formal_intake": null
+    },
+    "shared_constraint_carrier": "Post-sepsis immunologische evaluatie en infectiebescherming",
+    "translation": {
+      "source_representation": "Expliciet verzoek tot immunoglobulinen-analyse in koude fase ter uitsluiting immuundeficiëntie",
+      "target_representation": "Volledig verzuim van orderinvoer in het Huisarts Informatie Systeem (HIS)",
+      "required_target_fields": [
+        "laborder_immunoglobulines_uitgevoerd",
+        "trombocyten_vervolgcontrole_verricht"
+      ],
+      "mapped_fields": []
+    },
+    "gate": {
+      "source_gate": {
+        "name": "Ontslagoverdracht medisch specialist met gerichte diagnostische opdracht",
+        "condition": "Opdracht tweemaal geëxpliciteerd in officiële ontslagbrief 23-05-2016",
+        "satisfied": true
+      },
+      "target_gate": {
+        "name": "Opvolging specialistisch advies door huisarts (Zorgstandaard / WGBO)",
+        "condition": "Uitvoeren geadviseerde laboratoriumdiagnostiek in eerste lijn",
+        "satisfied": false
+      }
+    },
+    "invariants": {
+      "declared_casimirs": [
+        {
+          "id": "C_onderliggende_afweerstatus_post_fournier",
+          "description": "Klinische invariant: Verificatie humorale immuuncompetentie na weefselvernietigende necrotiserende infectie",
+          "in_source": true,
+          "in_target_obs": false,
+          "in_target_casimir": false
+        }
+      ],
+      "micro_observables": [
+        {
+          "id": "O_kelder_advies_tweemaal_genoemd",
+          "description": "Feitelijke observable: Zowel onder Ziekteverloop als onder Maatregelen na ontslag staat 'immunoglobulines nog te bepalen door eigen huisarts'",
+          "in_source": true,
+          "in_target_obs": true
+        },
+        {
+          "id": "O_geen_igg_in_his_tot_2026",
+          "description": "Feitelijke observable: Nul bepalingen van IgG/A/M in huisartsenjournaal tussen 2016 en 2026",
+          "in_source": true,
+          "in_target_obs": false
+        }
+      ],
+      "interface_witnesses": [
+        {
+          "id": "W_ontslagbrief_kelder_2016",
+          "description": "Ontslagbrief Heelkunde d.d. 23-05-2016 (1006561063/DLV) in Zorgdossier/79",
+          "witness_file": "Zorgdossier/79_Feitenrelaas_Immuuncontinuum_en_Opdracht_Martini_2016_voor_Dr_Brand.md",
+          "verified": true
+        }
+      ]
+    }
   }
 ]
