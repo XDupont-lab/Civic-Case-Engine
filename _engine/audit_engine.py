@@ -16,7 +16,7 @@ Architectuur:
 - Optionele Kruislingse Verificatie (--critical): Grok toetst DeepSeek, DeepSeek toetst Grok.
 - Genereert een tweeledige output in Outgoing_Drafts/:
   1. AUDIT_REPORT_<naam>.md (volledig dialectisch rapport)
-  2. REFINED_<naam>.md (direct verzendklare brief waarin de verbeteringen zijn geïntegreerd)
+  2. REFINED_<naam>.md (korte brief voor een lokaal Nederlands loket; de wetsartikelen blijven in het rapport)
 """
 
 import os
@@ -198,10 +198,13 @@ def execute_native_grok(full_prompt_text):
                     pass
 
 def call_grok_engine(system_prompt, user_prompt, openrouter_key, max_tokens=2048, temp=0.3):
+    mask, restore = _masker()
+    system_prompt, kluis = mask(system_prompt or "")
+    user_prompt, kluis = mask(user_prompt or "", kluis)
     full_prompt = f"Systeem: {system_prompt}\n\nOpdracht & Inhoud:\n{user_prompt}"
     native_res = execute_native_grok(full_prompt)
     if native_res:
-        return native_res
+        return restore(native_res, kluis)
     if openrouter_key and openrouter_key != "vul_hier_in" and not openrouter_key.startswith("leeg_"):
         try:
             return call_api(ENDPOINTS["openrouter"], openrouter_key, MODELS["grok"], system_prompt, user_prompt, max_tokens, temp)
@@ -209,7 +212,18 @@ def call_grok_engine(system_prompt, user_prompt, openrouter_key, max_tokens=2048
             return f"[Grok Fout: {e}]"
     return "[Grok Fout: Native Grok CLI heeft geen output geleverd en geen secundaire API geconfigureerd]"
 
+def _masker():
+    shared = Path(r"E:\LLM_Workspace\Shared_Tools")
+    if str(shared) not in sys.path:
+        sys.path.insert(0, str(shared))
+    from pii_mask import mask, restore
+    return mask, restore
+
+
 def call_api(endpoint, api_key, model, system_prompt, user_prompt, max_tokens=2048, temp=0.2):
+    mask, restore = _masker()
+    system_prompt, kluis = mask(system_prompt or "")
+    user_prompt, kluis = mask(user_prompt or "", kluis)
     payload = {
         "model": model,
         "messages": [
@@ -228,7 +242,7 @@ def call_api(endpoint, api_key, model, system_prompt, user_prompt, max_tokens=20
     req = urllib.request.Request(endpoint, data=json.dumps(payload).encode("utf-8"), headers=headers, method="POST")
     with urllib.request.urlopen(req, timeout=60) as resp:
         res = json.loads(resp.read().decode("utf-8"))
-        return res["choices"][0]["message"]["content"].strip()
+        return restore(res["choices"][0]["message"]["content"].strip(), kluis)
 
 def run_constructive_audit(draft_path, is_critical=False):
     root_dir = Path(__file__).resolve().parent.parent
@@ -240,6 +254,26 @@ def run_constructive_audit(draft_path, is_critical=False):
 
     with open(draft_path, "r", encoding="utf-8") as f:
         draft_content = f.read()
+
+    engine_dir = Path(__file__).resolve().parent
+    if str(engine_dir) not in sys.path:
+        sys.path.insert(0, str(engine_dir))
+    from veto_gate import CLINICAL_KEYWORDS, VetoGate
+
+    poort_voor = VetoGate(root_dir=root_dir).check_draft(
+        draft_content, slot_metadata={"name": "lokaal loket", "ingest_capacity": ["productcodes", "termijnen", "privacy"]}
+    )
+    klinisch_eruit = any(
+        (not item.get("passed", True)) and item.get("rule") == "VETO_1_PAYLOAD_SLOT_INGEST"
+        for item in poort_voor.get("results", [])
+    )
+    draft_voor_model = draft_content
+    if klinisch_eruit:
+        stukken = re.split(r"(?<=[.!?])\s+", draft_content)
+        gehouden = [s for s in stukken if not any(re.search(pat, s, re.IGNORECASE) for pat in CLINICAL_KEYWORDS)]
+        gehouden.append("Gelet op mijn medische belastbaarheid verzoek ik alle stukken uitsluitend digitaal aan te leveren.")
+        draft_voor_model = " ".join(gehouden)
+        print("[*] Veto vóór de audit: klinische zinnen blijven lokaal en gaan niet naar het model.")
 
     print(f"[*] Dossier Hub               : {root_dir.name}")
     print(f"[*] Te auditen conceptbrief    : {draft_path.name}")
@@ -272,8 +306,9 @@ def run_constructive_audit(draft_path, is_critical=False):
     user_deepseek = (
         f"GELADEN DOCTRINE:\n{doctrine_context}\n\n"
         f"DOSSIERFEITEN & CHRONOLOGIE:\n{dossier_context}\n\n"
-        f"CONCEPTBRIEF TER BEOORDELING ({draft_path.name}):\n\"\"\"\n{draft_content}\n\"\"\"\n\n"
-        "Geef een gestructureerde wetstechnische en logische audit. Benoem concrete versterkingen en ontbrekende wetsartikelen."
+        f"CONCEPTBRIEF TER BEOORDELING ({draft_path.name}):\n\"\"\"\n{draft_voor_model}\n\"\"\"\n\n"
+        "Geef een gestructureerde wetstechnische en logische audit voor het dossier. "
+        "Benoem ontbrekende wetsartikelen in dit rapport. Zet ze niet in de brief zelf als het loket lokaal Nederlands is."
     )
 
     sys_grok = (
@@ -286,7 +321,7 @@ def run_constructive_audit(draft_path, is_critical=False):
         "Geen robot-steno, gewone Nederlandse zinnen, scherpe kern."
     )
     user_grok = (
-        f"CONCEPTBRIEF TER BEOORDELING ({draft_path.name}):\n\"\"\"\n{draft_content}\n\"\"\"\n\n"
+        f"CONCEPTBRIEF TER BEOORDELING ({draft_path.name}):\n\"\"\"\n{draft_voor_model}\n\"\"\"\n\n"
         "Toets deze conceptbrief scherp op machtsdynamiek en The Velvet Glove (hoffelijk, waardig, ontwapenend, onwrikbaar). "
         "Geef direct 3 concrete verbeterpunten en formuleringen in gewone zinnen."
     )
@@ -309,10 +344,10 @@ def run_constructive_audit(draft_path, is_critical=False):
     if is_critical and has_multi:
         print("[Ronde 2] Kruislingse toetsing (Grok toetst DeepSeek & DeepSeek toetst Grok)...")
         sys_cross_grok = "Je bent Grok. Toets DeepSeeks audit op feitelijke overclaims, wettekst-hallucinaties en praktische houdbaarheid. Gebruik live websearch ter verificatie."
-        user_cross_grok = f"ORIGINEEL:\n{draft_content[:2000]}\n\nDEEPSEEK AUDIT:\n{deepseek_audit}\n\nBeoordeel DeepSeeks conclusies scherp en feitelijk."
+        user_cross_grok = f"ORIGINEEL:\n{draft_voor_model[:2000]}\n\nDEEPSEEK AUDIT:\n{deepseek_audit}\n\nBeoordeel DeepSeeks conclusies scherp en feitelijk."
         
         sys_cross_ds = "Je bent DeepSeek. Toets Groks audit op logische gaten, aannames en procedurele consistentie."
-        user_cross_ds = f"ORIGINEEL:\n{draft_content[:2000]}\n\nGROK AUDIT:\n{grok_audit}\n\nBeoordeel Groks aanbevelingen analytisch."
+        user_cross_ds = f"ORIGINEEL:\n{draft_voor_model[:2000]}\n\nGROK AUDIT:\n{grok_audit}\n\nBeoordeel Groks aanbevelingen analytisch."
 
         with ThreadPoolExecutor(max_workers=2) as executor:
             f_cg = executor.submit(call_grok_engine, sys_cross_grok, user_cross_grok, openrouter_key, 1500, 0.3)
@@ -323,17 +358,17 @@ def run_constructive_audit(draft_path, is_critical=False):
     # Ronde 3: Generatie van de definitieve Refined Version
     print("[Ronde 3] Integreren van inzichten tot verzendklare REFINED brief...")
     sys_refine = (
-        "Je bent de Meester-Schrijver van de Civic Case Engine. "
-        "Jouw taak is het produceren van de DEFINITIEVE, VERZENDKLARE VERSIE van de conceptbrief. "
-        "Integreer alle terechte juridische versterkingen (wetsartikelen, termijnen) en pas 'The Velvet Glove' onberispelijk toe: "
-        "hoffelijk, waardig, rustig, maar met een ijzeren greep op de wettelijke verplichtingen van het bestuursorgaan. "
-        "Lever uitsluitend de complete, verzendklare brieftekst in Markdown zonder metatekst of inleiding."
+        "Je schrijft de korte brief die een lokaal Nederlands loket kan lezen. "
+        "De wetsartikelen, termijnen en kopieën blijven in het auditrapport. "
+        "Zet ze niet in deze brief. Geen extra CC. Geen dreigende termijn. "
+        "Hoffelijk, kort, menselijk. "
+        "Lever uitsluitend de brieftekst, zonder inleiding."
     )
     user_refine = (
-        f"ORIGINELE CONCEPTBRIEF:\n{draft_content}\n\n"
-        f"WETSTECHNISCHE AUDIT (DeepSeek):\n{deepseek_audit}\n\n"
-        f"STRATEGISCHE & VELVET GLOVE AUDIT (Grok):\n{grok_audit}\n\n"
-        "Schrijf nu de definitieve, geperfectioneerde brief klaar voor verzending."
+        f"ORIGINELE CONCEPTBRIEF:\n{draft_voor_model}\n\n"
+        f"WAT IN HET RAPPORT BLIJFT (niet overnemen in de brief):\n{deepseek_audit}\n\n"
+        f"TOON:\n{grok_audit}\n\n"
+        "Schrijf de korte brief. De artikelen blijven achterwege."
     )
 
     refined_letter = "[Geen model beschikbaar voor synthese]"
@@ -341,6 +376,19 @@ def run_constructive_audit(draft_path, is_critical=False):
         refined_letter = call_api(ENDPOINTS["deepseek"], deepseek_key, MODELS["deepseek"], sys_refine, user_refine, 2500, 0.2)
     elif openrouter_key:
         refined_letter = call_api(ENDPOINTS["openrouter"], openrouter_key, MODELS["grok"], sys_refine, user_refine, 2500, 0.2)
+
+    from two_gate_dispatcher import TwoGateDispatcher
+    poort_na = TwoGateDispatcher(root_dir=root_dir).dispatch(
+        refined_letter,
+        slot_metadata={"name": "lokaal loket", "ingest_capacity": ["productcodes", "termijnen", "privacy"]},
+    )
+    print(f"[*] Veto na de audit: {poort_na.get('reason')}")
+    refined_letter = (
+        refined_letter
+        + "\n\n---\nDeze brief is nog niet verstuurd. Het sein van de persoon ontbreekt.\n"
+        + poort_na.get("reason", "")
+        + "\n"
+    )
 
     # Rapporten opslaan
     out_dir = root_dir / "Outgoing_Drafts"
