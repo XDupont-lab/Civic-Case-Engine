@@ -1,0 +1,86 @@
+[
+  {
+    "id": "sein",
+    "route": "bureau",
+    "titel": "Geef het sein op de brief",
+    "tekst": "Kijk of er in Civic_Case_Engine/werk een brief klaarstaat. Zeg in één zin of die op het sein wacht, en waarom de poort hem tegenhoudt als dat zo is. Verstuur niets."
+  },
+  {
+    "id": "vandaag",
+    "route": "bureau",
+    "titel": "Wat ligt er vandaag",
+    "tekst": "Lees Civic_Case_Engine/werk/00_Kompas.md. Zeg welk loket of welk probleem vandaag als eerste op tafel ligt, en wat de volgende zet is. Geen wetsartikel. Verstuur geen post."
+  },
+  {
+    "id": "orgaan",
+    "route": "landschap",
+    "titel": "Organogram en mandaat",
+    "tekst": "Breng van het loket dat in werk/00_Kompas.md openstaat het orgaan en het mandaat in kaart. Gebruik sync_landscape.py en openbare bronnen. Een lege cel blijft leeg. Schrijf in de lokale werkmap, niet in git."
+  },
+  {
+    "id": "politiek",
+    "route": "landschap",
+    "titel": "Politiek en media",
+    "tekst": "Lees het lokale politieke discours en het medialandschap rond het open loket. Alleen hun eigen woorden, met bron en datum. Geen voorspelling. Schrijf in de lokale werkmap."
+  },
+  {
+    "id": "kantel",
+    "route": "landschap",
+    "titel": "Intern model van dit loket",
+    "tekst": "Lees aan wat er al binnen is welk intern model dit loket draait. Zeg hoe de volgende brief dat model aanspreekt, zonder gezichtsverlies. Bij een lokaal Nederlands loket blijft de brief kort."
+  },
+  {
+    "id": "avg",
+    "route": "dossiers",
+    "titel": "Vraag een ontbrekend dossier op",
+    "tekst": "Zet een kort art. 15-verzoek klaar voor het ontbrekende stuk dat het kompas noemt. Loop veto, dan audit, dan TwoGateDispatcher. Verstuur niets. Het sein blijft bij de persoon."
+  },
+  {
+    "id": "breuk",
+    "route": "dossiers",
+    "titel": "Toets waar de overdracht breekt",
+    "tekst": "Toets met glue_check.py en sluiting.py waar een overdracht tussen twee eilandjes niet sluit. Een breuk is een residu, geen woord dat twee keer voorkomt. Zeg het in gewone taal."
+  },
+  {
+    "id": "stempel",
+    "route": "dossiers",
+    "titel": "Zet een feit naast een oude stempel",
+    "tekst": "Zoek in de binnengekomen stukken een oude stempel die telkens terugkomt. Zet het feit uit dezelfde periode ernaast. Geen ruzie op het scherm. Verstuur geen post."
+  },
+  {
+    "id": "klok",
+    "route": "post",
+    "titel": "Nakijken welke klok loopt",
+    "tekst": "Kijk welke inzageverzoek of brief nog openstaat en hoeveel dagen de termijn nog heeft. Noem één klok. Zet geen nieuwe brief de deur uit."
+  },
+  {
+    "id": "bevestig",
+    "route": "post",
+    "titel": "Bevestig een telefoongesprek",
+    "tekst": "Zet een korte bevestigingsmail klaar van wat er mondeling is toegezegd. Laat de ander ruimte. Verstuur niets tot de persoon het sein geeft."
+  },
+  {
+    "id": "blad",
+    "route": "bureau",
+    "titel": "Overdrachtsblad voor een afspraak",
+    "tekst": "Maak één pagina met de feiten en een briefje van drie punten voor de eerstvolgende afspraak in het kompas. Het gesprek blijft bij de afspraak van vandaag. Schrijf het in de werkmap."
+  },
+  {
+    "id": "modelhuis",
+    "route": "omgeving",
+    "titel": "Koppel een tweede modelhuis",
+    "tekst": "Kijk via Shared_Tools/model_bus.py welk modelhuis al bereikbaar is. Zeg welk tweede huis nog ontbreekt voor de kruistoets. Vraag de sleutel niet op het scherm. Zet geen sleutel in een bestand dat in git staat."
+  },
+  {
+    "id": "kopie",
+    "route": "omgeving",
+    "titel": "Richt een afgeschermde identiteitskopie in",
+    "tekst": "Beschrijf de stap voor een afgeschermde identiteitskopie: burgerservicenummer en machineregel afgedekt, met een datum. Bouw die stap in de werkmap, niet in de openbare map. Kopieer geen persoonlijk script de openbare map in."
+  },
+  {
+    "id": "nieuw",
+    "route": "omgeving",
+    "titel": "Noem het hulpmiddel dat nog ontbreekt",
+    "tekst": "Noem één hulpmiddel dat de open zaak nu nog niet heeft. Zeg dat het in de lokale werkmap hoort, niet in _engine en niet in git. Bouw het nog niet."
+  }
+]

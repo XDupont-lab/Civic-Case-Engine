@@ -34,6 +34,9 @@ Incoming_Letters/*
 Outgoing_Drafts/*
 !Outgoing_Drafts/.gitkeep
 
+# Zaak van de persoon. Niet het programma.
+werk/
+
 # Bankmutaties & financiële logs
 *.csv
 *.tsv
