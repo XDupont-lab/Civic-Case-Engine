@@ -1,6 +1,6 @@
 # 🛡️ Dialectisch Multi-Model Review Rapport v2.0: README.md
 
-**Doelbestand:** `E:\LLM_Workspace\Civic_Case_Engine\README.md`  
+**Doelbestand:** `README.md`  
 **Opdracht:** Toets de architectuur en taxonomie van de Civic Case Engine kritisch. Beoordeel de conceptuele scheiding tussen Exoskelet (functie) en Kernel/Harness (techniek).  
 **Methode:** Onafhankelijke audits + Kruislingse Falsificatie
 

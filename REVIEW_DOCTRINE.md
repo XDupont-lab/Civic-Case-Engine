@@ -1,6 +1,6 @@
 # 🛡️ Dialectisch Multi-Model Review Rapport: DOCTRINE.md
 
-**Doelbestand:** `E:\LLM_Workspace\Civic_Case_Engine\DOCTRINE.md`  
+**Doelbestand:** `DOCTRINE.md`  
 **Opdracht:** Bekijk deze doctrine kritisch voor het burger-exoskelet. Waar zitten zwakke plekken en hoe kunnen we het versterken?
 
 ---

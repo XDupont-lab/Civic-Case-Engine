@@ -1,29 +1,29 @@
-# Agentische Werkomgeving Basisadministratie (AWB) — Systeemarchitectuur & Referentie
+# Agentische Werkomgeving Basisadministratie (AWB)
 
-> **Definitie:** Een open-source **Agentische Werkomgeving Basisadministratie (AWB)** voor de burger als een **Externe Executieve Functie** om de structurele informatieverwerkingsasymmetrie tussen burger en bureaucratie op te heffen. Bevat instrumenten voor bestuursrechtelijke termijnbewaking, procedurele verificatie en integrale dossiervoering.  
-> *Agentic workspace for personal base administration, statutory procedural tracking, and case verification.*
+[English](README.en.md)
 
-Het framework is 100% geanonimiseerd, domein-agnostisch en openbaar overdraagbaar. Het bevat géén persoonlijke dossiers; persoonlijke data en instantiespecifieke dossiers worden separaat gekoppeld.
+> **Definitie.** Agentische Werkomgeving Basisadministratie. Het ketengrootboek staat in het midden. Geld wordt twee keer geboekt, een overdracht één keer, en die post blijft open tot de andere kant tegenboekt.
+
+De werkomgeving houdt één beeld bij over zorg, loket en geld. Zij draait op de computer van de persoon. Het dossier, de brieven en de namen blijven buiten git. De persoon leest een brief en geeft het sein. Zolang een gesprek met een lokaal loket open is, gaat er geen ingebrekestelling weg en noemt het programma geen dwangsom.
+
+De maat voor de bouw staat in [APPLICATIE_SPECIFICATIE.md](APPLICATIE_SPECIFICATIE.md). Het venster heet Civic Helper. De repository heet nog `Civic-Case-Engine`.
+
+Wat hieronder staat is de architectuurnotitie. De definitie hierboven is de deur.
 
 ---
 
-## 🚀 Snelle Start (1-Prompt Turnkey Replicatie)
+## Begin
 
-### Voor Antigravity / Agy Agents:
-Geef je agent deze prompt:
-> *"Zet de Civic Case Engine lokaal voor me op door `SETUP_ALL.cmd` (of `python setup_environment.py`) uit te voeren."*
-
-### Voor Menselijke Gebruikers (1-Klik):
-1. **Clone de repository**:
+1. Clone de repository en ga de map in.
    ```bash
    git clone https://github.com/XDupont-lab/Civic-Case-Engine.git
    cd Civic-Case-Engine
    ```
-2. **Dubbelklik op `SETUP_ALL.cmd`**:
-   * Installeert automatisch Python en Git via Windows Package Manager (`winget`) indien nog niet aanwezig.
-   * Richt de virtuele AI-omgeving in (`.venv_bu`) inclusief Playwright Chromium browser voor portaal- en documentinzage.
-   * Start de interactieve 5-stappen wizard (`bootstrap.py`) om jouw dossier en rechtsdomein te selecteren.
-3. **Klaar voor actie**: Open `START.cmd` of stuur je opdrachten direct via je agent!
+2. Op Windows opent `CivicHelper.cmd` het venster. Op Linux opent `hulp/start_venster.sh` hetzelfde venster.
+3. Een schone computer begint bij `ontkiem.py`. Eén gewoon mailadres is genoeg om te starten. Een sleutel blijft in de omgeving. Het venster vraagt er niet om.
+4. `START.cmd` en `start_linux.sh` zijn het menu voor de bouwer. Dat menu is niet de deur.
+
+Of een overdracht sluit, toetst `Ketengrootboek/sluiting.py`. Ontbreekt de tegenboeking, dan blijft de post open. Het openbare voorbeeld heet Voorbeeldstad. Een pad naar een eigen dossier hoort niet in `interfaces.json`.
 
 ---
 
@@ -88,7 +88,7 @@ Om categoriefouten te voorkomen, ontkoppelt de architectuur het maatschappelijke
 
 ## 2. De Cybernetische Architectuur: 3 Klokken & 5 Rigoureuze Lagen
 
-> **Volledige specificatie:** Zie [CYBERNETISCHE_ARCHITECTUUR.md](file:///E:/LLM_Workspace/Civic_Case_Engine/CYBERNETISCHE_ARCHITECTUUR.md) en [NON_LINEAIRE_ANALYSE_EN_CONSTRAINT_TOPOLOGIE.md](file:///E:/LLM_Workspace/Civic_Case_Engine/NON_LINEAIRE_ANALYSE_EN_CONSTRAINT_TOPOLOGIE.md) (wiskundige en epistemische fundering via CT v1/v2).
+> **Volledige specificatie:** Zie [CYBERNETISCHE_ARCHITECTUUR.md](CYBERNETISCHE_ARCHITECTUUR.md) en [NON_LINEAIRE_ANALYSE_EN_CONSTRAINT_TOPOLOGIE.md](NON_LINEAIRE_ANALYSE_EN_CONSTRAINT_TOPOLOGIE.md) (wiskundige en epistemische fundering via CT v1/v2).
 
 Een lokale agent is geen brievenschrijver, maar een **externe executieve lus** die drie ontkoppelde klokken waarneemt en synchroniseert:
 * **$\omega_c$ (Cliëntklok):** Leefwereld, lichaam, zorggat. Continue biologische tijd die niet kan pauzeren.
@@ -125,7 +125,13 @@ Civic_Case_Engine/
 ├── DOCTRINE.md                # Actief geladen juridische doctrine
 ├── INTERACTIONAL_STATE_AND_OPERATOR_DISPATCH.md # v2.0 Interactionele toestand & Operator Dispatch (S_case & WAIT)
 ├── ONTWIKKELPLAN_CIVIC_EXOSKELETON.md # Het master ontwikkelplan
-├── README.md                  # Dit architectuurdocument
+├── README.md                  # Deze deur, in het Nederlands
+├── README.en.md               # Dezelfde deur, in het Engels
+├── APPLICATIE_SPECIFICATIE.md # De maat voor de bouw
+├── CivicHelper.cmd            # Opent het venster op Windows
+├── ontkiem.py                 # Eerste start op een schone computer
+├── Ketengrootboek/            # Tegenboeking en proefbalans
+├── hulp/                      # Het venster (venster.py, lus.py)
 │
 ├── _engine/                   # De Civic Legal Kernel & Agentic Harness
 │   ├── audit_engine.py        # Multi-model dialectic auditor (DeepSeek + Grok)
@@ -141,24 +147,21 @@ Civic_Case_Engine/
 │       ├── nl_brp_adres/      # Art. 2.23 Wet BRP, VOW-bestrijding
 │       └── uk_housing/        # Equality Act 2010, Housing Act 1996 Part VII
 │
-├── Dossier/                   # Gekoppelde casus-data en chronologie
+├── Dossier/                   # Voorbeeldbladen. De zaak van de persoon staat in werk/ en gaat niet naar git
 │   ├── 00_Master_Chronologie.md / .json
 │   ├── 01_Zorg_en_Gezondheid.md tot 12_Vergunningen_en_Toezicht.md
 │   └── termijnen.json
 │
 ├── Probes/                    # Scherpe wettelijke uitvraag-mallen (AVG / Awb)
-├── Incoming_Letters/          # Ontvangen correspondentie van instanties
-├── Outgoing_Drafts/           # Uitgaande concepten, audits en verfijnde brieven
+├── Incoming_Letters/          # Leeg in git. Binnengekomen post blijft lokaal
+├── Outgoing_Drafts/           # Leeg in git. Concepten blijven lokaal tot het sein
 └── Landschap/                 # Institutionele machtskaart (Keten, Politiek)
 ```
 
 ---
 
-## 4. Hoe te Gebruiken
+## 4. Hoe te gebruiken
 
-1. Start het centrale menu: dubbelklik op `START.cmd`.
-2. Selecteer het gewenste domein via `[6] SWITCH_DOMAIN.cmd` (bijv. Wmo, Schulden, UWV of UK Housing).
-3. Drop inkomende documenten in `Incoming_Letters/` of plaats een concept in `Outgoing_Drafts/`.
-4. Draai een audit via `[1] AUDIT_DRAFT.cmd`: het Agentic Harness roept DeepSeek en Grok aan, toetst tegen de actieve doctrine en levert een kant-en-klaar verbeterd concept op.
-5. Bewaak de wettelijke klok via `[3] CHECK_TERMIJNEN.cmd`.
-6. Genereer een complete, geverifieerde procesbundel voor rechtbank of ombudsman via `[5] EXPORT_BUNDEL.cmd`.
+De deur staat hierboven, onder Begin. `START.cmd` blijft het menu voor wie aan de motor bouwt.
+
+Een brief gaat pas weg nadat de persoon de tekst heeft gelezen en het sein heeft gegeven. De toets of de andere kant de overdracht heeft ingeboekt, is het ketengrootboek. Twee groene balies zonder tegenboeking zijn nog geen sluiting.

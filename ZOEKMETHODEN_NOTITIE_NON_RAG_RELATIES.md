@@ -3,7 +3,7 @@
 
 **Geldig vanaf:** 9 oktober 2026  
 **Status:** Canoniek methodologisch navigatiedocument voor alle CLI-agenten (Agy, Grok, DeepSeek, Claude)  
-**Locatie:** [`E:\LLM_Workspace\Civic_Case_Engine\ZOEKMETHODEN_NOTITIE_NON_RAG_RELATIES.md`](file:///E:/LLM_Workspace/Civic_Case_Engine/ZOEKMETHODEN_NOTITIE_NON_RAG_RELATIES.md)  
+**Locatie:** [`ZOEKMETHODEN_NOTITIE_NON_RAG_RELATIES.md`](ZOEKMETHODEN_NOTITIE_NON_RAG_RELATIES.md)  
 **Theoretisch Fundament:** Constraint Topologie v1.0 / v2.0, Luhmanniaanse Operationele Geslotenheid, Dubbele Boekhouding (Ketengrootboek)
 
 ---
@@ -52,35 +52,35 @@ Hierin liggen alle geverifieerde interfaces tussen zorg, wonen, geld en recht va
 Toetst of een relatie juridisch en klinisch sluit:
 ```powershell
 # Eén specifieke relatie toetsen:
-python E:\LLM_Workspace\Civic_Case_Engine\_engine\glue_check.py IF-MED-TRAUMA-OOG-004
+python _engine/glue_check.py IF-MED-TRAUMA-OOG-004
 
 # Alle interfaces integraal toetsen:
-python E:\LLM_Workspace\Civic_Case_Engine\_engine\glue_check.py ALL
+python _engine/glue_check.py ALL
 ```
 
 ### C. Het Ketengrootboek & Sluiting (`sluiting.py`)
 Toetst de boekhoudkundige pariteit van de verzorgingsstaat (Debet = Credit):
 ```powershell
-python E:\LLM_Workspace\Civic_Case_Engine\Ketengrootboek\sluiting.py ALL
+python Ketengrootboek/sluiting.py ALL
 ```
 
 ### D. De Non-RAG Theorie-Atlas voor het Wetenschappelijke Notion-Corpus (`non_rag_theory_engine.py`)
-Voor de 788+ bestanden in `E:\Obsidian Vault\Notion_Import`, `Schone_Canon/` en `Research/Preprints/` geldt exact hetzelfde verbod op losse woordzoekers en TF-IDF associaties (`Same Word ≠ Same Constraint`). De deterministische theorie-engine stript alle 1.146 oude TF-IDF `Graph Weaver`-links en indexeert elk document als een getypeerde Patch $P_i$ (`SCHONE_CANON`, `CANON_KERN`, `TYPE_A_MATH_TRANSLATION`, `TYPE_B_APPLIED_LENS`, `EXPLORATION_WORKBENCH`, `ARCHIEF_SUPERSEDED`) met gerichte interfaces (`UPSTREAM_ANCHOR`, `LATERAL_BRIDGE`, `DOWNSTREAM_APPLICATION` met *Direction Lock*, `SUPERSEDED_BY`):
+Voor het lokale theoriecorpus geldt exact hetzelfde verbod op losse woordzoekers en TF-IDF associaties (`Same Word ≠ Same Constraint`). De deterministische theorie-engine stript alle 1.146 oude TF-IDF `Graph Weaver`-links en indexeert elk document als een getypeerde Patch $P_i$ (`SCHONE_CANON`, `CANON_KERN`, `TYPE_A_MATH_TRANSLATION`, `TYPE_B_APPLIED_LENS`, `EXPLORATION_WORKBENCH`, `ARCHIEF_SUPERSEDED`) met gerichte interfaces (`UPSTREAM_ANCHOR`, `LATERAL_BRIDGE`, `DOWNSTREAM_APPLICATION` met *Direction Lock*, `SUPERSEDED_BY`):
 ```powershell
 # Bouw/ververs de Non-RAG Theorie-Atlas (Shared_Tools/theory_atlas_non_rag.json):
-python E:\LLM_Workspace\Shared_Tools\non_rag_theory_engine.py build
+python ../Shared_Tools/non_rag_theory_engine.py build
 
 # Toon de Oogst-Radar per 3D+1 domein (zonder Archief- of TF-IDF ruis):
-python E:\LLM_Workspace\Shared_Tools\non_rag_theory_engine.py harvest-radar
+python ../Shared_Tools/non_rag_theory_engine.py harvest-radar
 
 # Inspecteer het Patch-Paspoort, Contract (Π_ref, GU-log, Gate) en de in/uit-pijlen van een stuk:
-python E:\LLM_Workspace\Shared_Tools\non_rag_theory_engine.py inspect "Kepler"
+python ../Shared_Tools/non_rag_theory_engine.py inspect "Kepler"
 
 # Volg de zuivere Non-RAG relatie-keten vanaf een start-patch:
-python E:\LLM_Workspace\Shared_Tools\non_rag_theory_engine.py trace "Periode-ring" -d 2
+python ../Shared_Tools/non_rag_theory_engine.py trace "Periode-ring" -d 2
 
 # Voer de Direction-Lock & Π/Gate Contract Audit uit op het theorie-corpus:
-python E:\LLM_Workspace\Shared_Tools\non_rag_theory_engine.py glue-check
+python ../Shared_Tools/non_rag_theory_engine.py glue-check
 ```
 
 ---

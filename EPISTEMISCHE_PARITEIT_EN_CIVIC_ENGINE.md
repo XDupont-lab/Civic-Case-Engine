@@ -2,7 +2,7 @@
 
 > **Status:** Referentie- & Manifestdocument (v2.1 — De Prothese-Editie & Hermeneutische Dialoog)  
 > **Auteur / Context:** Civic Case Engine Project & het Agentic Ensemble (Antigravity, Grok, Agy)  
-> **Locatie:** `E:\LLM_Workspace\Civic_Case_Engine\EPISTEMISCHE_PARITEIT_EN_CIVIC_ENGINE.md`  
+> **Locatie:** `EPISTEMISCHE_PARITEIT_EN_CIVIC_ENGINE.md`  
 > **Fundament:** Constraint Topologie (v1.0 / v2.0), Awb, Wmo 2015, AVG art. 15, Cybernetica & Holobiont-Theorie  
 > **Hardware- & Systeembasis:** Windows 11 4K Desktop, Fossibot F102 (Android), Meta Quest 3 (VR), Proton Mail Bridge, Betterbird, Python 3.12 (Zero-PIP Kernel)
 

@@ -4,7 +4,7 @@
 
 **Datum:** 7 oktober 2026  
 **Status:** Normatieve Architectuurspecificatie voor de Civic Case Engine Harness & Dialectische Auditoren  
-**Referentie:** Casus Dupont vs. Sociaal Team Oost (Lennart Top / Concept 51), CAK, Menzis, LAVG, Midwerk  
+**Referentie:** het openbare voorbeeld Voorbeeldstad. De levende zaak blijft buiten deze repository.  
 
 ---
 

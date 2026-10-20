@@ -17,7 +17,7 @@ $$\frac{d}{dt} \text{Weerstand} \propto \|\text{Emotionele/Lineaire Druk}\|$$
 Elke wanhopige kreet van de burger bevestigt in het ambtelijke model de diagnose "onredelijk gedrag". De ambtelijke gate ($\mathrm{Gate}_w$) slaat hermetisch dicht.
 
 ### 1.2 De Mechanische Anker-Bifurcatie
-De formele brief van 2 september 2026 ([`06_Brief_Casemanager_Termijn_Motivatie.md`](file:///dossier/06_Brief_Casemanager_Termijn_Motivatie.md)) introduceerde een **topologische singulariteit** in dit systeem:
+De formele brief van 2 september 2026 introduceerde een **topologische singulariteit** in dit systeem:
 * Er werd een nieuwe ordeningsparameter ingebracht: **Niet-Aangeboren Hersenletsel (NAH) met dysexecutief syndroom**.
 * Dit is geen moreel of gedragsmatig label, maar een **mechanisch substraat-anker**.
 * Hierdoor ondergaat de ambtelijke energiefunctie een **bifurcatie**: het oude minimum ("moeilijke burger") wordt instabiel, en er ontstaat een nieuw, dieper minimum: **wettelijke compensatieplicht bij objectieve neurologische functiestoornis**.
@@ -80,7 +80,7 @@ $$D_t = \oint A_{\mu} \, dx^{\mu} > 0$$
 Elke informele doorgifte over de ambtelijke hiërarchie voegt een fasefout toe. Gesprekken worden niet genotuleerd, toezeggingen vervagen, en na zes maanden staat de burger met lege handen terwijl de ambtenaar meent dat "alles in overleg loopt".
 
 ### 3.2 De A/B-Gate en de Discrete Commit
-De wiskunde van de A/B-gate ([`ct_runtime/resolution.py`](file:///E:/LLM_Workspace/ct_runtime/resolution.py)) definieert de overgangsconditie:
+De wiskunde van de A/B-gate ([`ct_runtime/resolution.py`](ct_runtime/resolution.py)) definieert de overgangsconditie:
 $$\Gamma_{AB} = \frac{L_{\mathrm{coord}}}{L_{\mathrm{coh}}}$$
 * **$\Gamma_{AB} \le 1.0$ (Regime A - Continu):** De coördinatielast is klein en past binnen de natuurlijke coherentietijd. Informeel overleg volstaat.
 * **$\Gamma_{AB} > 1.0$ (Regime B - Discreet):** Zodra $D_t$ de tolerantiegrens overschrijdt, breekt het continue kanaal. Voortgezet bellen is pure energieverspilling.
@@ -95,7 +95,7 @@ Het Civic Exoskeleton dwingt bij $\Gamma_{AB} > 1.0$ een **DISCRETE_COMMIT_ANCHO
 
 ## 4. Ketenbreuken als "Lifting Obstructions" (CT v1.0)
 
-In CT v1.0 ([`Foundations v1.0`](file:///E:/Obsidian%20Vault/02_Domeinen/LLM_Instructies_Master/Constraint%20Topologie%20%E2%80%94%20Foundations%20%28v1%200%29.md)) ontstaat een **Gluing Failure** wanneer lokale patches $P_i$ en $P_j$ niet compatibel zijn onder de interface $f_{ij}$.
+In CT v1.0, Foundations v1.0, ontstaat een **Gluing Failure** wanneer lokale patches $P_i$ en $P_j$ niet compatibel zijn onder de interface $f_{ij}$.
 
 In het zorg- en bestaanszekerheidsdomein zien we de klassieke **Lifting Obstruction**:
 * **Patch $P_1$ (Woningcorporatie X):** Ziet 100% stipte huurbetalingen en leefbaarheids-/noodsignalen. Kan zelf geen zorg indiceren.
@@ -107,7 +107,7 @@ Geen enkele individuele patch heeft het mandaat om de integrale toestand van de 
 
 ### De Rol van Casimirs (Globale Invarianten)
 Het Civic Exoskeleton herstelt de samenhang door **Casimirs** te construeren die standhouden over álle patches heen:
-* **De Master Chronologie:** Beveiligd met cryptografische hashes ([`timeline_weaver.py`](file:///E:/LLM_Workspace/Civic_Case_Engine/_engine/timeline_weaver.py)).
+* **De Master Chronologie:** Beveiligd met cryptografische hashes ([`timeline_weaver.py`](_engine/timeline_weaver.py)).
 * **De Vier AVG-Sondes:** Door gelijktijdig bij alle vier de ketenpartijen ($P_1, P_2, P_3, P_4$) het volledige digitale dossier op te vragen, dwingt de burger af dat de verborgen interfaces ($f_{ij}$) boven tafel komen (zoals afstemmingsmails tussen verhuurder en zorgloket).
 * Het dossier transformeert van een verzameling losse loketbrieven naar een **gesloten variëteit**, waarin de ketenaansprakelijkheid mathematisch onontkoombaar wordt.
 
@@ -115,7 +115,7 @@ Het Civic Exoskeleton herstelt de samenhang door **Casimirs** te construeren die
 
 ## 5. Multi-Resolution Escalatie: De Computationele Zuinigheid
 
-Geïnspireerd door de resolutietrap uit [`ct_runtime/resolution.py`](file:///E:/LLM_Workspace/ct_runtime/resolution.py), hanteert het Civic Exoskeleton strikte energie-economie: *"Lokaal goed genoeg is goed genoeg."*
+Geïnspireerd door de resolutietrap uit [`ct_runtime/resolution.py`](ct_runtime/resolution.py), hanteert het Civic Exoskeleton strikte energie-economie: *"Lokaal goed genoeg is goed genoeg."*
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐

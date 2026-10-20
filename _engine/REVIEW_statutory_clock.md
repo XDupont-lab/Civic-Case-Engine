@@ -1,6 +1,6 @@
 # 🛡️ Dialectisch Multi-Model Review Rapport v2.0: statutory_clock.py
 
-**Doelbestand:** `E:\LLM_Workspace\Civic_Case_Engine\_engine\statutory_clock.py`  
+**Doelbestand:** `_engine\statutory_clock.py`  
 **Opdracht:** Toets dit script kritisch op: 1. Wiskundige correctheid van de Awb dwangsomstaffel (art. 4:17). 2. Fatale termijnen en bestuursrechtelijke houdbaarheid. 3. Gebruiksvriendelijkheid en frictieloze inzetbaarheid.  
 **Methode:** Onafhankelijke audits + Kruislingse Falsificatie
 

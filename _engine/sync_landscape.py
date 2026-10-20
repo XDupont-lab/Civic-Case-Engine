@@ -77,12 +77,15 @@ class LandscapeSynchronizer:
 
     def _resolve_target_dossier(self) -> Path:
         # Check standard locations
-        candidates = [
-            Path(r"E:\LLM_Workspace\Zorgdossier"),
-            self.root_dir.parent / "Zorgdossier",
-            self.root_dir.parent / "Zaakdossier",
-            self.root_dir / "Landschap"
-        ]
+        candidates = []
+        uit_omgeving = os.environ.get("CCE_DOSSIER", "").strip()
+        if uit_omgeving:
+            candidates.append(Path(uit_omgeving))
+        candidates.extend([
+            self.root_dir / "werk",
+            self.root_dir / "Dossier",
+            self.root_dir / "Landschap",
+        ])
         for c in candidates:
             if c.exists() and c.is_dir():
                 return c

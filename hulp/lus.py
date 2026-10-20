@@ -76,9 +76,12 @@ def _agy():
     gevonden = shutil.which("agy")
     if gevonden:
         return gevonden
-    vast = Path(r"C:\Users\Gebruiker\AppData\Local\agy\bin\agy.exe")
-    if vast.exists():
-        return str(vast)
+    for vast in (
+        Path.home() / "AppData/Local/agy/bin/agy.exe",
+        Path.home() / ".local/bin/agy",
+    ):
+        if vast.exists():
+            return str(vast)
     return ""
 
 

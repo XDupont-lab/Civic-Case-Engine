@@ -278,6 +278,6 @@ Een reële casus (Wmo, Sociaal Domein) wordt geabstraheerd tot een deterministis
 2. `_engine/statutory_clock.py` bewaakt de **$\omega_*$-klok** en handhaaft Veto-regel 5 (geen dubbele $t=0$).
 3. `Landschap/` levert de definities van slots en hun `ingest-capaciteit` voor Veto-regel 1.
 4. Alle domeinpacks respecteren de **meso-constraint**: lokale afbakening, medische poortwachter, zero theater.
-5. **Niet-lineaire dynamica & Constraint Topologie (CT v1/v2):** Voor de wiskundige en epistemische fundering van attractor-bifurcaties, de dialectische update-operator ($\Sigma$) via interne observatieruimten, en de A/B-gate conditie ($\Gamma_{AB} > 1$), zie: [`NON_LINEAIRE_ANALYSE_EN_CONSTRAINT_TOPOLOGIE.md`](file:///E:/LLM_Workspace/Civic_Case_Engine/NON_LINEAIRE_ANALYSE_EN_CONSTRAINT_TOPOLOGIE.md).
+5. **Niet-lineaire dynamica & Constraint Topologie (CT v1/v2):** Voor de wiskundige en epistemische fundering van attractor-bifurcaties, de dialectische update-operator ($\Sigma$) via interne observatieruimten, en de A/B-gate conditie ($\Gamma_{AB} > 1$), zie: [`NON_LINEAIRE_ANALYSE_EN_CONSTRAINT_TOPOLOGIE.md`](NON_LINEAIRE_ANALYSE_EN_CONSTRAINT_TOPOLOGIE.md).
 
 

@@ -47,7 +47,7 @@ class SluitingsToetser:
             self.keten_dir = Path(__file__).resolve().parent
         else:
             self.keten_dir = Path(root_dir)
-        self.workspace_root = Path(r"E:\LLM_Workspace")
+        self.workspace_root = self.keten_dir.parent
 
     def _los_bestand_op(self, rel_pad: str) -> Optional[Path]:
         """Zoekt bestand lokaal in workspace of keten_dir."""
