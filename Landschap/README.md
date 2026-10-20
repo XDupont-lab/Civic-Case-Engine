@@ -1,6 +1,6 @@
 # Landschap
 
-**Canonieke mal staat in** `E:\LLM_Workspace\Burger_Interface\Landschap\`.  
+**Canonieke mal staat buiten deze repository.**  
 Deze map is dezelfde schema-laag. Instanties: Zaakdossier 21a/b/c, niet hier.
 
 Schema, geen casus. Drie vragen die bij elke wederpartij hetzelfde zijn:

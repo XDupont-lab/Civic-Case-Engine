@@ -191,7 +191,7 @@ class GlueChecker:
         self.workspace_root = self.engine_dir.parent if self.engine_dir.name == "Civic_Case_Engine" else self.engine_dir
 
     def _resolve_file(self, rel_path: str) -> Optional[Path]:
-        """Resolves file path in engine_dir or workspace_root or local E:\\LLM_Workspace."""
+        """Resolves a witness inside the repository. A personal case path is not a public path."""
         if not rel_path:
             return None
         p1 = self.engine_dir / rel_path
@@ -200,9 +200,6 @@ class GlueChecker:
         p2 = self.workspace_root / rel_path
         if p2.is_file():
             return p2
-        p3 = Path(r"E:\LLM_Workspace") / rel_path
-        if p3.is_file():
-            return p3
         return None
 
 

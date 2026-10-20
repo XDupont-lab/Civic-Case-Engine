@@ -3,7 +3,7 @@
 **Status:** Vastgelegd & Operationeel  
 **Auteur:** Civic Case Engine Project & Agy (Antigravity)  
 **Datum:** 13 september 2026  
-**Locatie:** E:\LLM_Workspace\Civic_Case_Engine\
+**Locatie:** deze repository.
 
 ---
 
@@ -46,7 +46,7 @@ Een lokale agent is geen brievenschrijver, maar een externe executieve lus die d
 * **$\omega_w$ (Protocolklok):** Systeemwereld, zaaksystemen (Gws4all, Socrates), productcodes (trage ambtelijke relaxatie).
 * **$\omega_*$ (Procedurele Klok):** Discrete, wederzijds getuigde flank (Awb-dwangsom, AVG-termijn van 30 dagen, Zivver-logs). Dwingt $\omega_w$ tot aansluiting op $\omega_c$.
 
-Het systeem bewaakt vijf strikt gescheiden lagen (zie [CYBERNETISCHE_ARCHITECTUUR.md](file:///E:/LLM_Workspace/Civic_Case_Engine/CYBERNETISCHE_ARCHITECTUUR.md)):
+Het systeem bewaakt vijf strikt gescheiden lagen (zie [CYBERNETISCHE_ARCHITECTUUR.md](CYBERNETISCHE_ARCHITECTUUR.md)):
 1. **L0 — Cliënttoestand ($\omega_c$):** NAH, dysexecutie, interne context (lekt niet naar buiten).
 2. **L1 — Landschap van Entiteiten:** Functionele slots, mandaat, zaaksystemen, ambtelijke `ingest-capaciteit` $\subseteq$ `{productcodes, termijnen, keten, klinisch, privacy}`. CV dient als bandbreedte-filter.
 3. **L2 — Discours (optioneel):** Default UIT. Relais naar raadsgriffie/fracties bij claims over 'zelfreinigend vermogen'.
@@ -151,7 +151,7 @@ Civic_Case_Engine/
 ## 4. De Interactie met het Zorgdossier ("Living Lab")
 
 * **Strikte Scheiding:**
-  * [Civic_Case_Engine/](file:///E:/LLM_Workspace/Civic_Case_Engine/) blijft 100% geanonimiseerd, domein-agnostisch en openbaar overdraagbaar als software-framework.
+  * [Civic_Case_Engine/]() blijft 100% geanonimiseerd, domein-agnostisch en openbaar overdraagbaar als software-framework.
   * Lokale operationele dossiers blijven strikt gescheiden van deze openbare repository.
 * **Kruisbestuiving:**
   Elke innovatie die in de praktijk van complexe casussen wordt ontdekt (zoals de 10-jarige bank-audit of de telefoon-extractie) wordt direct gesteriliseerd en als generieke module in de Civic Case Engine geplaatst.
