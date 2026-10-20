@@ -28,7 +28,7 @@ ROOT_DIR = ENGINE_DIR.parent
 INCOMING_DIR = ROOT_DIR / "Incoming_Letters"
 
 # Virtual environment pad voor browser-use integratie
-VENV_PATH = Path("E:/LLM_Workspace/scratch/.venv_bu")
+VENV_PATH = Path(os.getenv("BROWSER_VENV_PATH", str(ROOT_DIR.parent / "scratch" / ".venv_bu")))
 if VENV_PATH.exists():
     site_packages = VENV_PATH / "Lib" / "site-packages"
     if site_packages.exists() and str(site_packages) not in sys.path:

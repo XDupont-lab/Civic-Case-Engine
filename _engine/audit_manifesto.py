@@ -23,7 +23,8 @@ if sys.platform == "win32":
         pass
 
 def load_env():
-    env_file = Path(r"E:\LLM_Workspace\Shared_Tools\.env")
+    root = Path(__file__).resolve().parent.parent
+    env_file = Path(os.getenv("SHARED_TOOLS_ENV", str(root.parent / "Shared_Tools" / ".env")))
     env = {}
     if env_file.exists():
         for line in env_file.read_text(encoding="utf-8").splitlines():
@@ -94,7 +95,7 @@ def query_gemini(prompt, system_prompt, api_key, model="gemini-3.8-flash"):
 
 def main():
     env = load_env()
-    manifesto_path = Path(r"E:\LLM_Workspace\Civic_Case_Engine\THEORETISCH_MANIFEST_AGENTISCH_BURGERSCHAP.md")
+    manifesto_path = Path(__file__).resolve().parent.parent / "THEORETISCH_MANIFEST_AGENTISCH_BURGERSCHAP.md"
     if not manifesto_path.exists():
         print(f"Manifest niet gevonden op {manifesto_path}!", file=sys.stderr)
         sys.exit(1)
@@ -171,7 +172,7 @@ Beoordeel en beantwoord gestructureerd de volgende kernvragen:
         print("Geen DEEPSEEK_API_KEY gevonden!")
 
     # Rapport samenstellen
-    out_path = Path(r"E:\LLM_Workspace\Civic_Case_Engine\AUDIT_MANIFEST_AGENTISCH_BURGERSCHAP.md")
+    out_path = Path(__file__).resolve().parent.parent / "AUDIT_MANIFEST_AGENTISCH_BURGERSCHAP.md"
     
     rep_parts = [
         "# Onafhankelijk Multi-LLM Audit Rapport",

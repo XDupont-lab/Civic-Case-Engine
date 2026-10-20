@@ -40,14 +40,17 @@ Een dossier is geen wolk van woorden, maar een **gerichte graaf van interfaces**
 Elke agent beschikt in deze workspace over deterministische code om relaties te analyseren in plaats van woorden te raden:
 
 ### A. De Interface Registry (`Civic_Case_Engine/interfaces.json`)
-Hierin liggen alle geverifieerde interfaces tussen zorg, wonen, geld en recht vastgelegd:
-* `IF-WONEN-WMO-001`: Overdracht leefbaarheidssignaal verhuurder naar Wmo.
-* `IF-CAK-BIJSTAND-002`: Beslagvrije voet en bronheffing CAK vs Participatiewet.
+Hierin liggen alle getypeerde interfaces tussen zorg, wonen, geld en recht vastgelegd (in het openbare model: Voorbeeldstad):
+* `IF-WONEN-WMO-001`: Noodsignaal woningcorporatie naar Wmo/sociaal wijkteam bij acute verloedering van de woonsituatie.
+* `IF-CAK-BIJSTAND-002`: Bestuursrechtelijke bronheffing wanbetalerspremie vs. toetsing Participatiewet (vrijwaring beslagvrije voet).
+* `IF-WMO-LEEFBAARHEID-003`: Compensatieplicht leefbare woonruimte (Wmo art. 2.3.5) vs. signalering huurderzorg.
+* `IF-ZORG-OVERDRACHT-004`: Ontslagoverdracht medisch specialist (tweede lijn) naar eerstelijns huisarts en wijkzorg.
+* `IF-INDICATIE-POORT-005`: Formele zorgvraag met poortconditie en achterlating van een administratief of diagnostisch residu.
 
 ### B. De Deterministische Relatie-Toetser (`glue_check.py`)
-Toetst of een relatie juridisch en klinisch sluit:
+Toetst of een relatie juridisch en procedureel sluit:
 ```powershell
-# Eén specifieke relatie toetsen:
+# Eén specifieke relatie toetsen (bijv. Voorbeeldstad wonen-Wmo):
 python _engine/glue_check.py IF-WONEN-WMO-001
 
 # Alle interfaces integraal toetsen:
@@ -89,10 +92,10 @@ Wanneer een vraag van de gebruiker binnenkomt over de geschiedenis, de medische 
 2. **STAP 1 — Identificeer de Relatie:**  
    Welke twee domeinen botsen hier? Wie was de zendende partij ($P_{\text{bron}}$)? Wie was de ontvangende partij ($P_{\text{doel}}$)? Wat was de materiële overdracht?
 3. **STAP 2 — Zoek de Poort & het Residu:**  
-   Heeft de ontvangende partij de overdracht formeel aanvaard? Zo nee, welk residu $\delta$ is er in de dossiers achtergebleven? (Bijv: een weigering van een neuroloog die wél resulteert in een ICPC-code `N80.00`).
+   Heeft de ontvangende partij de overdracht formeel aanvaard? Zo nee, welk residu $\delta$ is er in de registers achtergebleven? (Bijv: een weigering of gebrek aan intake die wél een schriftelijk dossierfeit of wettelijk verzuim achterlaat).
 4. **STAP 3 — Raadpleeg & Verrijk `interfaces.json`:**  
    Kijk of de relatie al gedefinieerd is in `interfaces.json`. Zo nee, voeg de nieuwe causale pijl toe met een SHA-256 brongetuige.
 5. **STAP 4 — Construeer het Bewijs:**  
-   Presenteer de bevinding aan Xander of de behandelend arts niet als een meningsuiting, maar als een **gesloten causale keten**.
+   Presenteer de bevinding niet als een meningsuiting of emotioneel narratief, maar als een **gesloten causale keten** met getuigen, poorten en residuen.
 
 Dit garandeert dat elke AI-agent die in deze workspace opereert direct overschakelt van *tekst-nabootser* naar *forensisch systeem-analist*.
