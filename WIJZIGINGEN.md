@@ -16,3 +16,5 @@ De naam op de deur is Agentische Werkomgeving Basisadministratie. Het ketengroot
 De oude commits bewaren de vorige `interfaces.json`. Die geschiedenis is niet herschreven.
 
 De about-regel van de repository hoort dezelfde definitie te dragen als de eerste alinea van de README.
+
+In dezelfde notitie is daarna de belofte van een meteen verzendbare brief geschrapt. De klok noemt het gat. De ingebrekestelling blijft in de achterzak zolang het gesprek open is. Het concept wacht op het sein.

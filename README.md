@@ -72,7 +72,7 @@ Om categoriefouten te voorkomen, ontkoppelt de architectuur het maatschappelijke
 #### Pijler 3: De Civic Legal Kernel (Deterministische Machinekamer)
 * **Het fundament:** 100% Python 3 standaardbibliotheek, zero-dependency, lokaal agentisch. Geen probabilistische gissingen over fatale termijnen of integriteit.
 * **Kernmodules (`_engine/`):**
-  * `statutory_clock.py`: Wiskundige Awb-, Wmo-, AVG- en Woo-termijnenbewaker met automatische dwangsomteller (art. 4:17 Awb) en ingebrekestelling-generator.
+  * `statutory_clock.py`: Wiskundige Awb-, Wmo-, AVG- en Woo-termijnenbewaker. De klok noemt het gat. De ingebrekestelling en het dwangsombedrag blijven in de achterzak zolang het gesprek open is.
   * `timeline_weaver.py`: Forensische parser voor bank-CSV's, WhatsApp-logs, call-logs en e-mails met automatische SHA-256 verificatie en zorgbreukdetectie.
   * `case_bundler.py`: Assembleert alle producties, chronologie en doctrine tot een rechtbank- en ombudsmanklare procesbundel (.md en printklare HTML).
   * `domain_packs/`: Modulaire juridische drivers (`nl_wmo`, `nl_schulden_oninbaar`, `nl_uwv`, `nl_toeslagen`, `nl_brp_adres`, `uk_housing`).
@@ -82,7 +82,7 @@ Om categoriefouten te voorkomen, ontkoppelt de architectuur het maatschappelijke
 * **Strikte Epistemische Rolverdeling:**
   * **Native Grok-4.6 (CLI via grok.com):** Toegerust met *live websearch*. Verifieert geldende wetteksten en jurisprudentie rechtstreeks op overheidsservers (`wetten.overheid.nl`, `rechtspraak.nl`), toetst institutionele machtsdynamiek en bewaakt 'The Velvet Glove' (hoffelijk, ontwapenend, onwrikbaar).
   * **DeepSeek (API):** *Statisch parametrisch model zonder zoekfunctie*. Wordt **nooit** gebruikt als gezaghebbende bron voor actuele wetgeving of feiten (vanwege risico op hallucinaties), maar fungeert uitsluitend als *advocaat van de duivel*: genadeloze formele logica, interne consistentietoetsing en het opsporen van procedurele mazen en drogredenen.
-  * **Dialectische Synthese:** Grok toetst DeepSeek op feiten en actuele wetten; DeepSeek toetst Grok op formele logica. De synthese levert een direct verzendbare, juridisch onaantastbare brief op.
+  * **Dialectische Synthese:** Grok toetst DeepSeek op feiten en actuele wetten. DeepSeek toetst Grok op formele logica. De synthese zet een concept klaar. De persoon leest het en geeft het sein. Een brief aan een lokaal Nederlands loket blijft kort.
 
 ---
 
