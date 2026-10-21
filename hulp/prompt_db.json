@@ -3,13 +3,13 @@
     "id": "sein",
     "route": "bureau",
     "titel": "Geef het sein op de brief",
-    "tekst": "Kijk of er in Civic_Case_Engine/werk een brief klaarstaat. Zeg in één zin of die op het sein wacht, en waarom de poort hem tegenhoudt als dat zo is. Verstuur niets."
+    "tekst": "Kijk of er in CivicHelper/werk een brief klaarstaat. Zeg in één zin of die op het sein wacht, en waarom de poort hem tegenhoudt als dat zo is. Verstuur niets."
   },
   {
     "id": "vandaag",
     "route": "bureau",
     "titel": "Wat ligt er vandaag",
-    "tekst": "Lees Civic_Case_Engine/werk/00_Kompas.md. Zeg welk loket of welk probleem vandaag als eerste op tafel ligt, en wat de volgende zet is. Geen wetsartikel. Verstuur geen post."
+    "tekst": "Lees CivicHelper/werk/00_Kompas.md. Zeg welk loket of welk probleem vandaag als eerste op tafel ligt, en wat de volgende zet is. Geen wetsartikel. Verstuur geen post."
   },
   {
     "id": "orgaan",
