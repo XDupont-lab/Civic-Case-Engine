@@ -17,10 +17,10 @@ PROFIEL = WERK / "profiel.txt"
 KIEMEN = [
     (
         "1",
-        "Lees AGENTS.md en Civic_Case_Engine/APPLICATIE_SPECIFICATIE.md. "
+        "Lees AGENTS.md en CivicHelper/APPLICATIE_SPECIFICATIE.md. "
         "Verken of deze computer Windows of Linux is, welk mailprogramma of welke postbrug er is, "
         "en welke OCR- en spraakmiddelen beschikbaar zijn. "
-        "Richt buiten git Civic_Case_Engine/werk in met 00_Kompas.md, tijdlijn.md en de takken.",
+        "Richt buiten git CivicHelper/werk in met 00_Kompas.md, tijdlijn.md en de takken.",
     ),
     (
         "2",
