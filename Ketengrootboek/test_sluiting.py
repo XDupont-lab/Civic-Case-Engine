@@ -1,0 +1,303 @@
+#!/usr/bin/env python3
+"""
+CIVIC HELPER — REGRESSIETESTS KETENGROOTBOEK (v1.1)
+Pure Python Standard Library (unittest).
+
+Toetst de formele borging van sluiting en proefbalans conform de architectuurreview van Sol 6.1:
+  1. Regressietest Sol 6.1: Een los intakefeit van een andere partij (bijv. een thuiszorgaanbieder)
+     mag nooit een openstaande post van een andere overdracht (bijv. Woningcorporatie -> Wmo) sluiten.
+  2. Ketenfasering: Een administratieve ontvangstbevestiging of ontkenning (Fase 1)
+     mag een zorgpost NOOIT op groen / sluitend zetten.
+  3. Bewijsplicht tegenboeking: Een tegenfeit zonder bestaand bewijsbestand op schijf
+     met SHA-256 hash mag nooit tot sluiting leiden.
+  4. Legitieme sluiting: Pas wanneer een specifiek aan déze post gekoppeld tegenfeit
+     met bewezen bestand én vereist type aanwezig is, en alle velden/poorten kloppen,
+     sluit de post (Fase 3: Feitelijke Realisatie).
+"""
+
+import copy
+import json
+from pathlib import Path
+import tempfile
+import unittest
+
+from sluiting import (
+    SluitingsToetser,
+    FASE_1_ONTVANGST_ONTKENNING,
+    FASE_3_FEITELIJKE_REALISATIE,
+    sha256_bestand,
+)
+
+
+class TestKetengrootboekSluiting(unittest.TestCase):
+    def setUp(self):
+        self.toetser = SluitingsToetser()
+        self.feiten_index, self.posten_lijst = self.toetser.laad_boeken()
+
+    def test_regressie_sol61_vreemd_intakefeit_sluit_post_niet(self):
+        """Regressietest Sol 6.1:
+        In POST-WONEN-WMO-001 zetten we alle velden, poorten en Casimirs kunstmatig op groen.
+        In het journaal zit EVT-THUISZORG-20310925 (type: intake_en_actie).
+        Het tegenfeit van déze post is echter EVT-WMO-20310314 (type: ontkenning_ontvangst_wmo).
+        In de oude bug sloot de post omdat er 'ergens' een intake_en_actie feit bestond.
+        Nu MOET de post blijven openstaan (POST SLUIT NIET).
+        """
+        post = copy.deepcopy(next(p for p in self.posten_lijst if p["post_id"] == "POST-WONEN-WMO-001"))
+        
+        # Zet alles behalve het tegenfeit kunstmatig op groen
+        post["geboekte_velden"] = list(post["vereiste_velden"])
+        for c in post["vaste_posten"]:
+            c["in_credit_geboekt"] = True
+        post["poorten"]["bronpoort"]["voldaan"] = True
+        post["poorten"]["doelpoort"]["voldaan"] = True
+
+        res = self.toetser.toets_post(post, self.feiten_index)
+
+        self.assertEqual(res["vonnis"], "POST SLUIT NIET", "Post mag niet sluiten op een vreemd intake-feit!")
+        self.assertFalse(res["tegen_feit_ok"], "tegen_feit_ok moet False zijn voor ontkenning")
+        self.assertTrue(any("tegen_type_ongeldig" in item for item in res["ontbrekend"]))
+        self.assertTrue(res["fase"].startswith("FASE 1"), "Ketenfase moet FASE 1 zijn")
+
+    def test_ontvangstbevestiging_sluit_post_nooit(self):
+        """Ketenfasering: Een administratieve ontvangstbevestiging (Fase 1)
+        mag een zorgpost nooit sluiten, zelfs als het type overeen zou komen.
+        """
+        post = copy.deepcopy(next(p for p in self.posten_lijst if p["post_id"] == "POST-WONEN-WMO-001"))
+        post["geboekte_velden"] = list(post["vereiste_velden"])
+        for c in post["vaste_posten"]:
+            c["in_credit_geboekt"] = True
+        post["poorten"]["bronpoort"]["voldaan"] = True
+        post["poorten"]["doelpoort"]["voldaan"] = True
+
+        # Stel een specifieke ontvangstbevestiging in
+        feiten_mock = copy.deepcopy(self.feiten_index)
+        feiten_mock["EVT-BEVESTIGING-01"] = {
+            "id": "EVT-BEVESTIGING-01",
+            "type": "ontvangstbevestiging",
+            "bestand_gevonden": True,
+            "sha256": "abcdef1234567890",
+            "omschrijving": "Automatische ontvangstbevestiging van de gemeente"
+        }
+        post["tegen_feit"] = "EVT-BEVESTIGING-01"
+        post["sluitings_conditie"]["vereist_feit_type"] = "ontvangstbevestiging"
+
+        res = self.toetser.toets_post(post, feiten_mock)
+        self.assertEqual(res["vonnis"], "POST SLUIT NIET")
+        self.assertFalse(res["tegen_feit_ok"])
+        self.assertTrue(any("slechts_ontvangst_of_stilzitten" in item for item in res["ontbrekend"]))
+
+    def test_tegenbewijs_zonder_bestand_blokkeert_sluiting(self):
+        """Bewijsplicht: Als het tegenfeit wel het juiste type heeft,
+        maar het bewijsstuk ontbreekt op schijf, mag de post niet sluiten.
+        """
+        post = copy.deepcopy(next(p for p in self.posten_lijst if p["post_id"] == "POST-WONEN-WMO-001"))
+        post["geboekte_velden"] = list(post["vereiste_velden"])
+        for c in post["vaste_posten"]:
+            c["in_credit_geboekt"] = True
+        post["poorten"]["bronpoort"]["voldaan"] = True
+        post["poorten"]["doelpoort"]["voldaan"] = True
+
+        feiten_mock = copy.deepcopy(self.feiten_index)
+        feiten_mock["EVT-INTAKE-SPOOK"] = {
+            "id": "EVT-INTAKE-SPOOK",
+            "type": "intake_en_actie",
+            "bestand_gevonden": False,  # Bestand ontbreekt!
+            "sha256": None,
+            "omschrijving": "Niet-bewezen intake"
+        }
+        post["tegen_feit"] = "EVT-INTAKE-SPOOK"
+
+        res = self.toetser.toets_post(post, feiten_mock)
+        self.assertEqual(res["vonnis"], "POST SLUIT NIET")
+        self.assertFalse(res["tegen_feit_ok"])
+        self.assertTrue(any("ontbreekt_op_schijf" in item for item in res["ontbrekend"]))
+
+    def test_legitieme_sluiting_met_geldig_tegenfeit(self):
+        """Legitieme sluiting:
+        Wanneer een specifiek gekoppeld tegenfeit van het juiste type aanwezig is,
+        bewezen op schijf staat, en alle velden, poorten en Casimirs kloppen,
+        sluit de post met FASE 3: FEITELIJKE REALISATIE.
+        """
+        post = copy.deepcopy(next(p for p in self.posten_lijst if p["post_id"] == "POST-WONEN-WMO-001"))
+        post["geboekte_velden"] = list(post["vereiste_velden"])
+        for c in post["vaste_posten"]:
+            c["in_credit_geboekt"] = True
+        post["poorten"]["bronpoort"]["voldaan"] = True
+        post["poorten"]["doelpoort"]["voldaan"] = True
+
+        # Koppel een bewezen intake-feit van de Wmo
+        feiten_mock = copy.deepcopy(self.feiten_index)
+        feiten_mock["EVT-WMO-ECHTE-INTAKE"] = {
+            "id": "EVT-WMO-ECHTE-INTAKE",
+            "type": "intake_en_actie",
+            "bestand_gevonden": True,
+            "sha256": "d29c13b0d35f8a0a112233445566778899aabbccddeeff001122334455667788",
+            "omschrijving": "Formele intake en feitelijke start ondersteuning Wmo"
+        }
+        post["tegen_feit"] = "EVT-WMO-ECHTE-INTAKE"
+
+        res = self.toetser.toets_post(post, feiten_mock)
+        self.assertEqual(res["vonnis"], "POST SLUIT", "Post moet sluiten bij bewezen en passende tegenboeking")
+        self.assertTrue(res["tegen_feit_ok"])
+        self.assertEqual(len(res["ontbrekend"]), 0)
+        self.assertTrue(res["fase"].startswith("FASE 3"))
+        self.assertTrue(res["rekenkundig_sluitend"])
+        self.assertTrue(res["procedureel_gesloten"])
+        self.assertTrue(res["materieel_vereffend"])
+        self.assertEqual(res["keten_diagnose"], "MATERIEEL_VEREFFEND")
+
+    def test_doorverwijzing_zonder_uitvoering_geeft_schijnsluiting(self):
+        """Test 2: Doorverwijzing zonder aantoonbare uitvoering is procedureel gesloten,
+        maar materieel NIET vereffend (SCHIJNSLUITING).
+        """
+        post = copy.deepcopy(next(p for p in self.posten_lijst if p["post_id"] == "POST-WONEN-WMO-001"))
+        feiten_mock = copy.deepcopy(self.feiten_index)
+        feiten_mock["EVT-DOORVERWIJZING-01"] = {
+            "id": "EVT-DOORVERWIJZING-01",
+            "type": "doorverwijzing_zonder_uitvoering",
+            "bestand_gevonden": True,
+            "sha256": "11223344556677889900",
+            "omschrijving": "Loket verwijst door naar ander team en sluit eigen melding af.",
+        }
+        post["tegen_feit"] = "EVT-DOORVERWIJZING-01"
+        res = self.toetser.toets_post(post, feiten_mock)
+        self.assertTrue(res["rekenkundig_sluitend"])
+        self.assertTrue(res["procedureel_gesloten"])
+        self.assertFalse(res["materieel_vereffend"])
+        self.assertEqual(res["keten_diagnose"], "SCHIJNSLUITING")
+        self.assertEqual(res["werklexicon_code"], "ATE_LOKALE_AFSLUITING_ZONDER_KETENVERVOLG")
+
+    def test_niet_overschrijvings_invariant_laag1_vs_laag3(self):
+        """Test 4: Een latere interpretatie (Laag 3) mag de oorspronkelijke waarneming (Laag 1)
+        nooit wijzigen, verwijderen of stilzwijgend vervangen.
+        """
+        basis_feit = self.feiten_index.get("EVT-CORP-20310312") or {
+            "id": "EVT-CORP-20310312",
+            "datum": "2031-03-12",
+            "type": "noodsignaal_woningcorporatie",
+            "omschrijving": "Schriftelijk noodsignaal en zorgmelding",
+            "sha256": "abcdef1234567890abcdef1234567890",
+            "interpretatie_historie": [],
+        }
+        origineel = copy.deepcopy(basis_feit)
+        met_interpretatie = self.toetser.voeg_interpretatie_toe(
+            origineel,
+            classificatie="Geen acute Wmo-hulpvraag volgens loket",
+            actor="Sociaal Team",
+            datum="2031-03-14",
+            betwist=True,
+        )
+        # Laag 1 moet 100% intact zijn
+        self.assertTrue(self.toetser.verifieer_niet_overschrijving(origineel, met_interpretatie))
+        self.assertEqual(met_interpretatie["omschrijving"], origineel["omschrijving"])
+        self.assertEqual(met_interpretatie["sha256"], origineel["sha256"])
+        self.assertTrue(met_interpretatie["betwist"])
+        self.assertEqual(
+            len(met_interpretatie["interpretatie_historie"]),
+            len(origineel.get("interpretatie_historie", [])) + 1,
+        )
+
+        # Poging om Laag 1 waarneming te overschrijven moet falen
+        vervalst = copy.deepcopy(met_interpretatie)
+        vervalst["omschrijving"] = "Cliënt had geen zorgvraag"
+        with self.assertRaises(ValueError):
+            self.toetser.verifieer_niet_overschrijving(origineel, vervalst)
+
+    def test_tegenstrijdige_registraties_tussen_twee_loketten(self):
+        """Test 5: Tegenstrijdige registraties bij twee loketten (bijv. Vektis Status N vs. zorgverzekeraar premie-incasso)
+        moeten als rekenkundig_sluitend=False en TEGENSTRIJDIGE_REGISTRATIE zichtbaar blijven,
+        ook wanneer beide administraties procedureel gesloten zijn.
+        """
+        post_vektis = next(p for p in self.posten_lijst if p["post_id"] == "POST-VEKTIS-VERZEKERAAR-004")
+        res = self.toetser.toets_post(post_vektis, self.feiten_index)
+        self.assertFalse(res["rekenkundig_sluitend"])
+        self.assertTrue(res["procedureel_gesloten"])
+        self.assertFalse(res["materieel_vereffend"])
+        self.assertEqual(res["keten_diagnose"], "TEGENSTRIJDIGE_REGISTRATIE")
+        self.assertEqual(res["werklexicon_code"], "STASIS_TEGENSTRIJDIGE_WERKELIJKHEID")
+
+    def test_drie_boeken_rekeningen_grootboek_en_terugwaartse_herleidbaarheid(self):
+        """Test 6: Boek 3 (Grootboek per Rekening) reconstrueert de positie per loket
+        en herleidt elke rekening terug naar het Journaal (Boek 2) en het Memoriaal (Boek 1).
+        """
+        grootboek = self.toetser.bouw_rekeningen_grootboek()
+        self.assertGreaterEqual(len(grootboek), 5)
+        wmo_rekeningen = self.toetser.herleid_rekening("wmo")
+        self.assertTrue(len(wmo_rekeningen) >= 1)
+        wmo = wmo_rekeningen[0]
+        self.assertFalse(wmo["materieel_vereffend"])
+        self.assertGreaterEqual(wmo["open_verplichtingen_aantal"], 1)
+        self.assertTrue(any("EVT-" in spoor for spoor in wmo["herleidbare_bewijsstukken"]))
+
+    def test_multimodale_bewijsbundel_en_afgeleide_klok(self):
+        """Test 7: Boek 1 verifieert multimodale bewijsbundels (audio/PDF/MD) met SHA-256,
+        en Boek 3 leidt automatisch de openstaande Klok en Tafel-besluitreferenties af.
+        """
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmppath = Path(tmpdir)
+            doc_pad = tmppath / "brief.md"
+            audio_pad = tmppath / "opname.wav"
+            pdf_pad = tmppath / "besluit.pdf"
+
+            doc_pad.write_text("Schriftelijk verzoek", encoding="utf-8")
+            audio_pad.write_bytes(b"RIFF1234WAVEfmt ")
+            pdf_pad.write_bytes(b"%PDF-1.4...")
+
+            # Maak een multimodale waarneming in Laag 1
+            feit = {
+                "id": "EVT-TEST-MULTIMODAAL-001",
+                "datum": "2031-10-27",
+                "type": "schriftelijk_verzoek",
+                "modaliteit": "multimodale_bundel",
+                "actor": "Burger / Loket",
+                "omschrijving": "Test bundel met audio en schriftelijke producties",
+                "bewijsstuk": str(doc_pad),
+                "extra_bewijsstukken": [str(audio_pad), str(pdf_pad)],
+                "laag": "LAAG_1_WAARNEMING",
+            }
+
+            f_copy = dict(feit)
+            b_pad = self.toetser._los_bestand_op(feit["bewijsstuk"])
+            f_copy["bestand_gevonden"] = b_pad is not None
+            f_copy["sha256"] = sha256_bestand(b_pad) if b_pad else None
+
+            extra_hashes = {}
+            for ep in feit.get("extra_bewijsstukken", []):
+                ep_res = self.toetser._los_bestand_op(ep)
+                extra_hashes[ep] = sha256_bestand(ep_res) if ep_res else None
+            f_copy["extra_sha256"] = extra_hashes
+            f_copy["multimodale_bundel_compleet"] = all(v is not None for v in extra_hashes.values())
+
+            self.assertTrue(f_copy["bestand_gevonden"])
+            self.assertTrue(f_copy["multimodale_bundel_compleet"])
+            self.assertEqual(len(f_copy["extra_sha256"]), 2)
+            self.assertIsNotNone(f_copy["sha256"])
+
+        # Test de afgeleide Klok in Boek 3
+        klok = self.toetser.bouw_openstaande_klok()
+        self.assertGreaterEqual(len(klok), 1)
+        for k in klok:
+            self.assertTrue(k.get("tafel_besluit", "").startswith("TAFEL-"))
+            self.assertIn("verval_datum", k)
+            self.assertIn("dagen_resterend", k)
+            self.assertIn("klok_status", k)
+
+    def test_cryptografische_chain_of_custody(self):
+        """Test 8: Verifieert de onveranderlijke append-only hash chain over alle feiten in Boek 1 (FRE 803(6) / Art. 8:29 Awb)."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            jsonl_pad = Path(tmpdir) / "test_chain.jsonl"
+            receipts = self.toetser.bouw_chain_of_custody(jsonl_pad)
+            self.assertGreaterEqual(len(receipts), 5)
+            self.assertTrue(jsonl_pad.is_file())
+
+            # Verifieer ononderbroken hash-koppeling
+            vorige = "0" * 64
+            for r in receipts:
+                self.assertEqual(r["vorige_hash"], vorige)
+                self.assertTrue(len(r["receipt_hash"]) == 64)
+                self.assertIn(r["status_vordering"], ("betwist", "vastgesteld"))
+                vorige = r["receipt_hash"]
+
+
+if __name__ == "__main__":
+    unittest.main()
