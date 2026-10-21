@@ -3,7 +3,7 @@
 **Datum:** 17 oktober 2026
 **Status:** De maat voor de bouw
 **Venster:** Civic Helper
-**Map:** `Civic_Case_Engine` (deze naam blijft)
+**Map:** `CivicHelper`
 
 Dit document vervangt de eerdere specificatie. Die eerdere tekst beschreef een gesloten formulier met vaste zinnen. Dat formulier wordt niet gebouwd.
 
