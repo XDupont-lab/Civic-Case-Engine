@@ -41,6 +41,22 @@ def sha256_bestand(pad: Path) -> Optional[str]:
     return h.hexdigest()
 
 
+# Ketenfasering van overdrachten (administratieve continuïteit vs feitelijke levering)
+FASE_0_UITSTAAND = "FASE 0: UITSTAAND (Geen credit-tegenboeking geregistreerd)"
+FASE_1_ONTVANGST_ONTKENNING = "FASE 1: ONTVANGST / ONTKENNING (Signaal ontvangen of afgewezen; geen zorgstart)"
+FASE_2_AANVAARDING = "FASE 2: VERANTWOORDELIJKHEID AANVAARD (In onderzoek / zaaktoewijzing)"
+FASE_3_FEITELIJKE_REALISATIE = "FASE 3: FEITELIJKE REALISATIE (Afgeletterd / zorg feitelijk gestart)"
+
+# Feittypes die slechts administratieve ontvangst of stilzitten vaststellen en NOOIT een zorgpost sluiten
+NIET_SLUITENDE_TYPES = {
+    "ontvangstbevestiging",
+    "ontkenning_ontvangst_wmo",
+    "stilzitten_schuldhulpverlening",
+    "signaal_ontvangen_zonder_actie",
+    "automatisch_bericht_ontvangen",
+}
+
+
 class SluitingsToetser:
     def __init__(self, root_dir: Optional[Path] = None):
         if root_dir is None:
@@ -92,7 +108,14 @@ class SluitingsToetser:
         return feiten_index, posten_lijst
 
     def toets_post(self, post: Dict[str, Any], feiten_index: Dict[str, Dict[str, Any]]) -> Dict[str, Any]:
-        """Toetst één grootboekpost tegen de feiten in het journaal."""
+        """Toetst één grootboekpost tegen de feiten in het journaal.
+        
+        Borging tegen schijnsluiting (Sol 6.1 verwerkt):
+        - Post sluit uitsluitend als het specifiek aan déze post gekoppelde tegenfeit bestaat.
+        - Het tegenfeit moet een verifieerbaar bewijsstuk op schijf hebben met een geldige SHA-256 hash.
+        - Het type van het tegenfeit moet exact voldoen aan de sluitingsconditie.
+        - Administratieve ontvangst/ontkenning (Fase 1) sluit NOOIT een zorg- of overdrachtspost.
+        """
         post_id = post.get("post_id", "ONBEKEND")
         anker_id = post.get("anker_feit")
         tegen_id = post.get("tegen_feit")
@@ -100,13 +123,14 @@ class SluitingsToetser:
         anker = feiten_index.get(anker_id)
         tegen = feiten_index.get(tegen_id)
 
-        # 1. Toets op volledigheid gegevens
+        # 1. Toets op aanwezigheid en integriteit van het ankerbewijs (Debet-opening)
         if not anker or not anker.get("bestand_gevonden"):
             return {
                 "post_id": post_id,
                 "naam": post.get("naam", ""),
                 "debet": post.get("debet_rekening", ""),
                 "credit": post.get("credit_rekening", ""),
+                "fase": FASE_0_UITSTAAND,
                 "vonnis": "NOG NIET GESTELD",
                 "reden": f"Ankerbewijs ontbreekt of bestand niet op schijf ({anker_id})",
                 "locus": ("C_onbekend", post_id, "Poort_onbekend"),
@@ -114,6 +138,18 @@ class SluitingsToetser:
                 "anker": anker,
                 "tegen": tegen,
             }
+
+        # Bepaal de ketenfase op basis van het specifieke tegenfeit
+        if not tegen:
+            fase = FASE_0_UITSTAAND
+        elif tegen.get("type") in NIET_SLUITENDE_TYPES:
+            fase = FASE_1_ONTVANGST_ONTKENNING
+        elif tegen.get("type") in {"onderzoek_geopend", "zaak_aanvaard", "minimapolis_toetsing", "formeel_intrekkingsbesluit_2_3_10"}:
+            fase = FASE_2_AANVAARDING
+        elif tegen.get("type") in {"intake_en_actie", "feitelijke_zorgstart", "levering_voltooid"}:
+            fase = FASE_3_FEITELIJKE_REALISATIE
+        else:
+            fase = f"FASE 1: ANDERS ({tegen.get('type')})"
 
         # 2. Toets veldentransport (Rep-compatibiliteit)
         vereiste_velden = post.get("vereiste_velden", [])
@@ -132,18 +168,27 @@ class SluitingsToetser:
         doelpoort = poorten.get("doelpoort", {})
         poorten_ok = bronpoort.get("voldaan", False) and doelpoort.get("voldaan", False)
 
-        # 5. Sluitingsconditie (intake/tegenboeking aanwezig?)
+        # 5. Sluitingsconditie: Strikte binding aan het specifieke tegenfeit van déze post
         sluit_cond = post.get("sluitings_conditie", {})
         vereist_type = sluit_cond.get("vereist_feit_type")
-        intake_aanwezig = False
-        if vereist_type:
-            # Kijk of er een feit van dit type bestaat
-            for f in feiten_index.values():
-                if f.get("type") == vereist_type:
-                    intake_aanwezig = True
-                    break
+        
+        tegen_feit_ok = False
+        tegen_gebreken = []
 
-        sluit_ok = rep_ok and casimir_ok and poorten_ok and (not vereist_type or intake_aanwezig)
+        if not tegen_id:
+            tegen_gebreken.append("tegen_feit_niet_aangewezen_in_post")
+        elif not tegen:
+            tegen_gebreken.append(f"tegen_feit_{tegen_id}_niet_gevonden_in_journaal")
+        elif not tegen.get("bestand_gevonden") or not tegen.get("sha256"):
+            tegen_gebreken.append(f"bewijsstuk_voor_tegenfeit_{tegen_id}_ontbreekt_op_schijf")
+        elif vereist_type and tegen.get("type") != vereist_type:
+            tegen_gebreken.append(f"tegen_type_ongeldig({tegen.get('type')}_!=_{vereist_type})")
+        elif tegen.get("type") in NIET_SLUITENDE_TYPES:
+            tegen_gebreken.append(f"tegen_feit_slechts_ontvangst_of_stilzitten({tegen.get('type')})")
+        else:
+            tegen_feit_ok = True
+
+        sluit_ok = rep_ok and casimir_ok and poorten_ok and tegen_feit_ok
 
         vonnis = "POST SLUIT" if sluit_ok else "POST SLUIT NIET"
 
@@ -152,13 +197,13 @@ class SluitingsToetser:
             ontbrekend.append(f"creditboeking_{c['id']}")
         if not doelpoort.get("voldaan"):
             ontbrekend.append(f"poort_{doelpoort.get('naam', 'doel')}")
-        if vereist_type and not intake_aanwezig:
-            ontbrekend.append(f"journaalfeit_{vereist_type}")
+        for g in tegen_gebreken:
+            ontbrekend.append(g)
 
         locus = None
         if not sluit_ok:
             c_tag = verloren_casimirs[0]["id"] if verloren_casimirs else "C_geen"
-            p_tag = doelpoort.get("naam", "Poort_doel") if not doelpoort.get("voldaan") else "Poort_onbekend"
+            p_tag = doelpoort.get("naam", "Poort_doel") if not doelpoort.get("voldaan") else "Poort_ok"
             locus = (c_tag, post_id, p_tag)
 
         return {
@@ -166,12 +211,14 @@ class SluitingsToetser:
             "naam": post.get("naam", ""),
             "debet": post.get("debet_rekening", ""),
             "credit": post.get("credit_rekening", ""),
+            "fase": fase,
             "vonnis": vonnis,
             "locus": locus,
             "ontbrekend": ontbrekend,
             "rep_ok": rep_ok,
             "casimir_ok": casimir_ok,
             "poorten_ok": poorten_ok,
+            "tegen_feit_ok": tegen_feit_ok,
             "anker": anker,
             "tegen": tegen,
         }
@@ -201,6 +248,7 @@ class SluitingsToetser:
         lines.append("")
         lines.append("-" * 80)
         lines.append(f"VONNIS:          {resultaat['vonnis']}")
+        lines.append(f"Ketenfase:       {resultaat.get('fase', 'ONBEKEND')}")
         if resultaat.get("locus"):
             l = resultaat["locus"]
             lines.append(f"Locus breuk:     ({l[0]}, {l[1]}, {l[2]})")
@@ -214,28 +262,29 @@ class SluitingsToetser:
         resultaten = [self.toets_post(p, feiten_index) for p in posten_lijst]
 
         lines = []
-        lines.append("=" * 105)
+        lines.append("=" * 115)
         lines.append(f"PROEFBALANS VAN HET KETENGROOTBOEK — {datetime.now(timezone.utc).astimezone().strftime('%Y-%m-%d %H:%M')}")
-        lines.append("=" * 105)
-        lines.append(f"{'Post ID':<23} | {'Debet (Zender)':<25} | {'Credit (Ontvanger)':<25} | {'Stand':<16}")
-        lines.append("-" * 105)
+        lines.append("=" * 115)
+        lines.append(f"{'Post ID':<23} | {'Debet (Zender)':<24} | {'Credit (Ontvanger)':<24} | {'Fase':<8} | {'Stand':<16}")
+        lines.append("-" * 115)
 
         sluit_niet_aantal = 0
         sluit_wel_aantal = 0
         open_posten = []
 
         for r in resultaten:
-            lines.append(f"{r['post_id']:<23} | {r['debet'][:25]:<25} | {r['credit'][:25]:<25} | {r['vonnis']:<16}")
+            fase_kort = r.get("fase", "").split(":")[0].strip()[:8]  # bijv. "FASE 1"
+            lines.append(f"{r['post_id']:<23} | {r['debet'][:24]:<24} | {r['credit'][:24]:<24} | {fase_kort:<8} | {r['vonnis']:<16}")
             if r["vonnis"] == "POST SLUIT NIET":
                 sluit_niet_aantal += 1
                 open_posten.append(r["post_id"])
             elif r["vonnis"] == "POST SLUIT":
                 sluit_wel_aantal += 1
 
-        lines.append("-" * 105)
+        lines.append("-" * 115)
         regime = "HF (Frustratie)" if sluit_niet_aantal > 0 else "HK (Harmonie)"
         lines.append(f"KETENSALDO: {sluit_niet_aantal} post(en) sluiten niet | {sluit_wel_aantal} post(en) sluiten | Regime: {regime}")
-        lines.append("=" * 105)
+        lines.append("=" * 115)
 
         # Werk saldo.json bij
         saldo_data = {

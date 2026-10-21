@@ -152,7 +152,13 @@ In het bankwezen is er symmetrische wederzijdse liquiditeitsafhankelijkheid. In 
 - Het ziekenhuis heeft acute doorstroomdruk (bed moet vrij).
 - De gemeente heeft budgetbeheersing (elke vertraging bespaart tijdelijk Wmo-middelen).
 
-**De Besluitregel als Schakel:** Zonder harde bestuursrechtelijke consequentie zou een gemeente open posten simpelweg kunnen negeren. Daarom moeten het protocol en de Awb gekoppeld zijn: hierdoor gaat de wettelijke Awb-beslistermijn direct lopen en ontstaat bij stilzitten van de gemeente van rechtswege de ingebrekestelling en dwangsomplicht (art. 4:17 Awb).
+**De Besluitregel als Schakel:** Zonder harde bestuursrechtelijke consequentie zou een gemeente open posten simpelweg kunnen negeren. Het Ketengrootboek registreert het continuïteitsgat onmiddellijk op de stelselgrens, maar de bestuursrechtelijke koppeling volgt strikt de getrapte systematiek van de Wmo 2015 en de Awb:
+
+1. **Melding (art. 2.3.2 lid 1 Wmo 2015):** De professionele overdracht geldt van rechtswege als een vormvrije melding van de maatschappelijke ondersteuningsbehoefte. Vanaf dit rechtsfeit gaat de dwingende gemeentelijke **onderzoekstermijn van maximaal 6 weken** lopen (art. 2.3.2 lid 8 Wmo), waarin de gemeente verplicht is het integrale onderzoek te doen en het schriftelijke onderzoeksverslag te verstrekken.
+2. **Aanvraag (art. 2.3.5 lid 1 Wmo 2015):** Na afronding van het onderzoek (of na afloop van de 6 weken bij gemeentelijk stilzitten) ontstaat het recht op de formele aanvraag. Vanaf de indiening geldt de wettelijke **beslistermijn van 2 weken**.
+3. **Ingebrekestelling & Dwangsom (art. 4:17 Awb):** Pas na overschrijding van de formele beslistermijn (of bij onrechtmatige weigering van de aanvraag conform vaste CRvB-rechtspraak) kan de ingebrekestelling worden verzonden, waarna na 14 dagen de dwangsomklok start.
+
+Het grootboek houdt de overdrachtspost continu open in het overdrachtsregister; de juridische sancties volgen de nauwkeurig vastgestelde rechtsfeiten per fase, waardoor de registratie bestuursrechtelijk onaantastbaar is.
 
 ---
 
@@ -368,8 +374,8 @@ Het Ketengrootboek realiseert een **volledig consistente globale sectie $\Gamma$
 | Dimensie | $U_{\text{moreel}}$ | $U_{\text{juridisch}}$ | $U_{\text{formeel}}$ | $U_{\text{uitvoering}}$ |
 | :--- | :--- | :--- | :--- | :--- |
 | **De Breuk** | Afboeking zonder kwijting | Verzuim ambtshalve onderzoek | Singular boundary layer explosie | Verloren overdrachts-payload |
-| **Het Instrument** | Dubbele boekhouding (Pacioli) | Melding van rechtswege (Awb) | Tikhonov-regularisatiedemper | Gekoppelde JSON-receptoren |
-| **De Wachtstand** | Mens in het vacuüm | Lopende Awb-beslistermijn | Open post in manifold | Wachtende status in zaaksysteem |
+| **Het Instrument** | Dubbele boekhouding (Pacioli) | Melding (art. 2.3.2) -> Aanvraag (2.3.5) | Tikhonov-regularisatiedemper | Gekoppelde JSON-receptoren |
+| **De Wachtstand** | Mens in het vacuüm | 6-wk onderzoek / 2-wk beslistermijn | Open post in manifold | Wachtende status in zaaksysteem |
 | **Het Doel** | Menselijke waardigheid | Zorgbeschikking & Recht | Systeem-stabiliteit ($\dot{y} \approx 0$) | Gestarte hulpverlening |
 
 ### C. Conclusie: Epistemische Pariteit
