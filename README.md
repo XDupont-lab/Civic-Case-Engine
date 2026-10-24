@@ -35,7 +35,7 @@ Om categoriefouten te voorkomen, ontkoppelt de architectuur het maatschappelijke
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │ A. FUNCTIONEEL-FILOSOFISCHE DIMENSIE (Het 'Waarom' en 'Voor Wie')           │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│ 1. MAATSCHAPPELIJK / STRATEGISCH: HET CIVIC HELPER                     │
+│ 1. MAATSCHAPPELIJK / STRATEGISCH: CIVIC HELPER                              │
 │    Asymmetrie-nivelleerder — Heft de informatie-asymmetrie op en dwingt     │
 │    het bestuursorgaan tot naleving van zijn wettelijke onderzoeksplicht.    │
 │                                                                             │
@@ -78,11 +78,12 @@ Om categoriefouten te voorkomen, ontkoppelt de architectuur het maatschappelijke
   * `domain_packs/`: Modulaire juridische drivers (`nl_wmo`, `nl_schulden_oninbaar`, `nl_uwv`, `nl_toeslagen`, `nl_brp_adres`, `uk_housing`).
 
 #### Pijler 4: Het Agentic Case Framework (Dialectisch Agentic Harness)
-* **Het mechanisme:** `audit_engine.py` fungeert als tuigage (harness) voor externe AI-modellen via gerichte 'prompts as code'.
+* **Het mechanisme:** `audit_engine.py` en de Tafel (`TAFEL.md`) fungeren als tuigage (harness) voor een multi-agent ensemble via gerichte 'prompts as code'.
 * **Strikte Epistemische Rolverdeling:**
   * **Native Grok-4.6 (CLI via grok.com):** Toegerust met *live websearch*. Verifieert geldende wetteksten en jurisprudentie rechtstreeks op overheidsservers (`wetten.overheid.nl`, `rechtspraak.nl`), toetst institutionele machtsdynamiek en bewaakt 'The Velvet Glove' (hoffelijk, ontwapenend, onwrikbaar).
   * **DeepSeek (API):** *Statisch parametrisch model zonder zoekfunctie*. Wordt **nooit** gebruikt als gezaghebbende bron voor actuele wetgeving of feiten (vanwege risico op hallucinaties), maar fungeert uitsluitend als *advocaat van de duivel*: genadeloze formele logica, interne consistentietoetsing en het opsporen van procedurele mazen en drogredenen.
-  * **Dialectische Synthese:** Grok toetst DeepSeek op feiten en actuele wetten. DeepSeek toetst Grok op formele logica. De synthese zet een concept klaar. De persoon leest het en geeft het sein. Een brief aan een lokaal Nederlands loket blijft kort.
+  * **Google Antigravity (agy CLI):** Autonoom dossier- en code-agent voor deterministische verificaties, bestandsoperaties, tools, scratch/outboxbeheer en tests. Start direct op met het commando `agy`.
+  * **Dialectische Synthese:** Grok toetst DeepSeek op feiten en actuele wetten. DeepSeek toetst Grok op formele logica. Agy voert deterministische verificaties en code-taken uit. De synthese zet een concept klaar. De persoon leest het en geeft het sein. Een brief aan een lokaal Nederlands loket blijft kort.
 
 ---
 
@@ -124,7 +125,7 @@ Civic_Helper/
 ├── EXPORT_BUNDEL.cmd          # Procesbundel exporteren met SHA-256 register
 ├── DOCTRINE.md                # Actief geladen juridische doctrine
 ├── INTERACTIONAL_STATE_AND_OPERATOR_DISPATCH.md # v2.0 Interactionele toestand & Operator Dispatch (S_case & WAIT)
-├── ONTWIKKELPLAN_CIVIC_CIVIC HELPERON.md # Het master ontwikkelplan
+├── ONTWIKKELPLAN_CIVIC_HELPER.md # Het master ontwikkelplan
 ├── README.md                  # Deze deur, in het Nederlands
 ├── README.en.md               # Dezelfde deur, in het Engels
 ├── APPLICATIE_SPECIFICATIE.md # De maat voor de bouw
