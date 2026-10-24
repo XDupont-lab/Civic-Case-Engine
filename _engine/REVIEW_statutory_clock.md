@@ -128,7 +128,7 @@ Psychologisch/strategisch effect is al goed: het script maakt de kosten van stil
 
 Het script raakt de juiste zenuw: het institutionaliseert waakzaamheid en maakt van art. 4:17 Awb een automatische kostenpost voor het bestuursorgaan. De wiskunde klopt, de toon van de brief is uitstekend en de zero-dependency-keuze is strategisch slim.
 
-Het is echter nog geen volwassen “Civic Case Engine”-component. De ontbrekende validatie op fatale termijn vóór ingebrekestelling, de incomplete statusmachine en het ontbreken van verdaging/ontvangst maken het kwetsbaar zodra de gemeente of de rechtbank serieus gaat kijken.
+Het is echter nog geen volwassen “Civic Helper”-component. De ontbrekende validatie op fatale termijn vóór ingebrekestelling, de incomplete statusmachine en het ontbreken van verdaging/ontvangst maken het kwetsbaar zodra de gemeente of de rechtbank serieus gaat kijken.
 
 **Aanbevolen harde verbeteringen (prioriteit)**
 1. Blokkeer `generate_ingebrekestelling` tenzij `today > deadline`.
@@ -210,7 +210,7 @@ De aangeleverde originele tekst is afgekapt midden in de rules. DeepSeek referee
 
 ## 4. Kruislingse Toets: DeepSeek over Grok (Logica & Consistentie)
 
-# KRUISLINGSE VERIFICATIE — Grok's Audit van de Civic Case Engine
+# KRUISLINGSE VERIFICATIE — Grok's Audit van de Civic Helper
 
 ## 1. Vooraf: wat is verifieerbaar?
 

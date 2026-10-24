@@ -1,5 +1,5 @@
 @echo off
-title Civic Case Engine -- Procesdossier Bundler
+title Civic Helper -- Procesdossier Bundler
 cd /d "%~dp0"
 
 echo =======================================================================

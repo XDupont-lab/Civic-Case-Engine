@@ -1,14 +1,14 @@
 # 🛡️ Dialectisch Multi-Model Review Rapport v2.0: README.md
 
 **Doelbestand:** `README.md`  
-**Opdracht:** Toets de architectuur en taxonomie van de Civic Case Engine kritisch. Beoordeel de conceptuele scheiding tussen Exoskelet (functie) en Kernel/Harness (techniek).  
+**Opdracht:** Toets de architectuur en taxonomie van de Civic Helper kritisch. Beoordeel de conceptuele scheiding tussen Civic Helper (functie) en Kernel/Harness (techniek).  
 **Methode:** Onafhankelijke audits + Kruislingse Falsificatie
 
 ---
 
 ## 1. DeepSeek Primaire Audit (Logica, Code & Edge Cases)
 
-# Kritische toets: Civic Case Engine architectuur
+# Kritische toets: Civic Helper architectuur
 
 ## 1. Fundamenteel categoriefout in de 4-laags taxonomie
 
@@ -25,9 +25,9 @@ Een echte gelaagdheid veronderstelt *abstractie- of afhankelijkheidsrelatie* (ho
 
 De "ontkoppeling van intentie en uitputting" is een *claim*, geen architectuurprincipe. Waar zit de formele interface tussen intentie en executie? Niet gespecificeerd.
 
-## 2. Exoskelet vs. Kernel/Harness: de scheiding is niet schoon
+## 2. Civic Helper vs. Kernel/Harness: de scheiding is niet schoon
 
-De stelling is: Exoskelet = functie, Kernel/Harness = techniek. Maar:
+De stelling is: Civic Helper = functie, Kernel/Harness = techniek. Maar:
 
 - **`statutory_clock.py` is geen techniek, het is recht.** De Awb-termijnen, dwangsomteller en ingebrekestelling zijn juridische normen. Ze horen in `domain_packs/`, niet in de kernel. Nu is er een *hardgecodeerde* Nederlandse rechtsopvatting in de "domein-agnostische" kernel. Dat is een **categorie-lek**: de kernel is niet domein-agnostisch, hij is *Nederlands-rechtelijk*.
 - **`timeline_weaver.py` met "zorgbreukdetectie"** is domein-specifiek (Wmo/zorg). Idem: hoort niet in de kernel.
@@ -112,7 +112,7 @@ Formeel:
 
 ## 3. Wat wél vaststelbaar is
 
-De HTTP 402 is een **infrastructurele faalconditie**, geen inhoudelijke afwijzing. Dit levert drie relevante observaties op over het *systeem* Civic Case Engine, niet over Grok's oordeel:
+De HTTP 402 is een **infrastructurele faalconditie**, geen inhoudelijke afwijzing. Dit levert drie relevante observaties op over het *systeem* Civic Helper, niet over Grok's oordeel:
 
 1. **Architecturale afhankelijkheid.** Laag 4 van het framework ("Agentic Case Framework") claimt een "dialectische audit-cyclus" tussen DeepSeek en Grok. De 402 toont dat deze cyclus **niet faaltolerant** is: één betalingsmuur bij één provider breekt de dialectiek. Een robuust ontwerp zou een fallback, retry-policy of expliciete degradatiemodus vereisen.
 2. **Soevereiniteitsparadox.** Het document positioneert het systeem als "lokaal, soeverein" en "zero-pip". Tegelijkertijd is de audit-laag afhankelijk van externe, commerciële LLM-API's met facturatie. Dat is een **interne spanning** tussen de soevereiniteitsclaim (laag 1–3) en de implementatie (laag 4).
@@ -128,6 +128,6 @@ De HTTP 402 is een **infrastructurele faalconditie**, geen inhoudelijke afwijzin
 | Houdbare observaties van Grok? | Nul. |
 | Retorische ruis? | Nul. Het is een foutcode. |
 
-**Eindoordeel:** De gevraagde kruislingse verificatie is **niet uitvoerbaar** zoals geformuleerd. De enige zinvolle verificatie is er één van het *systeem*: de 402 legt een reële kwetsbaarheid bloot in de dialectische audit-laag van het Civic Case Engine — namelijk dat de "soevereine" architectuur in de praktijk afhankelijk is van een faalbare, commerciële externe dienst, en dat een foutrespons kennelijk zonder inhoudelijke validatie als "audit" kan worden doorgevoerd.
+**Eindoordeel:** De gevraagde kruislingse verificatie is **niet uitvoerbaar** zoals geformuleerd. De enige zinvolle verificatie is er één van het *systeem*: de 402 legt een reële kwetsbaarheid bloot in de dialectische audit-laag van het Civic Helper — namelijk dat de "soevereine" architectuur in de praktijk afhankelijk is van een faalbare, commerciële externe dienst, en dat een foutrespons kennelijk zonder inhoudelijke validatie als "audit" kan worden doorgevoerd.
 
 Elke analyse die hier "houdbare observaties" of "retorische ruis" in Grok's rapport meent te vinden, zou **hallucineren**.

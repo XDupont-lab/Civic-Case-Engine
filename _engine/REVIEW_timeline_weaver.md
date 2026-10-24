@@ -63,7 +63,7 @@ m_msg = re.match(r"^\*\s+\*\*([^(]+)\s*(?:\(([^)]+)\))?:\*\*\s*(.*)$", line)
 
 ## 2. Grok Audit (Strategie, Instituties & Velvet Glove)
 
-**Strategische en institutionele review: CIVIC CASE ENGINE — Forensische Tijdlijn- & Bewijs-Weaver**
+**Strategische en institutionele review: CIVIC HELPER — Forensische Tijdlijn- & Bewijs-Weaver**
 
 Het script is een serieuze poging tot zero-dependency forensische ordening van heterogene bronnen. Het denkt in ketens, stiltes en domeinen — precies de taal die bureaucratieën en bestuursrechters herkennen. Dat is strategisch sterk. Hieronder de toetsing op de gevraagde assen, in gewone zinnen, met scherpe kern.
 

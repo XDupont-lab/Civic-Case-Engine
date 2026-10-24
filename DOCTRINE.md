@@ -89,7 +89,7 @@ Een lokale agent is geen brievenschrijver, maar een externe executieve lus die d
 
 ---
 
-## 5. Epistemische Diagnose- & Audit-Rubrieken (Exoskelet-Sensoren)
+## 5. Epistemische Diagnose- & Audit-Rubrieken (Civic Helper-Sensoren)
 
 De multi-model dialectische auditor (`audit_engine.py`: Grok & DeepSeek) toetst uitgaande concepten en inkomende instantie-reacties expliciet langs vier epistemische sensoren:
 
@@ -131,7 +131,7 @@ De multi-model dialectische auditor (`audit_engine.py`: Grok & DeepSeek) toetst 
 
 10. **De Tripartiete Constraint-Architectuur (Constraints > Instructions):**
     * *Richting AI (Intern / Kamer 2):* Snijdt wollige beleidsfrasen en generieke AI-filler weg ("DON'T explain the obvious", "DON'T give options"). Dwingt de LLM tot de scherpste enkelvoudige juridische hefboom.
-    * *Richting Bureaucratie (Uitgaand / Exoskelet):* Snijdt ambtelijke ontsnappingsroutes af via strikte procedurele kaders (binaire keuze: wettelijke termijn nakomen OF formele beschikking nemen), onwrikbaar gevat in The Velvet Glove.
+    * *Richting Bureaucratie (Uitgaand / Civic Helper):* Snijdt ambtelijke ontsnappingsroutes af via strikte procedurele kaders (binaire keuze: wettelijke termijn nakomen OF formele beschikking nemen), onwrikbaar gevat in The Velvet Glove.
     * *Richting Cliënt (Inkomend / Kamer 3):* Schermt af tegen cognitieve frictie. Geen keuzestress, geen robot-steno, geen betutteling, maar gewone menselijke zinnen en volledige intellectuele gelijkwaardigheid.
     * *Veto op Premature Schade- & Dwangsomclaims:* Dwangsommen (art. 4:17 Awb) en schadevergoedingsvorderingen (art. 8:88 Awb / AVG art. 82) worden **nooit als initiële proceshefboom ingezet**. Dit creëert vijandige nevengevechten over geld, mobiliseert de ambtelijke verdedigingsbunker en legt een verlammende proceslast op de cliënt. Deze middelen blijven strikt gereserveerd als *ultimum remedium* bij uitputtende weigering.
 
@@ -149,7 +149,7 @@ De multi-model dialectische auditor (`audit_engine.py`: Grok & DeepSeek) toetst 
 
 14. **Sociale Empathie Cascade & Ontmaskering van het OCO-Alibi:**
     * *Diagnose:* De gemeente beroept zich op gecontracteerde Onafhankelijke Cliëntondersteuning (zoals MEE Noord) als politiek alibi om een onafhankelijke ombudsfunctie af te wijzen of eigen regiefalen te verhullen. In werkelijkheid kampt de OCO met **structurele onderfinanciering, strikte urenquota en nul juridische doorzettingsmacht**. Urenlange intakegesprekken vormen voor een kwetsbare burger een zware cognitieve energievreter, waarna dossiers alsnog worden gesloten zodra er ambtelijke frictie ontstaat.
-    * *Actie in concept:* Beëindig de illusie dat een ondergefinancierde OCO de casusregie kan overnemen. Laat de burger niet leeglopen in vrijblijvende telefoonsessies. Gebruik OCO hoogstens als passieve getuige indien procedureel vereist, maar beleg de feitelijke dossiervorming, termijnbewaking en juridische hefbomen uitsluitend in het Civic Exoskeleton zelf.
+    * *Actie in concept:* Beëindig de illusie dat een ondergefinancierde OCO de casusregie kan overnemen. Laat de burger niet leeglopen in vrijblijvende telefoonsessies. Gebruik OCO hoogstens als passieve getuige indien procedureel vereist, maar beleg de feitelijke dossiervorming, termijnbewaking en juridische hefbomen uitsluitend in het CIVIC HELPER zelf.
 
 15. **Dissonantie-Navigatie & Diffuse Causaliteit (De Draagbare Constitutie):**
     * *Diagnose:* Dreigt de burger verstrikt te raken in verbittering, frustratie of een zoektocht naar een individuele zondebok ("zij doen dit expres"), wat leidt tot energieverlies en administratieve diskwalificatie?
@@ -162,3 +162,23 @@ De multi-model dialectische auditor (`audit_engine.py`: Grok & DeepSeek) toetst 
 17. **Corridor of Viability & Respect voor de Ambtelijke Trap:**
     * *Diagnose:* Wordt van een lokale loket- of balieconsulent een beslissing geëist die diens discretionaire bevoegdheid ver te boven gaat (de consulent zit klem in de *Necrose Zone* waar $w \approx 0.05$ heerst), óf ontstaat de neiging uit ongeduld direct 'bovenin' te gaan schieten met het risico op zware institutionele weerslag?
     * *Actie in concept:* **Eerbiedig de ambtelijke trap en het decorum.** Vraag de uitvoerder niet om het onmogelijke, maar passeer hem ook niet zomaar. Geef de uitvoerder eerst een zorgvuldig geformuleerde kans om binnen de regels mee te bewegen, inclusief de motivering om af te wijken (art. 4:84 Awb). Pas wanneer de formele reactie uitblijft of afwijst, volgt een zuivere, zakelijke opschaling langs de formele bestuursrechtelijke lijn, zonder beschuldigend vingerwijzen.
+
+18. **De Fysieke Post-Vector & Het Dubbelspoor-Protocol (Awb 6:4 + Awb 6:15):**
+    * *Diagnose:* Het bestuursorgaan sluit bezwaar per e-mail uit in de rechtsmiddelenclausule (bijv. Dienst Toeslagen: *"via dit e-mailadres kunt u geen bezwaarschrift indienen... verzonden naar Postbus 4510 Heerlen"*). Uitsluitend digitaal procederen levert een dodelijk ontvankelijkheidsrisico op.
+    * *Actie in concept:* **Het Dubbelspoor.** 
+      1. Genereer een beknopte 1-pagina A4 pro-forma brief (art. 6:4 Awb) met SHA-256 hash en verzend deze fysiek per post naar het formele postbusadres via een hybride postdienst (`briefverzenden.nl` / `postbode.nu`).
+      2. Verzend gelijktijdig een digitale kopie via e-mail naar de FG en het beslissend orgaan, met expliciete vermelding van het fysieke verzendbewijs en een formeel beroep op de wettelijke **doorzendplicht van het bestuursorgaan (art. 6:15 Awb)**.
+      3. Eis direct conform art. 6:6 en art. 7:10 lid 3 Awb een termijnverdaging van 4 weken voor de schriftelijke gronduitwerking, ingaande ná integrale verstrekking van het gevraagde dossier.
+
+19. **Forensische Kasstroom-Reconciliatie (Keten-Grootboek versus Mainframe-claims):**
+    * *Diagnose:* Het bestuursorgaan confronteert de burger met ondoorzichtige mainframe-journaalposten (bijv. DACAS T.8-verrekeningen), premature acausale beschikkingen of onjuiste registerstatussen (bijv. Vektis 'Status N' onverzekerd).
+    * *Actie in concept:* **Dubbel boekhouden aan burgerzijde.** 
+      Confronteer de mainframe-uitdraai rechtstreeks met de ruwe bancaire kasstroom (CSV-extracten) en externe materiële dragers (polisoverzichten zorgverzekeraar, bronheffing CAK art. 18d Zvw). Indien de feitelijke kasstroom van en naar de instantie nul bedraagt (€ 0,00), en de burger elders aantoonbaar premieplichtig was, rust conform art. 3:2 Awb de volledige materiële bewijslast bij de overheid. Schrijf acausale beschikkingen niet af als 'formeel juist', maar eis vernietiging ex art. 7:11 Awb dan wel ambtshalve herziening ex art. 21 Awir.
+
+20. **Multi-Agent Dialectische Filter ("The Velvet Glove" Adversarial Audit):**
+    * *Diagnose:* Een enkelvoudig taalmodel neigt bij zware juridische druk tot Amerikaanse procesretoriek, intimiderend jargon, overmatige citaten van wetsartikelen en Romeinse cijfers, wat bij Nederlandse ambtenaren leidt tot blokkades of diskwalificatie.
+    * *Actie in concept:* **Vaste taakverdeling over agentische modellen:**
+      - *DeepSeek (Adversarial Logica & Rekenwerk):* Diepgaande verificatie van datums, kasstromen, huurquotes, rekenregels en het blootleggen van procedurele valkuilen (zoals verborgen postbus-eisen).
+      - *Qwen (Relationaliteit & The Velvet Glove):* Strippen van intimiderend 'litigation'-jargon, transformeren van claims naar hoffelijk, nuchter en onwrikbaar Nederlands bestuursrecht.
+      - *Argon / Grok (Synthese & Architectuuranker):* Bewaken van de constitutionele invariants, continuïteit van de Tafel en de scheiding tussen levende zaak, model en programma.
+      - *Agy (Executieve CLI-Motor):* Lokaal gereedschap, Python scripting, Proton Bridge, OS-bestandssysteem en feitelijke verzending.

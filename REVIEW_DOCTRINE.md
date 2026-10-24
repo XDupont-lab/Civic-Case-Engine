@@ -1,7 +1,7 @@
 # 🛡️ Dialectisch Multi-Model Review Rapport: DOCTRINE.md
 
 **Doelbestand:** `DOCTRINE.md`  
-**Opdracht:** Bekijk deze doctrine kritisch voor het burger-exoskelet. Waar zitten zwakke plekken en hoe kunnen we het versterken?
+**Opdracht:** Bekijk deze doctrine kritisch voor het burger-Civic Helper. Waar zitten zwakke plekken en hoe kunnen we het versterken?
 
 ---
 
@@ -65,7 +65,7 @@
 
 ## 5. Samenvattend oordeel
 
-De doctrine is **retorisch bruikbaar maar juridisch lek**. Meerdere wetsartikelen zijn fout of verouderd, AVG wordt geoverclaimd, de dwangsom-route is incompleet, en de systeem-tactiek mist procedurele grondslag. Voor een burger-exoskelet dat stand moet houden tegen een gemeentelijke jurist: **eerst alle artikelen verifiëren, dan faseren, dan pas retoriek**.
+De doctrine is **retorisch bruikbaar maar juridisch lek**. Meerdere wetsartikelen zijn fout of verouderd, AVG wordt geoverclaimd, de dwangsom-route is incompleet, en de systeem-tactiek mist procedurele grondslag. Voor een burger-Civic Helper dat stand moet houden tegen een gemeentelijke jurist: **eerst alle artikelen verifiëren, dan faseren, dan pas retoriek**.
 
 ---
 
@@ -100,7 +100,7 @@ Voeg toe dat de burger nooit alleen de inhoudelijke strijd voert, maar altijd de
 Elke brief blijft beleefd, kort en herhaalt de invariant. Geen discussie over “begrip voor de drukte” of “gezamenlijk zoeken”. De hoffelijkheid zit in de vorm; de onwrikbaarheid in de weigering om de norm te onderhandelen.
 
 ### 3. Menselijke en psychologische effectiviteit: de doctrine negeert energie als schaarse hulpbron
-Mensen die een Wmo-exoskelet nodig hebben (NAH, chronische beperkingen, psychische kwetsbaarheid) hebben beperkt cognitief en emotioneel budget. De doctrine is juridisch correct maar vraagt impliciet om een marathon van alertheid, documentatie en herhaalde acties. Dat is precies waar gemeenten op rekenen.
+Mensen die een Wmo-Civic Helper nodig hebben (NAH, chronische beperkingen, psychische kwetsbaarheid) hebben beperkt cognitief en emotioneel budget. De doctrine is juridisch correct maar vraagt impliciet om een marathon van alertheid, documentatie en herhaalde acties. Dat is precies waar gemeenten op rekenen.
 
 **Zwakte:** Geen pacing, geen bescherming tegen gaslighting (“u bent niet ernstig genoeg”, “er is geen passend aanbod”, stilzwijgen) en geen inbouw van steunstructuur.  
 **Versterking:**  

@@ -1,11 +1,11 @@
 @echo off
 setlocal EnableDelayedExpansion
 chcp 65001 >nul
-title Civic Case Engine - Volledige Zelf-Inrichting (Setup All)
+title Civic Helper - Volledige Zelf-Inrichting (Setup All)
 cd /d "%~dp0"
 
 echo =======================================================================
-echo          CIVIC CASE ENGINE — COMPLETE WERKOMGEVING SETUP
+echo          CIVIC HELPER — COMPLETE WERKOMGEVING SETUP
 echo =======================================================================
 echo.
 echo Dit script richt de volledige autonome werkomgeving voor je in:

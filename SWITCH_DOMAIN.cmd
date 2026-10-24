@@ -1,9 +1,9 @@
 @echo off
-title Civic Case Engine -- Switch Domain Doctrine
+title Civic Helper -- Switch Domain Doctrine
 cd /d "%~dp0"
 
 echo =======================================================================
-echo          CIVIC CASE ENGINE — RECHTSDOMEIN SELECTIE (DOMAIN PACKS)
+echo          CIVIC HELPER — RECHTSDOMEIN SELECTIE (DOMAIN PACKS)
 echo =======================================================================
 echo.
 echo Kies welk juridisch domeinprofiel je wilt activeren:

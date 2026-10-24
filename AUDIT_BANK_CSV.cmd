@@ -4,7 +4,7 @@ chcp 65001 >nul
 cd /d "%~dp0"
 
 echo ===============================================================================
-echo                CIVIC CASE ENGINE -- BANK LEDGER AUDITOR
+echo                CIVIC HELPER -- BANK LEDGER AUDITOR
 echo ===============================================================================
 echo.
 echo Plaats een geanonimiseerde bank-export (.csv) in Incoming_Letters van DEZE engine.

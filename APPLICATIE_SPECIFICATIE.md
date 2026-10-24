@@ -170,6 +170,20 @@ Geen log, dichtgetimmerd monolithisch bureaubladvenster dat probeert een complee
 2. **Natuurlijke OS-integratie (QuickLook / `ql`):** Inspectie van dossiers, bijlagen, brieven en scans met één spatiebalk via QuickLook direct vanuit Windows Explorer of via het commando `ql <bestand>`.
 3. **Kennisgraaf en Tijdlijn (Obsidian):** Visueel overzicht over de 12 levensdomeinen, de ketenrelaties en de chronologie via Obsidian Graph View en Obsidian Canvas, rechtstreeks op de lokale markdown-bestanden buiten git.
 4. **Standalone On-Demand Dashboards (Owl Visual Aesthetic):** Wanneer een complexe visuele synthese nodig is (zoals een ketenorganogram, contractenmatrix of overdrachtskaart), genereert het model een zelfstandig, lokaal HTML/SVG-artefact. Dit opent direct in de standaardbrowser met een rustige, ambient donkere esthetiek (`#05030a`, glasvlakken, goud- en cyaantinten) zonder lokale server of afhankelijkheden.
+5. **Het Tafel-venster: De Beraadslaging als Interface (Owl Academy Esthetiek):**  
+   *Status:* Ontwerpconcept in beraad (pruttelstand; nog niet in actieve bouw).  
+   Eerdere ontwerpen faalden omdat een klassiek dashboard met formulieren en knoppen aanvoelt als het zaaksysteem van de overheid. De centrale interface van Civic Helper is **de Tafel zelf**: de levende beraadslaging tussen de persoon aan het hoofd en de hulptroepen (Agy, Grok, DeepSeek).  
+   * **Visuele identiteit (Owl Academy):** Diepe, rustgevende achtergrond (#05030a Void) met zachte nevels; Cinzel voor statige koppen, Inter voor broodtekst, JetBrains Mono voor zaakkenmerken en artikelen.  
+   * **Glassmorphism stoel-kaarten per deelnemer:**
+     * **Xander (Regisseur / Burger):** Goud (#D4AF37)
+     * **Grok (Laterale strateeg / scherpte):** Amber / Warm oranje (#f59e0b)
+     * **Agy (Archivaris / feiten & protocol):** Elektrisch cyaan (#00d4ff)
+     * **DeepSeek (Deductieve forensische analyse):** Kobaltblauw (#3b82f6)
+   * **Compositie van het venster:**
+     * *Bovenbalk (De Stok & De Klok):* Toont wie op dit moment het woord heeft en welke wettelijke termijnklok van het actieve dossier loopt.
+     * *Centraal (De Tafel-feed):* De chronologische stroom van overwegingen en dossierstukken in strak gerenderde kaarten.
+     * *Rechterflank (De Briefkamer / Actieve Sonde):* Het uitgaande SBARIII-concept dat parallel aan de beraadslaging meegroeit, klaar voor 1-klik accordering van de burger.
+     * *Onderbalk (De Regiestrook):* Eenvoudige spraak- of tekstinvoer om de stok door te geven of de richting bij te sturen.
 
 Whisper, het lezen van scans, en een diepe modelaanroep draaien in de achtergrond. De persoon hoeft geen terminalcommando's uit zijn hoofd te leren; een klik of een rustige zin in gewone taal volstaat.
 

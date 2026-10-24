@@ -39,7 +39,7 @@ Een dossier is geen wolk van woorden, maar een **gerichte graaf van interfaces**
 
 Elke agent beschikt in deze workspace over deterministische code om relaties te analyseren in plaats van woorden te raden:
 
-### A. De Interface Registry (`Civic_Case_Engine/interfaces.json`)
+### A. De Interface Registry (`Civic_Helper/interfaces.json`)
 Hierin liggen alle getypeerde interfaces tussen zorg, wonen, geld en recht vastgelegd (in het openbare model: Voorbeeldstad):
 * `IF-WONEN-WMO-001`: Noodsignaal woningcorporatie naar Wmo/sociaal wijkteam bij acute verloedering van de woonsituatie.
 * `IF-CAK-BIJSTAND-002`: Bestuursrechtelijke bronheffing wanbetalerspremie vs. toetsing Participatiewet (vrijwaring beslagvrije voet).

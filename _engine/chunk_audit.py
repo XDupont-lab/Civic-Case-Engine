@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-CIVIC CASE ENGINE — CHUNK-AUDIT ENGINE (v0.3 PROTOCOL IMPLEMENTATIE)
+CIVIC HELPER — CHUNK-AUDIT ENGINE (v0.3 PROTOCOL IMPLEMENTATIE)
 Cognitieve Werkgeheugentoets & Dichtheidsbewaker tegen Hyper-Densification.
 Pure Python Standard Library (Zero External Dependencies).
 
 Protocolreferentie:
 Notion: Chunk-Audit — telprotocol voor leesbaarheid (v0.3, instrument-kandidaat)
-Status: Geïntegreerde Cognitieve Impedantie-Poort voor Civic Case Engine.
+Status: Geïntegreerde Cognitieve Impedantie-Poort voor Civic Helper.
 
 Waarom dit nodig is:
 Na zware multi-LLM audits (DeepSeek, Grok, Gemini) neemt de dichtheid van teksten

@@ -109,7 +109,7 @@ async def harvest_portal_documents(portal_url: str, task_description: str, visib
 
 def run_cli():
     import argparse
-    parser = argparse.ArgumentParser(description="Civic Case Engine — Browser Harvester")
+    parser = argparse.ArgumentParser(description="Civic Helper — Browser Harvester")
     parser.add_argument("--url", type=str, required=True, help="URL van het burgerportaal of de instantie")
     parser.add_argument("--task", type=str, required=True, help="Omschrijving van de inzage- of oogsttaak")
     parser.add_argument("--headless", action="store_true", help="Draai zonder GUI venster")

@@ -1,11 +1,11 @@
 @echo off
-title Civic Case Engine (Civic Exoskeleton)
+title Civic Helper (CIVIC HELPER)
 cd /d "%~dp0"
 
 :menu
 cls
 echo =======================================================================
-echo              CIVIC CASE ENGINE — CIVIC EXOSKELETON HUB
+echo              CIVIC HELPER — CIVIC HELPER HUB
 echo =======================================================================
 echo.
 echo [0] Inrichtings- & Onboarding Wizard (bootstrap.py)

@@ -2,7 +2,7 @@
 
 **Kenmerk:** NOTITIE-2026-SBARIII-01  
 **Datum:** 19 oktober 2026  
-**Status:** Definitief / Referentiekader voor Civic Case Engine  
+**Status:** Definitief / Referentiekader voor Civic Helper  
 **Onderwerp:** Wetenschappelijke en methodische onderbouwing van de SBARIII-communicatiemal bij overdrachten in het zorg-, sociaal- en bestuursdomein.  
 **Doel:** Terugvaldocument en verweermatrix bij feedback, vragen of kritiek van professionals (artsen, wijkteams, ambtenaren, juristen) op het gehanteerde communicatieprotocol.
 
@@ -12,7 +12,7 @@
 
 Wanneer een burger of patiënt communiceert met instanties (ziekenhuizen, huisartsen, gemeentelijke wijkteams, CAK, UWV), stuit hij regelmatig op bureaucratische of professionele afweer. Berichten worden weggezet als "te lang", "te emotioneel", "onduidelijk", of juist als "te formeel en afstandelijk".
 
-De *Civic Case Engine* hanteert daarom een gestandaardiseerde overdrachts- en communicatiemal gebaseerd op de **SBARIII-methode**. 
+De *Civic Helper* hanteert daarom een gestandaardiseerde overdrachts- en communicatiemal gebaseerd op de **SBARIII-methode**. 
 
 Deze notitie dient als inhoudelijk en wetenschappelijk fundament. Wanneer een professional of instantie vraagtekens plaatst bij de opbouw, de formulering of de systematiek van een uitgaand stuk, kan integraal worden verwezen naar de standaarden en empirische studies in dit document.
 
@@ -110,7 +110,7 @@ Wanneer een arts, behandelaar, ambtenaar of jurist kritiek uit op de gehanteerde
 
 ## 6. Conclusie en Toepassing in het Ketengrootboek
 
-Het SBARIII-protocol is geen administratieve gril, maar de **operationele standaard** van de Civic Case Engine. 
+Het SBARIII-protocol is geen administratieve gril, maar de **operationele standaard** van de Civic Helper. 
 
 In het Ketengrootboek geldt:
 1. Elk uitgaand contact wordt getoetst op de aanwezigheid van S, B, A en R.

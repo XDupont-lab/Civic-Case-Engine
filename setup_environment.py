@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-setup_environment.py — Volledig Autonoom Inrichtingsscript voor Civic Case Engine & AI Tools.
+setup_environment.py — Volledig Autonoom Inrichtingsscript voor Civic Helper & AI Tools.
 
 Dit script automatiseert de volledige replicatie van de agentische werkomgeving:
 1. Systeem- & Runtimecontrole (Python, Git, Winget).
@@ -56,7 +56,7 @@ def get_venv_pip() -> Path:
 def main():
     print("""
 ================================================================================
-🏛️  CIVIC CASE ENGINE — AGENTIC ENVIRONMENT PROVISIONER v1.0
+🏛️  CIVIC HELPER — AGENTIC ENVIRONMENT PROVISIONER v1.0
     Autonome Systeem- & Gereedschapsinrichter voor Antigravity / Agy
 ================================================================================
 """)
@@ -124,7 +124,7 @@ def main():
 {'='*70}
 🎉 SOVEREINE WERKOMGEVING IS VOLLEDIG INGERICHT!
 {'='*70}
-Je kunt de Civic Case Engine direct bedienen via:
+Je kunt de Civic Helper direct bedienen via:
   • START.cmd (Centraal Keuzemenu)
   • RUN_BROWSER_AGENT.cmd (AI Browser Agent voor overheids- en zorgportalen)
   • Of praat direct met je Antigravity / Agy agent in deze map!

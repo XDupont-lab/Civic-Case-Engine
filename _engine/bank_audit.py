@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-CIVIC CASE ENGINE - BANK LEDGER AUDITOR
+CIVIC HELPER - BANK LEDGER AUDITOR
 100% Python Standard Library (No external dependencies).
 
 Doel: Automatische extractie van institutionele patronen uit bank-CSV's:
@@ -71,7 +71,7 @@ def analyze_csv(file_path):
                     })
 
     print("=" * 70)
-    print("CIVIC CASE ENGINE — BANK LEDGER AUDIT RAPPORT")
+    print("CIVIC HELPER — BANK LEDGER AUDIT RAPPORT")
     print("=" * 70)
     print(f"Geanalyseerd bestand : {os.path.basename(file_path)}")
     print(f"Totaal transacties   : {total_tx}")

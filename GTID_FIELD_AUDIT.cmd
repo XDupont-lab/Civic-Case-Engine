@@ -1,8 +1,8 @@
 @echo off
-title Civic Case Engine — G-TID Institutional Field Audit
+title Civic Helper — G-TID Institutional Field Audit
 cd /d "%~dp0"
 echo =======================================================================
-echo     CIVIC CASE ENGINE — G-TID INSTITUTIONAL FIELD DIAGNOSTICS
+echo     CIVIC HELPER — G-TID INSTITUTIONAL FIELD DIAGNOSTICS
 echo =======================================================================
 echo.
 python _engine\gtid_engine.py

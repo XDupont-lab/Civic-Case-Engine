@@ -196,7 +196,7 @@ Beoordeel en beantwoord gestructureerd de volgende kernvragen:
         "",
         "### Belangrijkste Waarschuwingen & Blinde Vlekken:",
         "1. **Het risico van een Cybernetische Wapenwedloop:** De centrale overheid zal niet zomaar decentraliseren; zij kan reageren met tegen-agenten, algoritmische uitsluiting en defensieve wetgeving.",
-        "2. **Rechtsongelijkheid en de Digitale Kloof:** Zonder openbare distributie worden agentische exoskeletten een privilege van digitaal vaardigen.",
+        "2. **Rechtsongelijkheid en de Digitale Kloof:** Zonder openbare distributie worden agentische hulpmiddelen een privilege van digitaal vaardigen.",
         "3. **De State Vector behoeft onzekerheid (POMDP):** De state vector moet rekening houden met partiële observeerbaarheid, belief states en overgangsfuncties.",
         "",
         "---",

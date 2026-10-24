@@ -1,4 +1,4 @@
-# Multi-LLM Auditrapport: Nieuwe Structuur Civic Case Engine
+# Multi-LLM Auditrapport: Nieuwe Structuur Civic Helper
 
 **Datum:** 13 september 2026  
 **Auditors:** DeepSeek (Formeel & Bestuursrechtelijk) & Grok (Strategisch & Institutioneel)  
@@ -12,12 +12,12 @@
 
 ## I. Dialectische Synthese & Eindoordeel
 
-# Civic Case Engine — Integrale Synthese & Eindoordeel
+# Civic Helper — Integrale Synthese & Eindoordeel
 ## Gezamenlijke Audit Doctrine v2.1 | DeepSeek (wetstechnisch) × Grok (strategisch-institutioneel)
 
 **Status:** Statisch model — geen live websearch
 **Toetsingskader:** Awb, Wmo 2015, AVG/UAVG, Woo, vaste CRvB-lijn, institutionele realiteit gemeentelijke uitvoeringspraktijk
-**Integrator:** Dialectische Integrator, Civic Case Engine
+**Integrator:** Dialectische Integrator, Civic Helper
 
 ---
 
@@ -122,7 +122,7 @@ Beide risico's zijn door de doctrine zelf voorzien. De vraag is niet of de doctr
 
 ## II. Integrale Audit: DeepSeek (Wetstechnisch & Bestuursrechtelijk)
 
-# Wetstechnische en Bestuursrechtelijke Audit — Civic Case Engine Doctrine v2.1
+# Wetstechnische en Bestuursrechtelijke Audit — Civic Helper Doctrine v2.1
 
 **Auditor:** DeepSeek (Senior Bestuursrechtelijk & Wetstechnisch Auditor)
 **Toetsingskader:** Awb, Wmo 2015, AVG/UAVG, Woo, vaste CRvB-lijn

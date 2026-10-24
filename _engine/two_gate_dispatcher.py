@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-CIVIC CASE ENGINE — TWEE-POORTEN-DISPATCHER (v1.0)
+CIVIC HELPER — TWEE-POORTEN-DISPATCHER (v1.0)
 Pure Python Standard Library (Zero External Dependencies).
 
 DE TWEE POORTEN
@@ -121,7 +121,7 @@ def main() -> int:
     import json
 
     parser = argparse.ArgumentParser(
-        description="Civic Case Engine — twee-poorten-dispatcher")
+        description="Civic Helper — twee-poorten-dispatcher")
     parser.add_argument("--text", type=str, default="",
                         help="De concepttekst")
     parser.add_argument("--actor", type=str, default=None,

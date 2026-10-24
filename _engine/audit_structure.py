@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-CIVIC CASE ENGINE — MULTI-LLM STRUCTURE AUDIT
+CIVIC HELPER — MULTI-LLM STRUCTURE AUDIT
 Voert een dialectische multi-LLM audit uit op de nieuwe doctrine en architectuur:
 - DeepSeek: Wetstechnische, bestuursrechtelijke en formele toetsing (Awb, Wmo, AVG, CRvB).
 - Grok: Strategische, cybernetische en institutionele machtsdynamiek (The Velvet Glove, decorum, backlash-preventie).
@@ -67,7 +67,7 @@ def run_grok_cli(prompt_text, timeout=180):
 
 def run_structure_audit():
     print("=" * 70)
-    print("CIVIC CASE ENGINE — MULTI-LLM STRUCTUUR-AUDIT")
+    print("CIVIC HELPER — MULTI-LLM STRUCTUUR-AUDIT")
     print("=" * 70)
 
     doctrine_path = root_dir / "DOCTRINE.md"
@@ -88,7 +88,7 @@ def run_structure_audit():
 
     # DeepSeek Audit Prompt (Bestuursrechtelijk, Juridisch, Logisch)
     sys_deepseek = (
-        "Je bent DeepSeek, fungerend als Senior Bestuursrechtelijk en Wetstechnisch Auditor binnen de Civic Case Engine. "
+        "Je bent DeepSeek, fungerend als Senior Bestuursrechtelijk en Wetstechnisch Auditor binnen de Civic Helper. "
         "Jouw rol is zuiver deductieve logica, wetsystematiek en bestuursrechtelijke houdbaarheid (Awb, Wmo 2015, AVG, CRvB-jurisprudentie). "
         "Let op: Je bent een statisch model en hebt geen live websearch. Baseer je daarom uitsluitend op de geldende bestuursrechtelijke principes en de verstrekte doctrinestukken. "
         "Toetsingseisen:\n"
@@ -100,7 +100,7 @@ def run_structure_audit():
     )
 
     user_deepseek = (
-        f"Hier is de actuele doctrinestructuur van de Civic Case Engine:\n\n"
+        f"Hier is de actuele doctrinestructuur van de Civic Helper:\n\n"
         f"### KERN VAN DE DOCTRINE (17 SENSOREN):\n{doctrine_text}\n\n"
         f"### FORMALISERING & ESCALATIE (Topologie & Drie Kamers):\n{topology_text[:4000]}\n\n"
         "Voer nu een diepgaande wetstechnische en bestuursrechtelijke audit uit op deze structuur."
@@ -108,7 +108,7 @@ def run_structure_audit():
 
     # Grok Audit Prompt (Strategisch, Institutioneel, Live Dynamiek)
     sys_grok = (
-        "Je bent Grok, fungerend als Strategisch en Cybernetisch Auditor binnen de Civic Case Engine. "
+        "Je bent Grok, fungerend als Strategisch en Cybernetisch Auditor binnen de Civic Helper. "
         "Jouw rol: Beoordeel de nieuwe architectuur op institutionele werking, machtsdynamiek en strategische robuustheid tegen bureaucratische afweermechanismen. "
         "Toetsingseisen:\n"
         "1. De werking van 'The Velvet Glove' en trapsgewijze subsidiariteit (Sensoren 11 en 17): voorkomt dit effectief dat de bureaucratie in de defensieve bunker schiet?\n"
@@ -118,7 +118,7 @@ def run_structure_audit():
     )
 
     user_grok = (
-        f"Hier is de actuele doctrinestructuur van de Civic Case Engine:\n\n"
+        f"Hier is de actuele doctrinestructuur van de Civic Helper:\n\n"
         f"### KERN VAN DE DOCTRINE (17 SENSOREN):\n{doctrine_text}\n\n"
         f"### FORMALISERING & ESCALATIE:\n{topology_text[:4000]}\n\n"
         "Toets deze structuur strategisch en cybernetisch op institutionele dynamiek, ambtelijk decorum en bescherming van de burger."
@@ -151,7 +151,7 @@ def run_structure_audit():
     # Fase 2: Synthese en Eindoordeel
     print("\n[Fase 2] Dialectische synthese genereren...")
     sys_synth = (
-        "Je bent de Dialectische Integrator van de Civic Case Engine. "
+        "Je bent de Dialectische Integrator van de Civic Helper. "
         "Synthetiseer de wetstechnische audit van DeepSeek en de strategische audit van Grok tot een helder, gezamenlijk eindoordeel over de nieuwe structuur. "
         "Formatteer het rapport strak in Markdown met concrete conclusies, goedgekeurde pijlers en eventuele operationele aandachtspunten."
     )
@@ -166,7 +166,7 @@ def run_structure_audit():
 
     # Opslaan van het rapport
     report_file = root_dir / "AUDIT_RAPPORT_NIEUWE_STRUCTUUR.md"
-    report_content = f"""# Multi-LLM Auditrapport: Nieuwe Structuur Civic Case Engine
+    report_content = f"""# Multi-LLM Auditrapport: Nieuwe Structuur Civic Helper
 
 **Datum:** 13 september 2026  
 **Auditors:** DeepSeek (Formeel & Bestuursrechtelijk) & Grok (Strategisch & Institutioneel)  

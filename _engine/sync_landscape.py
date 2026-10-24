@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-CIVIC CASE ENGINE — LANDSCAPE REALTIME SYNCHRONIZER (v1.0)
+CIVIC HELPER — LANDSCAPE REALTIME SYNCHRONIZER (v1.0)
 Pure Python Standard Library (Zero External Dependencies).
 
 Doel:
@@ -240,7 +240,7 @@ class LandscapeSynchronizer:
         return f"Kon tabelstructuur in {org_file.name} niet automatisch patchen. Rijen handmatig toevoegen."
 
 def main():
-    parser = argparse.ArgumentParser(description="Civic Case Engine Landscape Realtime Synchronizer")
+    parser = argparse.ArgumentParser(description="Civic Helper Landscape Realtime Synchronizer")
     parser.add_argument("--scan", action="store_true", help="Scan het actieve dossier op actoren en functies")
     parser.add_argument("--sync", action="store_true", help="Synchroniseer gedetecteerde actoren naar de organisatiekaart")
     parser.add_argument("--dry-run", action="store_true", help="Toon wijzigingen zonder bestanden aan te passen")

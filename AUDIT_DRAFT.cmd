@@ -1,10 +1,10 @@
 @echo off
 chcp 65001 >nul
-title Civic Case Engine — Constructieve Multi-Model Audit
+title Civic Helper — Constructieve Multi-Model Audit
 cd /d "%~dp0"
 
 echo =======================================================================
-echo     CIVIC CASE ENGINE — CONSTRUCTIEVE MULTI-MODEL AUDIT ENGINE v2.0
+echo     CIVIC HELPER — CONSTRUCTIEVE MULTI-MODEL AUDIT ENGINE v2.0
 echo =======================================================================
 echo.
 echo Methodologie: "Bekijk kritisch, verrijk, verfijn en vul aan"

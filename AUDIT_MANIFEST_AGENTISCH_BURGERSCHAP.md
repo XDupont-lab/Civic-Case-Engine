@@ -19,7 +19,7 @@ De drie onafhankelijke AI-systemen hebben het theoretische manifest onderworpen 
 
 ### Belangrijkste Waarschuwingen & Blinde Vlekken:
 1. **Het risico van een Cybernetische Wapenwedloop:** De centrale overheid zal niet zomaar decentraliseren; zij kan reageren met tegen-agenten, algoritmische uitsluiting en defensieve wetgeving.
-2. **Rechtsongelijkheid en de Digitale Kloof:** Zonder openbare distributie worden agentische exoskeletten een privilege van digitaal vaardigen.
+2. **Rechtsongelijkheid en de Digitale Kloof:** Zonder openbare distributie worden agentische hulpmiddelen een privilege van digitaal vaardigen.
 3. **De State Vector behoeft onzekerheid (POMDP):** De state vector moet rekening houden met partiële observeerbaarheid, belief states en overgangsfuncties.
 
 ---
@@ -27,7 +27,7 @@ De drie onafhankelijke AI-systemen hebben het theoretische manifest onderworpen 
 ## 2. Audit Review 1: Google Gemini 3.8 Flash (Frontier AI Research & Benchmarks)
 
 ### Memorie van Beoordeling
-**Aan:** Xander Dupont & The Civic Case Engine Ensemble  
+**Aan:** Xander Dupont & The Civic Helper Ensemble  
 **Van:** Principal Research Scientist, Google DeepMind (Agentic Reasoning & Multi-Agent Systems Group)  
 **Betreft:** Academische en technisch-theoretische audit van *‘De Agentische Burger en de Cybernetische Staat’* (v2.0)
 
@@ -51,7 +51,7 @@ De toepassing van Ashby’s eerste wet is formeel correct en elegant geoperation
   
 * Omdat de interne variëteit van het ambtelijk apparaat ($\mathcal{H}(R)$) logistiek en computationeel inherent lager is dan de combinatorische complexiteit van miljoenen unieke humane levenslopen ($\mathcal{H}(E)$), dwingt de wet van Ashby de regulator tot **variëteitsreductie aan de bron (attenuation)**.
 * Het manifest toont terecht aan dat wat beleidsmakers eufemistisch "dienstverlening" noemen, cybernetisch fungeert als een *stochastisch variëteitsfilter*. Frictie (wachttijden, semantische ambiguïteit, bewijslastcomplexiteit) is geen 'bug', maar het stabilisatiemechanisme waarmee $V_{\text{burger}}$ kunstmatig wordt verlaagd tot $V_{\text{burger}} \to \{0, 1\}$ (afgewezen / goedgekeurd binnen star format).
-* **De variëteitsinversie:** Zodra een lokaal inference-model gekoppeld aan deterministische regelsystemen (een hybride neuro-symbolisch exoskelet) de burger bijstaat, explodeert de variëteit van de inputvector die de staat moet verwerken. De burger comprimeert zijn toestand niet langer tot het door de staat geprefabriceerde sjabloon, maar dwingt de staat om de **volledige niet-gereduceerde complexiteit** van de feitelijke situatie te verwerken. De wet van Ashby dicteert onverbiddelijk: een regulator met te lage variëteit verliest de controle over het systeem.
+* **De variëteitsinversie:** Zodra een lokaal inference-model gekoppeld aan deterministische regelsystemen (een hybride neuro-symbolische Civic Helper) de burger bijstaat, explodeert de variëteit van de inputvector die de staat moet verwerken. De burger comprimeert zijn toestand niet langer tot het door de staat geprefabriceerde sjabloon, maar dwingt de staat om de **volledige niet-gereduceerde complexiteit** van de feitelijke situatie te verwerken. De wet van Ashby dicteert onverbiddelijk: een regulator met te lage variëteit verliest de controle over het systeem.
 
 #### 1.2 Noodzakelijke Herverdeling naar Mesostructuren
 De conclusie dat de centrale staat dit *niet* centraal kan oplossen via brute-force schaalvergroting is cybernetisch valide.
@@ -143,7 +143,7 @@ Het manifest slaagt erin de Agentische Burger te positioneren als de ultieme **v
 
 #### De 3 Belangrijkste Blinde Vlekken
 1. **Onderschatting van Asymmetrische Tegenmaatregelen door de Wetgever:** Het manifest leunt op de aanname dat de wet statisch blijft. In werkelijkheid is de staat een speler die de *regels van het spel kan herschrijven* zodra hij dreigt te verliezen (bijv. inperken termijnen, uitsluiten van machine-to-machine bezwaarschriften, sanctioneren van geautomatiseerd procederen).
-2. **Compute- en Token-Economie van de Burger:** Een multi-agent ensemble dat over een horizon van jaren duizenden documenten, banktransacties en proceshandelingen forensisch bijhoudt, vereist aanzienlijke inference compute en storage. Wie financiert dit voor de minima? Zonder antwoord hierop blijft het exoskelet een privilege voor de hogere middenklasse.
+2. **Compute- en Token-Economie van de Burger:** Een multi-agent ensemble dat over een horizon van jaren duizenden documenten, banktransacties en proceshandelingen forensisch bijhoudt, vereist aanzienlijke inference compute en storage. Wie financiert dit voor de minima? Zonder antwoord hierop blijft Civic Helper een privilege voor de hogere middenklasse.
 3. **Het Risico van 'Model Drift' en Hallucinatie in Extreem Diepe Bomen:** Een fout in stap 3 van een 8-jarig dossier kan in stap 40 escaleren tot onherstelbaar rechtsverlies (bijvoorbeeld het missen van een fatale appeltermijn door context-window compressie of foutieve datum-extractie). De afhankelijkheid van probabilistische LLM’s vereist een strikter geformaliseerde *deterministische fallback-kernel*.
 
 ---

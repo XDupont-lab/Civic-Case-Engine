@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-CIVIC CASE ENGINE — REGRESSIESUITE CYBERNETISCHE INVARIANTEN (T1 t/m T6)
+CIVIC HELPER — REGRESSIESUITE CYBERNETISCHE INVARIANTEN (T1 t/m T6)
 Pure Python Standard Library (Zero External Dependencies).
 
 Toetst de 6 kernlessen van de reële casus (Grok Synthese):

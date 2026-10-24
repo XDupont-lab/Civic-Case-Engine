@@ -1,9 +1,9 @@
 @echo off
-title Civic Case Engine — Chunk-Audit v0.3
+title Civic Helper — Chunk-Audit v0.3
 cd /d "%~dp0"
 
 echo =======================================================================
-echo     CIVIC CASE ENGINE — CHUNK-AUDIT v0.3 (WERKGEHEUGENTOETS)
+echo     CIVIC HELPER — CHUNK-AUDIT v0.3 (WERKGEHEUGENTOETS)
 echo =======================================================================
 echo Toetst conceptbrieven en processtukken op cognitieve dichtheid (<= 4 chunks).
 echo Voorkomt dat teksten dichtslibben na zware multi-LLM audits.
