@@ -1,7 +1,7 @@
 @echo off
 setlocal
 echo ========================================================
-echo   CIVIC CASE ENGINE -- REALTIME LANDSCAPE SYNCHRONIZER
+echo   CIVIC HELPER -- REALTIME LANDSCAPE SYNCHRONIZER
 echo ========================================================
 echo.
 

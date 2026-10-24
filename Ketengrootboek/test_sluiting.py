@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-CIVIC CASE ENGINE — REGRESSIETESTS KETENGROOTBOEK (v1.1)
+CIVIC HELPER — REGRESSIETESTS KETENGROOTBOEK (v1.1)
 Pure Python Standard Library (unittest).
 
 Toetst de formele borging van sluiting en proefbalans conform de architectuurreview van Sol 6.1:

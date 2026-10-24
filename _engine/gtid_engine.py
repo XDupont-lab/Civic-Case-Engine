@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-CIVIC CASE ENGINE — G-TID veldkaart, eerste pass.
+CIVIC HELPER — G-TID veldkaart, eerste pass.
 
 Dit is een uitlezing (Kamer 3). Geen veldvergelijking en geen nieuwe grondslag.
 

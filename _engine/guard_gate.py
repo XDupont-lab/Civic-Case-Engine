@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-CIVIC CASE ENGINE — GUARD GATE (DRAAGKRACHT-POORT v1.0)
+CIVIC HELPER — GUARD GATE (DRAAGKRACHT-POORT v1.0)
 Pure Python Standard Library (Zero External Dependencies).
 
 DE TWEEDE POORT
@@ -161,7 +161,7 @@ class GuardResult:
 
 
 class GuardGate:
-    """De draagkracht-poort van de Civic Case Engine."""
+    """De draagkracht-poort van de Civic Helper."""
 
     def __init__(self, root_dir=None):
         self.root_dir = Path(root_dir) if root_dir else Path(__file__).resolve().parent.parent
@@ -211,7 +211,7 @@ def main() -> int:
     import json
 
     parser = argparse.ArgumentParser(
-        description="Civic Case Engine — Guard Gate (draagkracht-poort)")
+        description="Civic Helper — Guard Gate (draagkracht-poort)")
     parser.add_argument("--json", type=str,
                         help='JSON met G, D, I (en optioneel lambda_min)')
     parser.add_argument("--selftest", action="store_true",

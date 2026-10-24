@@ -1,9 +1,9 @@
-# Interactional State Architecture & Operator Dispatch (Civic Case Engine v2.0)
+# Interactional State Architecture & Operator Dispatch (Civic Helper v2.0)
 
 > **Kernaxioma:** Een civiele agent is geen documentvalidator en geen brievenschrijver. Hij modelleert en moduleert de **interactionele toestand** tussen institutionele actoren over vier discrete verdiepingen, en voorkomt vroegtijdige reductie van de toestandsruimte.
 
 **Datum:** 7 oktober 2026  
-**Status:** Normatieve Architectuurspecificatie voor de Civic Case Engine Harness & Dialectische Auditoren  
+**Status:** Normatieve Architectuurspecificatie voor de Civic Helper Harness & Dialectische Auditoren  
 **Referentie:** het openbare voorbeeld Voorbeeldstad. De levende zaak blijft buiten deze repository.  
 
 ---
@@ -15,7 +15,7 @@ $$\text{input} \longrightarrow \text{interpretatie} \longrightarrow \text{canoni
 
 Zodra er een wet, verjaringstermijn of termijnoverschrijding wordt gedetecteerd, dwingt het model een binaire sluiting af (*"legaliseer alles, sluit de status, eis een beschikking"*).
 
-In de Civic Case Engine v2.0 wordt de toestand van een dossier gemodelleerd als een **tripartite vector**:
+In de Civic Helper v2.0 wordt de toestand van een dossier gemodelleerd als een **tripartite vector**:
 
 $$\mathcal{S}_{\text{case}} = \begin{pmatrix} \mathbf{L} & \text{(Legal State)} \\ \mathbf{F} & \text{(Factual State)} \\ \mathbf{I} & \text{(Interactional State)} \end{pmatrix}$$
 
@@ -44,7 +44,7 @@ $$\mathcal{S}_{\text{case}} = \begin{pmatrix} \mathbf{L} & \text{(Legal State)} 
 
 ## 2. De Vier Institutionele Verdiepingen (Interactionele Regimes)
 
-De Civic Case Engine erkent dat "de overheid" niet bestaat als één generieke ontvanger. Dezelfde burgerlijke feiten vereisen op verschillende institutionele schalen een fundamenteel ander interactieregime:
+De Civic Helper erkent dat "de overheid" niet bestaat als één generieke ontvanger. Dezelfde burgerlijke feiten vereisen op verschillende institutionele schalen een fundamenteel ander interactieregime:
 
 | Verdieping (Floor) | Domein & Doelwitten | Primaire Dynamiek | Toelaatbaar Instrumentarium | Fataal Risico bij LLM-Overkill |
 | :--- | :--- | :--- | :--- | :--- |
@@ -57,7 +57,7 @@ De Civic Case Engine erkent dat "de overheid" niet bestaat als één generieke o
 
 ## 3. De Operator Dispatch ($\Omega$): Het Vierkants-Model
 
-In plaats van de blinde drang van generatieve AI om bij elke beurt tekst te produceren (*"Prompt $\implies$ Schrijf brief"*), beschikt het Harness van de Civic Case Engine over een discrete viervoudige operator-set $\Omega$:
+In plaats van de blinde drang van generatieve AI om bij elke beurt tekst te produceren (*"Prompt $\implies$ Schrijf brief"*), beschikt het Harness van de Civic Helper over een discrete viervoudige operator-set $\Omega$:
 
 $$\Omega = \{\mathbf{ASK}, \; \mathbf{CONFIRM}, \; \mathbf{WAIT}, \; \mathbf{ESCALATE}\}$$
 
@@ -109,7 +109,7 @@ $$\Omega = \{\mathbf{ASK}, \; \mathbf{CONFIRM}, \; \mathbf{WAIT}, \; \mathbf{ESC
 
 ## 4. De Poortwachter voor Juridisering (The Law Gating Invariant)
 
-De meest cruciale wet van de Civic Case Engine is de ontkoppeling tussen de detectie van een rechtsgrond en de activatie van juridische actie:
+De meest cruciale wet van de Civic Helper is de ontkoppeling tussen de detectie van een rechtsgrond en de activatie van juridische actie:
 
 $$\text{Law Detected} \centernot\implies \text{Activate Legal Protocol}$$
 

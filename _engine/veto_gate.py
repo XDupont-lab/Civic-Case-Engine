@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-CIVIC CASE ENGINE — VETO GATE (CYBERNETIC HARNESS v1.0)
+CIVIC HELPER — VETO GATE (CYBERNETIC HARNESS v1.0)
 Pure Python Standard Library (Zero External Dependencies).
 
 Implementeert de deterministische Veto-Keten (Stappen B, C, D) van de Cybernetische Architectuur:

@@ -1,6 +1,6 @@
-# Non-Lineaire Analyse & Constraint Topologie in het Civic Exoskeleton
+# Non-Lineaire Analyse & Constraint Topologie in het CIVIC HELPER
 
-> **Kernstelling:** Bureaucratische inertie en burgeruitputting zijn geen toevallige miscommunicaties, maar dynamische eigenschappen van niet-lineaire, ontkoppelde systemen. Het Civic Exoskeleton operationaliseert Constraint Topologie (CT v1.0 en v2.0) om niet-lineaire attractor-blokkades te doorbreken via topologische bifurcaties, adiabatische model-updates en discrete synthetische klok-commits.
+> **Kernstelling:** Bureaucratische inertie en burgeruitputting zijn geen toevallige miscommunicaties, maar dynamische eigenschappen van niet-lineaire, ontkoppelde systemen. Het CIVIC HELPER operationaliseert Constraint Topologie (CT v1.0 en v2.0) om niet-lineaire attractor-blokkades te doorbreken via topologische bifurcaties, adiabatische model-updates en discrete synthetische klok-commits.
 
 ---
 
@@ -85,7 +85,7 @@ $$\Gamma_{AB} = \frac{L_{\mathrm{coord}}}{L_{\mathrm{coh}}}$$
 * **$\Gamma_{AB} \le 1.0$ (Regime A - Continu):** De coördinatielast is klein en past binnen de natuurlijke coherentietijd. Informeel overleg volstaat.
 * **$\Gamma_{AB} > 1.0$ (Regime B - Discreet):** Zodra $D_t$ de tolerantiegrens overschrijdt, breekt het continue kanaal. Voortgezet bellen is pure energieverspilling.
 
-Het Civic Exoskeleton dwingt bij $\Gamma_{AB} > 1.0$ een **DISCRETE_COMMIT_ANCHOR** af:
+Het CIVIC HELPER dwingt bij $\Gamma_{AB} > 1.0$ een **DISCRETE_COMMIT_ANCHOR** af:
 1. **Sla een nieuw anker ($t=0$):** Een formele Saaie Sonde (bijv. Art. 15 AVG of formele Wmo-ingebrekestelling).
 2. **Fabricatie van $\omega_*$:** De wet dicteert een harde, discrete klok (bijv. 30 dagen ex art. 12 lid 3 AVG, of 2 weken ex art. 4:17 Awb).
 3. **Vernietiging van eerdere drift:** De lopende discussies worden irrelevant; er tikt vanaf $t=0$ slechts één deterministische klok.
@@ -106,7 +106,7 @@ In het zorg- en bestaanszekerheidsdomein zien we de klassieke **Lifting Obstruct
 Geen enkele individuele patch heeft het mandaat om de integrale toestand van de burger te observeren. De burger wordt gefragmenteerd over de raakbundel van de bureaucratie.
 
 ### De Rol van Casimirs (Globale Invarianten)
-Het Civic Exoskeleton herstelt de samenhang door **Casimirs** te construeren die standhouden over álle patches heen:
+Het CIVIC HELPER herstelt de samenhang door **Casimirs** te construeren die standhouden over álle patches heen:
 * **De Master Chronologie:** Beveiligd met cryptografische hashes ([`timeline_weaver.py`](_engine/timeline_weaver.py)).
 * **De Vier AVG-Sondes:** Door gelijktijdig bij alle vier de ketenpartijen ($P_1, P_2, P_3, P_4$) het volledige digitale dossier op te vragen, dwingt de burger af dat de verborgen interfaces ($f_{ij}$) boven tafel komen (zoals afstemmingsmails tussen verhuurder en zorgloket).
 * Het dossier transformeert van een verzameling losse loketbrieven naar een **gesloten variëteit**, waarin de ketenaansprakelijkheid mathematisch onontkoombaar wordt.
@@ -115,7 +115,7 @@ Het Civic Exoskeleton herstelt de samenhang door **Casimirs** te construeren die
 
 ## 5. Multi-Resolution Escalatie: De Computationele Zuinigheid
 
-Geïnspireerd door de resolutietrap uit [`ct_runtime/resolution.py`](ct_runtime/resolution.py), hanteert het Civic Exoskeleton strikte energie-economie: *"Lokaal goed genoeg is goed genoeg."*
+Geïnspireerd door de resolutietrap uit [`ct_runtime/resolution.py`](ct_runtime/resolution.py), hanteert het CIVIC HELPER strikte energie-economie: *"Lokaal goed genoeg is goed genoeg."*
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -175,7 +175,7 @@ De overgang van lineaire uitputtingsslagen naar niet-lineaire topologische navig
 6. **Handhaaf Bio-Cognitieve Closure:** Scherm het menselijk substraat af met een selectieve membraan die inkomende institutionele ruis filtert en uitgaand affectief energieverlies hermetisch blokkeert.
 7. **Mandaat-Matching & Getrapte Escalatie ($\Delta\lambda$):** Sla nooit willekeurig trappen over om administratieve weerslag te vermijden. Begin altijd hoffelijk bij het eerstelijns-slot en escaleer uitsluitend bij een formeel residu ($\delta > 0$: termijnoverschrijding of expliciet mandaattekort) naar het bevoegde mandaat-slot.
 8. **Toets op materiële legitimiteit ($\mathcal{L}$):** Ontmasker de papieren beleidsfictie ($\mathcal{GU}_{\text{ext}}$) zodra de materiële resonantie en de feitelijke burger-agency zijn vernietigd.
-9. **Doorzie het OCO-Alibi:** Verwacht geen stelselregie van een structureel ondergefinancierde en tandeloze externe cliëntondersteuning; bescherm de cognitieve energie van de burger tegen uitputtende intake-carrousels en beleg de regie in de harde instrumenten van het Exoskelet zelf.
+9. **Doorzie het OCO-Alibi:** Verwacht geen stelselregie van een structureel ondergefinancierde en tandeloze externe cliëntondersteuning; bescherm de cognitieve energie van de burger tegen uitputtende intake-carrousels en beleg de regie in de harde instrumenten van Civic Helper zelf.
 10. **Hanteer Dissonantie als Navigatiesensor (De Draagbare Constitutie):** Blijf verankerd in diffuse causaliteit (het systeem faalt, niet een individuele boosdoener). Laat de frictie exact de vector zijn die de kloof tussen statutaire zorgplicht ($\Sigma$) en ambtelijke uitvoering ($\beta$) diagnosticeert.
 11. **Koppel Dual-Layer Causaliteit Orthogonaal:** Dwing de macro-rechtsbescherming (Laag I: evenredigheid en materiële zorgplicht) onontkoombaar af via de micro-mechanismen (Laag II: fatale termijnen, AVG art. 15, ingebrekestellingen).
 12. **Bewaak de Corridor of Viability via Respect voor de Trap:** Eis geen onmogelijke afwijkingen aan het loket ($w \approx 0.05$), maar schiet ook niet impulsief naar de top. Reik de ambtenaar de inherente afwijkingsbevoegdheid (art. 4:84 Awb) aan als veilig administratief kader binnen zijn bevoegdheid.

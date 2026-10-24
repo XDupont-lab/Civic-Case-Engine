@@ -35,7 +35,7 @@ Om categoriefouten te voorkomen, ontkoppelt de architectuur het maatschappelijke
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │ A. FUNCTIONEEL-FILOSOFISCHE DIMENSIE (Het 'Waarom' en 'Voor Wie')           │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│ 1. MAATSCHAPPELIJK / STRATEGISCH: HET CIVIC EXOSKELETON                     │
+│ 1. MAATSCHAPPELIJK / STRATEGISCH: HET CIVIC HELPER                     │
 │    Asymmetrie-nivelleerder — Heft de informatie-asymmetrie op en dwingt     │
 │    het bestuursorgaan tot naleving van zijn wettelijke onderzoeksplicht.    │
 │                                                                             │
@@ -59,9 +59,9 @@ Om categoriefouten te voorkomen, ontkoppelt de architectuur het maatschappelijke
 
 ### A. De Functioneel-Filosofische Dimensie
 
-#### Pijler 1: Het Civic Exoskeleton (Burgerlijk Exoskelet)
+#### Pijler 1: Het CIVIC HELPER (Burgerlijk Civic Helper)
 * **Het probleem:** Instanties bezitten oneindige ambtelijke tijd, geautomatiseerde incassosystemen en juridische afdelingen. De burger heeft slechts één biologisch zenuwstelsel en beperkte reserves.
-* **De werking:** Het Exoskelet heft de structurele informatie-asymmetrie op. Met formele sondes (art. 15 AVG, art. 3:2 Awb) wordt de instantie gedwongen binnen fatale termijnen (30 dagen) zelf in haar archieven te spitten en haar wettelijke onderzoeks- en motiveringsplicht na te komen.
+* **De werking:** Civic Helper heft de structurele informatie-asymmetrie op. Met formele sondes (art. 15 AVG, art. 3:2 Awb) wordt de instantie gedwongen binnen fatale termijnen (30 dagen) zelf in haar archieven te spitten en haar wettelijke onderzoeks- en motiveringsplicht na te komen.
 
 #### Pijler 2: Externe Executieve Functie (Cognitieve Prothese)
 * **Het probleem:** Chronische ziekte, NAH of acute bestaansonzekerheid leiden tot executieve dysfunctie onder stress (moeite met plannen, prioritering, telefoongesprekken en emotionele overbelasting).
@@ -114,7 +114,7 @@ Een lokale agent is geen brievenschrijver, maar een **externe executieve lus** d
 ## 3. Directory-Structuur
 
 ```text
-Civic_Case_Engine/
+Civic_Helper/
 ├── START.cmd                  # Centraal interactief opstartmenu (8 keuzen)
 ├── SWITCH_DOMAIN.cmd          # Modulair wisselen tussen juridische rechtsgebieden
 ├── AUDIT_DRAFT.cmd            # Een-klik dialectische multi-model audit
@@ -124,7 +124,7 @@ Civic_Case_Engine/
 ├── EXPORT_BUNDEL.cmd          # Procesbundel exporteren met SHA-256 register
 ├── DOCTRINE.md                # Actief geladen juridische doctrine
 ├── INTERACTIONAL_STATE_AND_OPERATOR_DISPATCH.md # v2.0 Interactionele toestand & Operator Dispatch (S_case & WAIT)
-├── ONTWIKKELPLAN_CIVIC_EXOSKELETON.md # Het master ontwikkelplan
+├── ONTWIKKELPLAN_CIVIC_CIVIC HELPERON.md # Het master ontwikkelplan
 ├── README.md                  # Deze deur, in het Nederlands
 ├── README.en.md               # Dezelfde deur, in het Engels
 ├── APPLICATIE_SPECIFICATIE.md # De maat voor de bouw

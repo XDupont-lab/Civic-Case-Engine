@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-CIVIC CASE ENGINE — GLUE CHECK (CT v1.0 & Addendum II Kernel Verifier)
+CIVIC HELPER — GLUE CHECK (CT v1.0 & Addendum II Kernel Verifier)
 Pure Python Standard Library (Zero External Dependencies).
 
 Implements the formal Definition 4 & Addendum II Admissibility and Gluing Tests:
@@ -183,12 +183,12 @@ class InterfaceVerdict:
 
 class GlueChecker:
     def __init__(self, root_dir: Optional[Path] = None):
-        # Default root is Civic_Case_Engine parent or Civic_Case_Engine
+        # Default root is Civic_Helper parent or Civic_Helper
         if root_dir is None:
             self.engine_dir = Path(__file__).resolve().parent.parent
         else:
             self.engine_dir = Path(root_dir)
-        self.workspace_root = self.engine_dir.parent if self.engine_dir.name == "Civic_Case_Engine" else self.engine_dir
+        self.workspace_root = self.engine_dir.parent if self.engine_dir.name == "Civic_Helper" else self.engine_dir
 
     def _resolve_file(self, rel_path: str) -> Optional[Path]:
         """Resolves a witness inside the repository. A personal case path is not a public path."""

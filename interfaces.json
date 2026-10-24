@@ -757,5 +757,91 @@
         }
       ]
     }
+  },
+  {
+    "id": "IF-TOESLAGEN-POSTBUS-010",
+    "kind": "vertical",
+    "from_chart": {
+      "id": "chart_toeslagen",
+      "carrier": "Bestuursorgaan / Fiscale Uitvoeringsorganisatie",
+      "domain": "Fiscaal en Bestuursrecht",
+      "clock": "omega_w"
+    },
+    "to_chart": {
+      "id": "chart_burger_rechtsingang",
+      "carrier": "Burger Rechtsbescherming",
+      "domain": "Rechtsmiddelen en Awb-ontvankelijkheid",
+      "clock": "omega_star"
+    },
+    "anchor": {
+      "event_id": "EVT-TOESLAGEN-BESLUIT-20261020",
+      "type": "statutory_decision",
+      "description": "Besluit: Uitsluiting bezwaar per e-mail; fysieke verzending naar postbus geëist",
+      "date": "2026-10-20",
+      "witness_file": "lokaal/buiten-git.md",
+      "source_event_ref": "besluit_uitvoering_01"
+    },
+    "response": {
+      "event_id": "EVT-BURGER-DUBBELSPOOR-20261023",
+      "type": "hybrid_dual_track_remedy",
+      "description": "Fysiek 1-pagina pro-forma bezwaarschrift per post naar postbus + gelijktijdige e-mail met beroep op art. 6:15 Awb doorzendplicht",
+      "date": "2026-10-23",
+      "witness_file": "lokaal/buiten-git.md",
+      "target_formal_intake": "Awb_6_4_en_6_15_ontvankelijk"
+    },
+    "shared_constraint_carrier": "Rechtsingang en ontvankelijkheid bezwaartermijn 6 weken (art. 6:7 jo. art. 6:9 Awb)",
+    "translation": {
+      "source_representation": "Formele rechtsmiddelenclausule (enkelvoudige postbus)",
+      "target_representation": "Hybride dubbelspoor (Awb art. 6:4 fysiek + Awb art. 6:15 digitaal doorzendingsberoep)",
+      "required_target_fields": [
+        "fysiek_verzendbewijs_postbus",
+        "digitale_kennisgeving_bevoegd_orgaan",
+        "verzoek_termijnverdaging_art_6_6_awb"
+      ],
+      "mapped_fields": [
+        "fysiek_verzendbewijs_postbus",
+        "digitale_kennisgeving_bevoegd_orgaan",
+        "verzoek_termijnverdaging_art_6_6_awb"
+      ]
+    },
+    "gate": {
+      "source_gate": {
+        "name": "Art. 6:4 Awb (schriftelijke indiening bij bevoegd orgaan)",
+        "condition": "Tijdige terpostbezorging aan postbus binnen 6 weken",
+        "satisfied": true
+      },
+      "target_gate": {
+        "name": "Art. 6:15 Awb jo. Art. 7:10 lid 3 Awb (doorzendplicht en verdaging beslistermijn)",
+        "condition": "Digitale ontvangstbevestiging en toekenning 4 weken gronduitstel na dossierlevering",
+        "satisfied": false
+      }
+    },
+    "invariants": {
+      "declared_casimirs": [
+        {
+          "id": "C_awb_ontvankelijkheid_borging",
+          "description": "Procedurele invariant: Ontvankelijkheid bezwaarschrift mag nimmer stranden op digitaal afwijzingsluik",
+          "in_source": true,
+          "in_target_obs": true,
+          "in_target_casimir": true
+        }
+      ],
+      "micro_observables": [
+        {
+          "id": "O_post_verzendref_generiek",
+          "description": "Feitelijke observable: Verzendbewijs terpostbezorging aangeboden",
+          "in_source": true,
+          "in_target_obs": true
+        }
+      ],
+      "interface_witnesses": [
+        {
+          "id": "W_pdf_bezwaarschrift_sha256",
+          "description": "Pro-forma bezwaarschrift in lokale outbox (SHA-256 geverifieerd)",
+          "witness_file": "lokaal/buiten-git.md",
+          "verified": true
+        }
+      ]
+    }
   }
 ]

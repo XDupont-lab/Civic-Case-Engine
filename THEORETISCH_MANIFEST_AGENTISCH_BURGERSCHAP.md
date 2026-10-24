@@ -1,7 +1,7 @@
 # De Agentische Burger en de Cybernetische Staat
 ### *De Ineenstorting van de Ambtelijke Filterketen, Ashby's Variëteitsinversie en de Noodzakelijke Herverdeling naar Mesostructuren*
 
-**Auteurs:** Xander Dupont (`XDupont-lab`) & The Civic Case Engine Ensemble  
+**Auteurs:** Xander Dupont (`XDupont-lab`) & The Civic Helper Ensemble  
 **Datum:** 9 oktober 2026  
 **Status:** Normatief Theoretisch Manifest & Onderzoeksagenda (v2.1 — *Post-Multi-LLM Audit Edition*)  
 **Getoetst door:** Multi-LLM Audit (Google Gemini 3.8 Flash, DeepSeek V3, DeepSeek-Reasoner R1)  
@@ -13,7 +13,7 @@
 
 De moderne verzorgingsstaat balanceert op een onuitgesproken cybernetische premisse: **informatieverwerkingsasymmetrie als impliciet filtermechanisme**. Centrale overheidsbureaucratieën beschikken over een fundamenteel lagere variëteit ($V_{\text{centraal}}$) dan de reële levenswereld van hun burgers. Zij houden controle door de variëteit van de burger kunstmatig te onderdrukken via administratieve en cognitieve frictie (de 'trechter van vermoeidheid' / variety attenuation aan de bron). 
 
-De opkomst van de **Agentische Burger** — uitgerust met een lokaal, deterministisch-probabilistisch AI-exoskelet — veroorzaakt een acute **variëteitsinversie**. Omdat de agentische burger beschikt over oneindig executief uithoudingsvermogen, meerjarige forensische geheugencapaciteit en wiskundige termijnbewaking, storten de traditionele ambtelijke frictiefilters mechanisch in. 
+De opkomst van de **Agentische Burger** — uitgerust met een lokaal, deterministisch-probabilistisch AI-Civic Helper — veroorzaakt een acute **variëteitsinversie**. Omdat de agentische burger beschikt over oneindig executief uithoudingsvermogen, meerjarige forensische geheugencapaciteit en wiskundige termijnbewaking, storten de traditionele ambtelijke frictiefilters mechanisch in. 
 
 Ingevolge **Ashby's Wet van Requisite Variety** kan de centrale staat deze explosie van legitieme burger-variëteit niet centraal absorberen zonder infrastructurele overbelasting. Dit manifest modelleert het resulterende dynamische attractor-landschap en toont aan dat louter centrale schaalvergroting leidt tot een perverse algoritmische wapenwedloop (AI tegen AI). De enige stabiele, democratisch levensvatbare respons is de **cybernetische herverdeling van informatieverwerkings-, besluit- en handelingscapaciteit naar onderliggende mesostructuren** (wijkteams, lokale professionals, co-regulatie). Tevens presenteert dit manifest de *Civic Case Reconciliatie* en de voorgestelde `Civic-Gym` evaluatiesuite als de ultieme open benchmark voor de volgende generatie multi-agent reasoning-modellen bij frontier laboratoria zoals Google DeepMind en xAI.
 
@@ -49,7 +49,7 @@ De centrale bureaucratie overleeft dankzij het feit dat een overgroot deel van d
 
 ## 2. De Schok van de Agentische Burger: Ashby's Variëteitsinversie
 
-Het **Civic Exoskeleton** van de Agentische Burger verbreekt deze dynamiek radicaal. Door de burger te voorzien van een lokale deterministische kernel (Python, termijnenklokken, SHA-256 integriteits-hashes) aangestuurd door een frontier reasoning-ensemble, verandert de aard van de interactie:
+Het **CIVIC HELPER** van de Agentische Burger verbreekt deze dynamiek radicaal. Door de burger te voorzien van een lokale deterministische kernel (Python, termijnenklokken, SHA-256 integriteits-hashes) aangestuurd door een frontier reasoning-ensemble, verandert de aard van de interactie:
 
 1. **Oneindig Executief Uithoudingsvermogen:** De agent raakt niet vermoeid, mist geen fatale termijn en raakt niet ontmoedigd door ambtelijke vertraging.
 2. **Volledige Tijdlijnhomologie:** De burger legt een reconstructie over van vele jaren, cent voor cent geëxtraheerd uit bankafschriften, beschikkingen en correspondentie, met waterdichte audit-trails.
@@ -76,7 +76,7 @@ Hoe reageert een complex adaptief systeem wanneer zijn centrale knooppunten word
 ```
                               ┌─────────────────────────────────────────┐
                               │ VARIËTEITSINVERSIE AAN BURGERZIJDE     │
-                              │ (Civic Exoskeletons breken frictie)     │
+                              │ (Civic Helper breken frictie)     │
                               └────────────────────┬────────────────────┘
                                                    │
                   ┌────────────────────────────────┴────────────────────────────────┐
@@ -97,7 +97,7 @@ Hoe reageert een complex adaptief systeem wanneer zijn centrale knooppunten word
 ```
 
 1. **Attractor 1: De Algoritmische Wapenwedloop (AI tegen AI).** De centrale staat zet zelf grootschalige LLM-discriminators in om burgerverzoeken geautomatiseerd te vertragen of af te wijzen. Dit leidt tot escalatie van verificatiekosten aan beide zijden.
-2. **Attractor 2: Repressieve Wetgeving & De Nieuwe Digitale Kloof.** De wetgever perkt rechtsmiddelen in (bijvoorbeeld het afschaffen van dwangsommen bij termijnoverschrijding) of eist fysieke balie-aanwezigheid. Bovendien dreigt een gevaarlijke *computational divide*: alleen vermogende/technisch vaardige burgers bezitten een agentisch exoskelet.
+2. **Attractor 2: Repressieve Wetgeving & De Nieuwe Digitale Kloof.** De wetgever perkt rechtsmiddelen in (bijvoorbeeld het afschaffen van dwangsommen bij termijnoverschrijding) of eist fysieke balie-aanwezigheid. Bovendien dreigt een gevaarlijke *computational divide*: alleen vermogende/technisch vaardige burgers bezitten een agentisch Civic Helper.
 3. **Attractor 3: De Rechterlijke Bottleneck.** De rechtsprekende macht bezwijkt onder massale beroepszaken en wordt de 'variety-absorber van laatste instantie', leidend tot drastische poortwachtersmechanismen bij de bestuursrechter.
 4. **Attractor 4: De Cybernetische Meso-Herverdeling (De Enige Levensvatbare Uitweg).**  
    In overeenstemming met Stafford Beers *Viable System Model* (VSM) erkent de centrale overheid dat centrale controle faalt. Zij **herverdeelt informatieverwerkings-, besluit- en handelingscapaciteit naar de mesostructuren**:
@@ -111,7 +111,7 @@ Hoe reageert een complex adaptief systeem wanneer zijn centrale knooppunten word
 
 Om elk misverstand of valse associatie uit te sluiten, expliciteren wij het fundamentele onderscheid tussen Agentisch Burgerschap en pseudorechtelijke bewegingen:
 
-| Dimensie | De 'Soevereine Burger' (Pseudorecht / Complot) | De 'Agentische Burger' (Civic Case Engine) |
+| Dimensie | De 'Soevereine Burger' (Pseudorecht / Complot) | De 'Agentische Burger' (Civic Helper) |
 | :--- | :--- | :--- |
 | **Epistemologie** | Magisch denken, semantische ficties, verzonnen Latijnse sjablonen. | Empirisch, forensisch, deterministisch, cryptografisch verankerd. |
 | **Grondwettelijke Status** | Wijst de rechtsstaat af; ontkent legitimiteit van wet en instituties. | **Omarmt de democratische rechtsstaat;** dwingt strikte naleving af van Awb, AVG, Grondwet en EVRM. |
@@ -153,12 +153,12 @@ Wij stellen voor om een open benchmarkomgeving te ontwikkelen (**`Civic-Gym`**):
 
 ## 6. De Civic Commons Invariant & De Globale Commodity-Dynamiek
 
-Om te voorkomen dat de agentische burger een privilege wordt van de digitaal vermogende elite, verbindt de *Civic Case Engine* zich aan drie democratische ontwerpprincipes, verankerd in een onomkeerbare mondiale economische realiteit:
+Om te voorkomen dat de agentische burger een privilege wordt van de digitaal vermogende elite, verbindt de *Civic Helper* zich aan drie democratische ontwerpprincipes, verankerd in een onomkeerbare mondiale economische realiteit:
 
 ### 6.1 De Drie Civic Commons Principes
 1. **Local-First & FLOSS:** Alle broncode, templates en evaluaties zijn open-source. Lokale burgers bezitten hun data; geen persoonsgegevens in commerciële clouds.
 2. **Deterministic Fallback Kernel:** Cruciale termijnen en rekenkundige reconciliaties draaien op deterministische code (Python, SQLite, Z3), zodat de burger niet afhankelijk is van dure inference-tokens voor basisrechten.
-3. **Meso-Allianties:** Het exoskelet is ontworpen om gedeeld te worden met onafhankelijke cliëntondersteuners (MEE), wijkteams en sociaal raadslieden, waardoor de technologie de kwetsbaarste burger direct versterkt.
+3. **Meso-Allianties:** Civic Helper is ontworpen om gedeeld te worden met onafhankelijke cliëntondersteuners (MEE), wijkteams en sociaal raadslieden, waardoor de technologie de kwetsbaarste burger direct versterkt.
 
 ### 6.2 De Globale Commodity-Dynamiek: Waarom Overheden AI niet Lokaal kunnen 'Weg-Optimaliseren'
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-CIVIC CASE ENGINE — CIVIC LEGAL KERNEL (STATUTORY CLOCK & PENALTY TRACKER v2.0)
-Civic Exoskeleton Deterministic State Machine.
+CIVIC HELPER — CIVIC LEGAL KERNEL (STATUTORY CLOCK & PENALTY TRACKER v2.0)
+CIVIC HELPER Deterministic State Machine.
 Pure Python Standard Library (Zero External Dependencies).
 
 Rol in de architectuur:
@@ -265,7 +265,7 @@ class StatutoryClockManager:
     def print_status_table(self, today=None):
         evaluated, total_dwangsom = self.evaluate_status(today)
         print("\n" + "=" * 95)
-        print("          CIVIC CASE ENGINE — STATUS WETTELIJKE TERMIJNEN & DWANGSOMMEN")
+        print("          CIVIC HELPER — STATUS WETTELIJKE TERMIJNEN & DWANGSOMMEN")
         print("=" * 95)
         if not evaluated:
             print("Geen actieve termijnklokken geregistreerd.")

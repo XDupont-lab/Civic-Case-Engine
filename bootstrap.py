@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-bootstrap.py — Turnkey Onboarding & Setup Wizard voor Civic Case Engine.
+bootstrap.py — Turnkey Onboarding & Setup Wizard voor Civic Helper.
 
 Dit script leidt een nieuwe gebruiker (of Antigravity agent) in 5 behapbare stappen
 door de volledige inrichting:
@@ -40,7 +40,7 @@ ENV_FILE = ROOT_DIR / ".env"
 
 BANNER = """
 ================================================================================
-🏛️  CIVIC CASE ENGINE — AGENTIC CITIZEN EXOSKELETON
+🏛️  CIVIC HELPER — AGENTIC CITIZEN CIVIC HELPERON
     Interactieve Inrichtings- & Onboarding Wizard (v1.0)
 ================================================================================
 """
@@ -180,7 +180,7 @@ def run_wizard():
         print(" - DeepSeek overgeslagen.")
 
     # Opslaan in .env
-    env_content = f"""# Civic Case Engine — Lokale Omgevingsvariabelen
+    env_content = f"""# Civic Helper — Lokale Omgevingsvariabelen
 # NOOIT COMMITTEN NAAR GIT
 
 GOOGLE_API_KEY={gemini_key}
@@ -196,7 +196,7 @@ DEEPSEEK_API_KEY={deepseek_key}
     print("─" * 80)
     print("🛡️ STAP 4: DE ONVOORWAARDELIJKE VERZENDGARANTIE")
     print("─" * 80)
-    print("De Civic Case Engine hanteert één onverbiddelijke veiligheidsregel:")
+    print("De Civic Helper hanteert één onverbiddelijke veiligheidsregel:")
     print("  👉 Er wordt NOOIT automatisch post of mail verzonden zonder jouw expliciete akkoord.")
     print("  👉 Elk concept wordt eerst in Outgoing_Drafts/ geplaatst na een dubbele audit.")
     print("  👉 Jij houdt te allen tijde de vinger op de knop.\n")
@@ -262,7 +262,7 @@ E-mail: {email_contact}
     print(f"✔️ Eerste formele AVG-sonde klaargezet in: Outgoing_Drafts/{probe_output.name}")
 
     print("\n" + "=" * 80)
-    print("🎉 DE CIVIC CASE ENGINE IS VOLLEDIG OPERATIONEEL!")
+    print("🎉 DE CIVIC HELPER IS VOLLEDIG OPERATIONEEL!")
     print("================================================================================")
     print(f"1. Jouw eerste concept staat in: Outgoing_Drafts/{probe_output.name}")
     print("2. Dubbelklik op START.cmd om het hoofdmenu te openen en audits te draaien.")

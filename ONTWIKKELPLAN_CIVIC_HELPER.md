@@ -1,7 +1,7 @@
-# Civic Case Engine (Civic Exoskeleton) — Master Ontwikkelplan v1.0
+# Civic Helper (CIVIC HELPER) — Master Ontwikkelplan v1.0
 
 **Status:** Vastgelegd & Operationeel  
-**Auteur:** Civic Case Engine Project & Agy (Antigravity)  
+**Auteur:** Civic Helper Project & Agy (Antigravity)  
 **Datum:** 13 september 2026  
 **Locatie:** deze repository.
 
@@ -14,7 +14,7 @@ De moderne burger-bureaucratie interface functioneert in de praktijk op basis va
 * **Executieve frictie als poortwachter:** Formulieren zijn complex, termijnen verstopt en dossiers gefragmenteerd. Burgers met chronische multimorbiditeit, NAH of acute bestaansonzekerheid lopen vast op de administratieve rompslomp.
 * **De emotionele val:** Frustratie en angst worden door de bureaucratie direct bestempeld als "onbehoorlijk gedrag" of "weerstand", waardoor de inhoudelijke aanspraak van tafel wordt geveegd.
 
-De **Civic Case Engine** is ontworpen als een **Civic Exoskeleton (Asymmetrie-Nivelleerder)**. Het compenseert de executieve belasting en heft de informatieverwerkingsasymmetrie op via vier kernpijlers:
+De **Civic Helper** is ontworpen als een **CIVIC HELPER (Asymmetrie-Nivelleerder)**. Het compenseert de executieve belasting en heft de informatieverwerkingsasymmetrie op via vier kernpijlers:
 
 1. **De Grote Omkering (Lastenverschuiving & Asymmetrie-opheffing):** In plaats van smeken om zorg of kwijtschelding, schiet de burger gestandaardiseerde, wettelijke sondes af (art. 15 AVG, art. 3:2 Awb). De instantie wordt wettelijk gedwongen om binnen fatale termijnen (30 dagen) zelf het speur- en collatiewerk in haar archieven te doen en haar wettelijke onderzoeks- en motiveringsplicht na te komen.
 2. **Forensische Datakoppeling:** Wat geen sociaal advocaat kan bekostigen binnen een toevoeging: binnen seconden 10 jaar aan bankmutaties auditen, communicatielogs ontsluiten en contract- en zorgbreuken mathematisch dichtspijkeren.
@@ -26,7 +26,7 @@ De **Civic Case Engine** is ontworpen als een **Civic Exoskeleton (Asymmetrie-Ni
 In plaats van de beperkte noemer 'wrapper' of een verwarring tussen doel en techniek, rust het ontwerp op twee scherp gescheiden dimensies:
 
 #### A. Functioneel-Filosofische Dimensie (Het 'Waarom' en 'Voor Wie')
-1. **Maatschappelijk & Strategisch — Het Civic Exoskeleton (Burgerlijk Exoskelet):**  
+1. **Maatschappelijk & Strategisch — Het CIVIC HELPER (Burgerlijk Civic Helper):**  
    De asymmetrie-nivelleerder die de individuele burger voorziet van dezelfde institutionele documentatiekracht, juridische precisie en procedurele slagkracht als een overheidsorgaan of commercieel incassobedrijf.
 2. **Cognitief & Neurologisch — Externe Executieve Functie (Cognitieve Prothese):**  
    Het systeem fungeert als een externe prothese voor het door NAH, chronische ziekte of stress overbelaste werkgeheugen. Het bewaakt termijnen, structureert feiten en dwingt strikte schriftelijkheid af om cognitieve energie te sparen.
@@ -37,7 +37,9 @@ In plaats van de beperkte noemer 'wrapper' of een verwarring tussen doel en tech
 4. **AI-Engineering & Probabilistisch — Het Agentic Case Framework (Agentic Harness):**  
    De multi-model tuigage (`audit_engine.py`) met strikte epistemische scheiding:
    * **Grok-4.6 (live websearch):** Verifieert actuele wetgeving (`wetten.overheid.nl`), bewaakt 'The Velvet Glove' en analyseert institutionele machtsdynamiek.
-   * **DeepSeek (statisch model zonder web):** Uitsluitend ingezet als *advocaat van de duivel* voor formele argumentatieleer, interne consistentie en het ontdekken van procedurele mazen; *geen* autoriteit over wetteksten of feiten.
+   * **DeepSeek (agentic CLI met shell, bestanden en gerichte zoekactie):** Formele logicus en falsificator. Toetst het artefact en niet de beschrijving, en levert een afwijking $\delta$ **met adres** (welke dimensie ontbreekt). Geen autoriteit over wetteksten of feiten; die blijven bij de bron.
+   * **agy (agentic CLI, Android/Quest/zandbak):** Uitvoerder en bouwer in `agy_werk`; schrijft in `scratch/` en `outbox/`, raakt de src van `hmi` en `hvm_monitor` niet aan.
+   * **Epistemische pariteit:** geen vaste ladder tussen de CLI's. Elke stoel kan inspringen waar nodig; de mangel met drie stemmen maakt het scherp. Het speelveld is Nederlands, niet Pruisisch.
 
 ### 1.2 De Cybernetische Lus & De Vijf Systeemlagen (L0 – L4)
 
@@ -60,14 +62,14 @@ Het systeem bewaakt vijf strikt gescheiden lagen (zie [CYBERNETISCHE_ARCHITECTUU
 ## 2. Architectuur van het Framework
 
 `
-Civic_Case_Engine/
+Civic_Helper/
 ├── START.cmd                  # Centraal opstartmenu (frictieloos)
 ├── SWITCH_DOMAIN.cmd          # Wisselen tussen wetgevingsdomeinen
 ├── AUDIT_DRAFT.cmd            # Een-klik constructieve audit van brieven
 ├── AUDIT_BANK_CSV.cmd         # Forensische bankrekening-audit
 ├── README.md                  # Snelgids en introductie
 ├── DOCTRINE.md                # Actief geladen juridische doctrine
-├── ONTWIKKELPLAN_CIVIC_EXOSKELETON.md # Dit masterplan
+├── ONTWIKKELPLAN_CIVIC_CIVIC HELPERON.md # Dit masterplan
 │
 ├── _engine/                   # De machinekamer (pure Python stdlib)
 │   ├── audit_engine.py        # Universele constructieve auditor
@@ -124,7 +126,7 @@ Civic_Case_Engine/
   5. `nl_brp_adres` (v2.0): Art. 2.23 Wet BRP (recht op briefadres), Landelijke Circulaire BRP (verplichte ambtshalve toekenning), Verbod op VOW-uitschrijving zonder deugdelijk adresonderzoek, Art. 8 EVRM.
 
 ### Batch 4: Frictieloze Interface & Bundel-Exporter — [Gerealiseerd & Operationeel]
-* **Doel:** De bediening van het Civic Exoskeleton zo intuïtief en prikkelarm mogelijk maken voor een burger met verminderde energie.
+* **Doel:** De bediening van het CIVIC HELPER zo intuïtief en prikkelarm mogelijk maken voor een burger met verminderde energie.
 * **Status:** Gerealiseerd via `_engine/case_bundler.py`, `EXPORT_BUNDEL.cmd` en centraal geïntegreerd in `START.cmd`.
 * **Bereikt resultaat:**
   * **Procesdossier Bundler:** Genereert met één klik een integraal dossier met frontispice, inhoudsopgave, actieve doctrine, uittreksel van de 905 feiten uit de master-chronologie, SHA-256 integriteitsregister, genummerde producties en formeel petitum.
@@ -151,7 +153,7 @@ Civic_Case_Engine/
 ## 4. De Interactie met het Zorgdossier ("Living Lab")
 
 * **Strikte Scheiding:**
-  * [Civic_Case_Engine/]() blijft 100% geanonimiseerd, domein-agnostisch en openbaar overdraagbaar als software-framework.
+  * [Civic_Helper/]() blijft 100% geanonimiseerd, domein-agnostisch en openbaar overdraagbaar als software-framework.
   * Lokale operationele dossiers blijven strikt gescheiden van deze openbare repository.
 * **Kruisbestuiving:**
-  Elke innovatie die in de praktijk van complexe casussen wordt ontdekt (zoals de 10-jarige bank-audit of de telefoon-extractie) wordt direct gesteriliseerd en als generieke module in de Civic Case Engine geplaatst.
+  Elke innovatie die in de praktijk van complexe casussen wordt ontdekt (zoals de 10-jarige bank-audit of de telefoon-extractie) wordt direct gesteriliseerd en als generieke module in de Civic Helper geplaatst.

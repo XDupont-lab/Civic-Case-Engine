@@ -122,5 +122,87 @@
         "voldaan": false
       }
     }
+  },
+  {
+    "post_id": "POST-VEKTIS-MENZIS-004",
+    "naam": "Verzekeringsstatus vs Zvw-Premieplicht & CAK-bronheffing",
+    "debet_rekening": "Uitvoeringsorgaan Toeslagen (chart_toeslagen)",
+    "credit_rekening": "Zorgverzekeraar Polisadministratie & CAK (chart_zvw)",
+    "anker_feit": "EVT-TOESLAGEN-VEKTIS-20261020",
+    "tegen_feit": "EVT-MENZIS-PREMIE-20261001",
+    "sluitings_conditie": {
+      "vereist_feit_type": "rectificatie_en_herziening_art16_avg",
+      "tussen_anker_en_tegenfeit": false
+    },
+    "vaste_posten": [
+      {
+        "id": "C_zvw_premieplicht_exclusie",
+        "omschrijving": "Wettelijke invariant: Art. 2 Wzt (actieve Zvw-premiebetaling sluit uitsluiting zorgtoeslag uit)",
+        "in_credit_geboekt": false
+      }
+    ],
+    "micro_observables": [
+      {
+        "id": "O_menzis_premie_incasso",
+        "omschrijving": "Feitelijke premie-inhouding en CAK-bronheffing ex art. 18d Zvw in historisch premiejaar"
+      }
+    ],
+    "vereiste_velden": [
+      "vektis_brondata_herkomst",
+      "intrekking_terugvordering_2014_2015",
+      "gecorrigeerde_beschikking"
+    ],
+    "geboekte_velden": [],
+    "poorten": {
+      "bronpoort": {
+        "naam": "Art. 3:2 Awb (Zorgvuldigheid & bewijslast grondslag Toeslagen)",
+        "voldaan": false
+      },
+      "doelpoort": {
+        "naam": "Art. 16 AVG / Art. 21 Awir (Recht op rectificatie en ambtshalve herziening)",
+        "voldaan": false
+      }
+    }
+  },
+  {
+    "post_id": "POST-DACAS-BANK-005",
+    "naam": "Mainframe Verrekeningen vs Bancaire Kasstroom",
+    "debet_rekening": "Uitvoeringsorgaan Verrekeningsadministratie (chart_toeslagen)",
+    "credit_rekening": "Bankadministratie Burger (chart_bank)",
+    "anker_feit": "EVT-DACAS-MAINFRAME-20261020",
+    "tegen_feit": "EVT-BANK-ING-20261023",
+    "sluitings_conditie": {
+      "vereist_feit_type": "specificatie_onderliggende_beschikkingen_t8",
+      "tussen_anker_en_tegenfeit": false
+    },
+    "vaste_posten": [
+      {
+        "id": "C_bancaire_kasstroom_sluiting",
+        "omschrijving": "Forensische invariant: Mainframe-verrekeningen moeten aantoonbaar matchen met de bankmutaties",
+        "in_credit_geboekt": false
+      }
+    ],
+    "micro_observables": [
+      {
+        "id": "O_kasstroom_nulstand_2018",
+        "omschrijving": "Geconsolideerde bancaire kasstroom versus gestelde verrekeningen"
+      }
+    ],
+    "vereiste_velden": [
+      "specificatie_onderliggende_beschikkingen",
+      "journaalspecificatie_verrekening",
+      "wettelijke_grondslag_verrekening"
+    ],
+    "geboekte_velden": [],
+    "poorten": {
+      "bronpoort": {
+        "naam": "Art. 4:89 Awb (Verplichting tot betaling / verrekening)",
+        "voldaan": false
+      },
+      "doelpoort": {
+        "naam": "Art. 7:4 Awb / Art. 15 AVG (Volledig afschrift zaakstukken)",
+        "voldaan": false
+      }
+    }
   }
 ]

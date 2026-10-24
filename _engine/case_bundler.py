@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-CIVIC CASE ENGINE — CIVIC LEGAL KERNEL (PROCESDOSSIER BUNDLER & EXPORTER v1.0)
-Civic Exoskeleton Forensic Case Assembler.
+CIVIC HELPER — CIVIC LEGAL KERNEL (PROCESDOSSIER BUNDLER & EXPORTER v1.0)
+CIVIC HELPER Forensic Case Assembler.
 Pure Python Standard Library (Zero External Dependencies).
 
 Rol in de architectuur:
@@ -243,7 +243,7 @@ def build_case_bundle(case_title: str, author_name: str, respondent_name: str, o
     b.append(f"**Forensische Integriteitsstatus:** Verifieerbaar via SHA-256 Checksums  ")
     b.append("")
     b.append("> [!IMPORTANT]")
-    b.append("> Dit procesdossier is samengesteld via het *Civic Case Engine Exoskeleton*. Alle opgenomen producties, feiten en correspondentie zijn voorzien van een cryptografische SHA-256 vingerafdruk ter verificatie van de materiële en temporele authenticiteit.")
+    b.append("> Dit procesdossier is samengesteld via het *Civic Helper CIVIC HELPERon*. Alle opgenomen producties, feiten en correspondentie zijn voorzien van een cryptografische SHA-256 vingerafdruk ter verificatie van de materiële en temporele authenticiteit.")
     b.append("")
     b.append("---")
     b.append("")
@@ -463,7 +463,7 @@ def generate_standalone_html(title: str, markdown_content: str, html_output: Pat
         pass
 
 def main():
-    parser = argparse.ArgumentParser(description="Civic Case Engine — Forensic Case Bundler")
+    parser = argparse.ArgumentParser(description="Civic Helper — Forensic Case Bundler")
     parser.add_argument("--title", default="Zaakdossier & Maatwerkvoorziening Wmo", help="Zaakstitel")
     parser.add_argument("--author", default="Betrokkene", help="Naam indiener")
     parser.add_argument("--respondent", default="College van Burgemeester en Wethouders", help="Wederpartij")
@@ -480,7 +480,7 @@ def main():
         out_path = DOSSIER_DIR / f"PROCESBUNDEL_{clean_title}_{date_tag}.md"
 
     print("=" * 70)
-    print("⚖️  CIVIC CASE ENGINE — FORENSIC PROCESDOSSIER BUNDLER")
+    print("⚖️  CIVIC HELPER — FORENSIC PROCESDOSSIER BUNDLER")
     print("=" * 70)
     print(f"[*] Zaakstitel:       {args.title}")
     print(f"[*] Indiener:         {args.author}")

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-CIVIC CASE ENGINE — SBARIII COMMUNICATION PROTOCOL & VALIDATOR
+CIVIC HELPER — SBARIII COMMUNICATION PROTOCOL & VALIDATOR
 Pure Python Standard Library (Zero External Dependencies).
 
 Onderbouwd door:
 - AHRQ TeamSTEPPS 3.0 Curriculum (Repeat-Back Recommendations and Requests)
 - Martínez-Fernández et al. (2022), PMC9778833 (Veerkracht + 97% failure ongestructureerde handoffs)
-- Civic Case Engine: NOTITIE_COMMUNICATIEPROTOCOL_SBARIII.md
+- Civic Helper: NOTITIE_COMMUNICATIEPROTOCOL_SBARIII.md
 
 Componenten van SBARIII:
 1. I — Identification (Identificatie van afzender, ontvanger en dossier)
@@ -102,7 +102,7 @@ class SBARProtocol:
     }
 
     # Standaard replieken bij professionele kritiek
-    DEFENSE_REFERENCE = "Civic_Case_Engine/NOTITIE_COMMUNICATIEPROTOCOL_SBARIII.md"
+    DEFENSE_REFERENCE = "Civic_Helper/NOTITIE_COMMUNICATIEPROTOCOL_SBARIII.md"
 
     @classmethod
     def validate_text(cls, text: str) -> ValidationReport:

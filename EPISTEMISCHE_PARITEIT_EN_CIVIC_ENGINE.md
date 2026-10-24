@@ -1,7 +1,7 @@
-# Het Civic Exoskeleton: Agentische LLM-Omgeving, Sensorimotorische Pariteit & De Democratisering van Systeemkracht
+# Het CIVIC HELPER: Agentische LLM-Omgeving, Sensorimotorische Pariteit & De Democratisering van Systeemkracht
 
 > **Status:** Referentie- & Manifestdocument (v2.1 — De Prothese-Editie & Hermeneutische Dialoog)  
-> **Auteur / Context:** Civic Case Engine Project & het Agentic Ensemble (Antigravity, Grok, Agy)  
+> **Auteur / Context:** Civic Helper Project & het Agentic Ensemble (Antigravity, Grok, Agy)  
 > **Locatie:** `EPISTEMISCHE_PARITEIT_EN_CIVIC_ENGINE.md`  
 > **Fundament:** Constraint Topologie (v1.0 / v2.0), Awb, Wmo 2015, AVG art. 15, Cybernetica & Holobiont-Theorie  
 > **Hardware- & Systeembasis:** Windows 11 4K Desktop, Fossibot F102 (Android), Meta Quest 3 (VR), Proton Mail Bridge, Betterbird, Python 3.12 (Zero-PIP Kernel)
@@ -32,7 +32,7 @@ Tussen de burger en de bureaucratie heerst een fundamentele, structurele ongelij
 3. **Cognitieve Asymmetrie:** Een burger die getroffen is door Niet-Aangeboren Hersenletsel (NAH), chronische uitputting, somatische complicaties (zoals stomazorg) of acute armoede, kampt met ernstige executieve frictie. Juist wanneer de burger maximale administratieve scherpte nodig heeft, beschikt hij over de minste reserves.
 4. **De 'Lastige Burger'-Attractor:** Wanneer een burger emotioneel, wanhopig of persistent reageert op ambtelijke inertie, classificeert het ambtelijke systeem dit gedrag reflexmatig als "weerstand", "onwilligheid" of "zorgmijding". De ambtelijke poorten sluiten zich; de burger wordt gefragmenteerd en uit de boot gewerkt.
 
-**Het Civic Exoskeleton breekt deze dynamiek.** Het is een lokaal, agentisch softwaresysteem dat fungeert als een **Externe Executieve Cortex** en een **Rechtsbeschermend Pantser**, ontworpen om volledige epistemische, ontologische én operationele pariteit tussen burger en overheid af te dwingen.
+**Het CIVIC HELPER breekt deze dynamiek.** Het is een lokaal, agentisch softwaresysteem dat fungeert als een **Externe Executieve Cortex** en een **Rechtsbeschermend Pantser**, ontworpen om volledige epistemische, ontologische én operationele pariteit tussen burger en overheid af te dwingen.
 
 ---
 
@@ -40,17 +40,17 @@ Tussen de burger en de bureaucratie heerst een fundamentele, structurele ongelij
 
 Een veelgemaakte denkfout bij technici en beleidsmakers is het projecteren van enterprise- en platform-denken op dit systeem: vragen over *multi-tenancy*, *centrale governance-raden*, *compliance-arbitrage* en *publiek sleutelbeheer*. 
 
-**Het Civic Exoskeleton is géén platform, géén overheidsinfrastructuur en géén multi-tenant SaaS-applicatie.**
+**Het CIVIC HELPER is géén platform, géén overheidsinfrastructuur en géén multi-tenant SaaS-applicatie.**
 
 ### A. De Prothese vs. Het Instituut
-Het exoskelet is in de meest letterlijke zin een **persoonlijke cognitieve en juridische prothese**:
-* Wanneer iemand met een dwarslaesie een gemotoriseerd loop-exoskelet aantrekt, richt hij geen ethische bestuursraad op om te stemmen of zijn linkerbeen een stap mag zetten. **De drager bestuurt en beslist.**
+Civic Helper is in de meest letterlijke zin een **persoonlijke cognitieve en juridische prothese**:
+* Wanneer iemand met een dwarslaesie een gemotoriseerd loop-Civic Helper aantrekt, richt hij geen ethische bestuursraad op om te stemmen of zijn linkerbeen een stap mag zetten. **De drager bestuurt en beslist.**
 * Als de prothese knelt, stelt de drager de schroef bij. Dat vereist geen 'contestability governance-protocol'; het is een directe, zelfstandige handeling van de drager zelf.
-* De Civic Case Engine is de externe administratieve prothese voor **één uniek mens, met één specifiek dossier, in één doorlopende onderhandeling met de overheid**.
+* De Civic Helper is de externe administratieve prothese voor **één uniek mens, met één specifiek dossier, in één doorlopende onderhandeling met de overheid**.
 
 ### B. De Hermeneutische Cirkel: Het Gesprek ís het Werk
 De traditionele softwarefilosofie streeft naar een statisch orakel: *geef data in, trek aan de hendel, produceer het onfeilbare juridische vonnis*. Dat is een illusie.
-In de Civic Case Engine is de dynamiek fundamenteel hermeneutisch:
+In de Civic Helper is de dynamiek fundamenteel hermeneutisch:
 * **De relatie is het product, niet de brief.** De brief aan de teamleider of het bezwaarschrift is slechts een tijdelijk *artefact* van een doorlopend gesprek tussen de drager en zijn agentic ensemble.
 * **Gesprekscontinuïteit over jaren:** De engine houdt de herinnering, de data en de context vast over decennia. Wat een door ziekte of overbelasting vergeten raakt, blijft in de machinekamer exact bewaard (wat een consulent in 2020 zei, wat een arts in 2022 schreef, wat de verhuurder in 2026 signaleerde).
 * **Fouttolerantie en directe correctie:** Een hallucinatie of aannamefout is niet catastrofaal. De drager ziet het ("wacht even, deze mail hebben we al behandeld"), tikt het ensemble op de schouder, en binnen twee seconden synchroniseert de kernel. Het systeem hoeft niet alwetend te zijn; het moet **maximaal corrigeerbaar, transparant en elastisch** zijn.
@@ -60,7 +60,7 @@ Er is geen externe jurist of auditor nodig om de waarheid in het systeem te vali
 
 ### D. Bounded, Auditeerbaar en Falsifieerbaar (Geen 'Onfeilbaarheids'-Mythe)
 We claimen uitdrukkelijk **géén onfeilbaarheid**. Geen enkel juridisch of cybernetisch systeem is onfeilbaar.
-De werkelijke kracht van het Civic Exoskeleton is dat het:
+De werkelijke kracht van het CIVIC HELPER is dat het:
 1. **Formeel begrensd is (Bounded):** Door hermetische patch-isolatie kan een fout in het huurwoning-domein nooit de uitkeringsadministratie corrumperen.
 2. **Cryptografisch auditeerbaar is (Auditable):** Elk feit, elk bewijsstuk en elke status is direct herleidbaar naar een primair bestand met een onveranderlijke SHA-256 hash.
 3. **Falsifieerbaar en herzienbaar is (Falsifiable):** Invarianten zijn geen religieuze dogma's, maar tijdgeïndexeerde feitenankers ($C(t)$) die direct worden bijgesteld zodra nieuwe primaire bewijsstukken worden ingevoerd.
@@ -69,7 +69,7 @@ De werkelijke kracht van het Civic Exoskeleton is dat het:
 
 ## 3. De Omgeving: Een Lokaal Agentisch Ecosysteem
 
-Het Civic Exoskeleton draait niet in een anonieme cloud, maar lokaal op de fysieke machine van de burger (**HarmonieSchijf `E:`**). Het is ontworpen volgens strikte cybernetische scheidingen:
+Het CIVIC HELPER draait niet in een anonieme cloud, maar lokaal op de fysieke machine van de burger (**HarmonieSchijf `E:`**). Het is ontworpen volgens strikte cybernetische scheidingen:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -96,7 +96,7 @@ Het Civic Exoskeleton draait niet in een anonieme cloud, maar lokaal op de fysie
 
 ### Strikte Domein-Isolatie
 Het framework hanteert een hermetische scheiding tussen de **generieke motor** en de **persoonlijke casus**:
-* `Civic_Case_Engine/`: Bevat uitsluitend geanonimiseerde, domein-agnostische drivers (`nl_wmo`, `nl_schulden_oninbaar`, `uk_housing`), deterministische scripts en proceslogica. Deze motor kan open-source worden gedeeld zonder privacy-risico.
+* `Civic_Helper/`: Bevat uitsluitend geanonimiseerde, domein-agnostische drivers (`nl_wmo`, `nl_schulden_oninbaar`, `uk_housing`), deterministische scripts en proceslogica. Deze motor kan open-source worden gedeeld zonder privacy-risico.
 * `Zaakdossier/` / `Dossier/`: Bevat de feitelijke brondocumenten, medische verslagen, bank-CSV's en unieke correspondentie van de individuele burger.
 
 ---
@@ -135,7 +135,7 @@ Om daadwerkelijke pariteit te realiseren, beschikt het agentic ensemble over een
   3. **Niveau 3 — Windows Native OCR (`winocr`):** Analyse van venster-crops binnen ~120 ms voor webviews, Electron-apps of gesloten overheids-iframes zonder UIA-boom (`ocr_click`).
   4. **Niveau 4 — Klembord-injectie:** Teksten direct plak-klaar zetten (`set_clipboard`), zodat de burger alleen `Ctrl+V` hoeft in te drukken.
 
-### B. Android Toolkit: De Mobiele Exoskelet-Cortex
+### B. Android Toolkit: De Mobiele Civic Helper-Cortex
 * **Locatie & Apparatuur:** `androidtoolkit\` met ADB (`adb.exe`), USB + WiFi (`192.168.x.x:5555`), Android smartphone en VR-headset.
 * **2FA & OTP Onderschepping zonder Paniek:**
   * Bureaucratische portals eisen vaak binnen 60 seconden een SMS-code. Voor iemand met een chronische aandoening veroorzaakt het zoeken naar een trillende telefoon acute executieve paniek.
@@ -177,12 +177,12 @@ Om te voorkomen dat AI-modellen ontaarden in hallucinerende babbelboxen of escal
 
 ### A. The Velvet Glove (Het Fluwelen Middenpad)
 * **Beginsel:** Hoffelijk, menselijk en kwetsbaar aan de voorkant; deterministisch, feitelijk en onwrikbaar aan de achterkant.
-* **Geen Chicanerend Gedrag:** Het exoskelet stuurt nooit agressieve, triomfantelijke of juridisch intimiderende brieven. Ambtenaren worden niet persoonlijk aangevallen; het systeem vermijdt ambtelijke kramp (geen escalatie naar *Juridische Zaken* zolang dialectiek openstaat).
+* **Geen Chicanerend Gedrag:** Civic Helper stuurt nooit agressieve, triomfantelijke of juridisch intimiderende brieven. Ambtenaren worden niet persoonlijk aangevallen; het systeem vermijdt ambtelijke kramp (geen escalatie naar *Juridische Zaken* zolang dialectiek openstaat).
 * **Adiabatische Model-Updates:** De communicatie sluit aan op de *eigen observatieruimte van de ambtenaar*. Fouten worden gepresenteerd als gezamenlijke ontdekkingen, waardoor de ambtenaar zonder gezichtsverlies kan corrigeren.
 
 ### B. De Saaie Sonde (Tier 0 Scalar Reflex)
-* **Mechanisme:** In plaats van ellenlange verweerschriften te typen, zendt het exoskelet ultrakorte, vormvrije en uiterst beleefde **Artikel 15 AVG-sondes** en **Awb-termijnvragen**.
-* **Lastomkering:** Het exoskelet spit niet zelf in ambtelijke databases; het dwingt de instantie (op straffe van formele dwangsommen en toezicht door de Autoriteit Persoonsgegevens) om binnen 30 dagen haar eigen archieven open te leggen.
+* **Mechanisme:** In plaats van ellenlange verweerschriften te typen, zendt Civic Helper ultrakorte, vormvrije en uiterst beleefde **Artikel 15 AVG-sondes** en **Awb-termijnvragen**.
+* **Lastomkering:** Civic Helper spit niet zelf in ambtelijke databases; het dwingt de instantie (op straffe van formele dwangsommen en toezicht door de Autoriteit Persoonsgegevens) om binnen 30 dagen haar eigen archieven open te leggen.
 
 ### C. Veto Gates (Integriteitsbewakers)
 Geïmplementeerd in de code (`veto_gate.py`):
@@ -199,7 +199,7 @@ Geïmplementeerd in de code (`veto_gate.py`):
 
 ## 6. De Doelstelling: De Holobiont in Stand Houden & Het Repair Budget
 
-De doelstelling van het Civic Exoskeleton is **niet** het winnen van juridische procedures of het incasseren van dwangsommen. Die instrumenten zijn louter middelen. 
+De doelstelling van het CIVIC HELPER is **niet** het winnen van juridische procedures of het incasseren van dwangsommen. Die instrumenten zijn louter middelen. 
 
 Het doel is uitsluitend: **het waarborgen van de levensvatbaarheid van de mens als geneste holobiont.**
 
@@ -212,14 +212,14 @@ In onze theorie is de mens een levend stelsel dat bestaat uit gelaagde subsystem
 ### Het Repair Budget ($R$)
 Elk mens heeft een biologisch herstelbudget ($R$). Door chronische ziekte of NAH is $R_{\text{bio}}$ uiterst beperkt. Wanneer de bureaucratie administratieve wrijving ($D + D_t$) over de schutting gooit, vreet dit het biologische budget op, leidend tot uitputting, zorgval en fysieke instorting.
 
-**Het Exoskelet levert synthetisch repair budget ($R_{\text{AI}} \gg 0$):**
+**Civic Helper levert synthetisch repair budget ($R_{\text{AI}} \gg 0$):**
 De software absorbeert 100% van de administratieve zoektijd, termijnbewaking, bewijsordening, SMS-verificaties en brievenconstructie. Hierdoor blijft het kleine biologische wiel ($C_{\text{NAH}}$) beschermd en kan de burger herstellen in rust.
 
 ---
 
 ## 7. De Functionaliteit: De Vier Deterministische Motoren & Constraint Topologie
 
-Het Civic Exoskeleton operationaliseert deze theorie via vier deterministische motoren in pure Python Standard Library, gecombineerd met de wiskunde van **Constraint Topologie**:
+Het CIVIC HELPER operationaliseert deze theorie via vier deterministische motoren in pure Python Standard Library, gecombineerd met de wiskunde van **Constraint Topologie**:
 
 ### 1. De Statutory Clock (`statutory_clock.py`)
 * Bewaakt alle wettelijke beslistermijnen (Wmo 8 weken, AVG 30 dagen, Bezwaar 6 weken).
@@ -256,15 +256,15 @@ In plaats van te proberen subjectieve open normen ("passende zorg", "redelijkhei
 
 ## 8. Epistemische en Ontologische Pariteit in de Praktijk
 
-Wanneer het Civic Exoskeleton en haar sensorimotorische schil operationeel zijn, treedt een fundamentele transformatie op in de machtsverhouding:
+Wanneer het CIVIC HELPER en haar sensorimotorische schil operationeel zijn, treedt een fundamentele transformatie op in de machtsverhouding:
 
 ### A. Epistemische Pariteit (Gelijkheid in Weten)
-* **Vóór het Exoskelet:** De ambtenaar zegt: *"Wij hebben uw melding nooit ontvangen"* of *"U bent niet komen opdagen"*. De burger kan dit niet bewijzen, twijfelt aan zijn eigen geheugen (zeker bij NAH) en verliest.
-* **Met het Exoskelet:** De burger overlegt een tijdlijn waarin de e-mail van de woningcorporatie van 15 juli 2026 om 11:14 uur staat, inclusief SHA-256 hash en het interne mutatiekenmerk. De ambtelijke doofpot stuit op een wiskundige muur. De burger weet méér over zijn dossier dan de individuele consulent.
+* **Vóór Civic Helper:** De ambtenaar zegt: *"Wij hebben uw melding nooit ontvangen"* of *"U bent niet komen opdagen"*. De burger kan dit niet bewijzen, twijfelt aan zijn eigen geheugen (zeker bij NAH) en verliest.
+* **Met Civic Helper:** De burger overlegt een tijdlijn waarin de e-mail van de woningcorporatie van 15 juli 2026 om 11:14 uur staat, inclusief SHA-256 hash en het interne mutatiekenmerk. De ambtelijke doofpot stuit op een wiskundige muur. De burger weet méér over zijn dossier dan de individuele consulent.
 
 ### B. Ontologische Pariteit (Gelijkheid in Zijn)
-* **Vóór het Exoskelet:** De burger is een passief *object* van beleid: een "geval", een "cliënt", een "dossiernummer" dat onderworpen is aan de ambtelijke definities van het zaaksysteem.
-* **Met het Exoskelet:** De burger treedt op als een **agentische causale actor**. Hij opereert met een eigen formele coördinatenstructuur. Hij vult niet louter formuliertjes in; hij stelt bestuursorganen formele vragen onder wettelijke termijnen en dwingt naleving af.
+* **Vóór Civic Helper:** De burger is een passief *object* van beleid: een "geval", een "cliënt", een "dossiernummer" dat onderworpen is aan de ambtelijke definities van het zaaksysteem.
+* **Met Civic Helper:** De burger treedt op als een **agentische causale actor**. Hij opereert met een eigen formele coördinatenstructuur. Hij vult niet louter formuliertjes in; hij stelt bestuursorganen formele vragen onder wettelijke termijnen en dwingt naleving af.
 
 ---
 
@@ -275,10 +275,10 @@ Wat gebeurt er wanneer deze technologie niet beperkt blijft tot één burger op 
 ### 1. De Ineenstorting van de Uitputtingstactiek
 De traditionele bureaucratie overleeft op **asymmetrische wrijving**: beleidsmakers weten dat van de 100 onterechte afwijzingen, 95 burgers het bezwaar opgeven wegens stress, complexiteit of moedeloosheid. Slechts 5% procedeert door. Dit maakt onrechtmatig beleid rendabel.
 
-Wanneer het Exoskelet de cognitieve kosten van een bezwaarschrift, een ingebrekestelling of een AVG-sonde reduceert van 40 uur uitputtende arbeid naar **$O(1)$ moeite (één klik door een getraind lokaal model met sensorimotorische tools)**:
+Wanneer Civic Helper de cognitieve kosten van een bezwaarschrift, een ingebrekestelling of een AVG-sonde reduceert van 40 uur uitputtende arbeid naar **$O(1)$ moeite (één klik door een getraind lokaal model met sensorimotorische tools)**:
 * Stijgt het aantal gegronde bezwaren van 5% naar **95%**.
 * Wordt het genereren van bureaucratische vertraging plotseling **onbetaalbaar** voor de overheid: de dwangsommen ex art. 4:17 Awb lopen direct in de miljoenen euro's.
-* De 'uitputtingstactiek' verliest haar werking; de overheid kán burgers niet meer moe maken, want het exoskelet wordt nooit moe.
+* De 'uitputtingstactiek' verliest haar werking; de overheid kán burgers niet meer moe maken, want Civic Helper wordt nooit moe.
 
 ### 2. Het Einde van de Verkokering (Geforceerde Keten-Compatibiliteit)
 Bureaucratieën schuiven verantwoordelijkheden traditioneel af over de schutting: de Wmo wijst naar de Zorgverzekeringswet, de Zorgverzekeraar wijst naar de Participatiewet, en de Participatiewet wijst naar de corporatie.
@@ -288,7 +288,7 @@ Doordat de Civic Engine de **Constraint Interfaces ($f_{ij}$)** expliciet regist
 * Overheden worden gedwongen hun databases en mandaten daadwerkelijk te synchroniseren. De papieren fictie van "integraal maatwerk" moet noodgedwongen werkelijkheid worden.
 
 ### 3. Zelfreinigend Vermogen van de Rechtsstaat
-In plaats van een vijandige machine die de staat wil ontwrichten, fungeert het Civic Exoskeleton als een **noodzakelijk cybernetisch correctiemechanisme**:
+In plaats van een vijandige machine die de staat wil ontwrichten, fungeert het CIVIC HELPER als een **noodzakelijk cybernetisch correctiemechanisme**:
 * Het dwingt ambtelijke organisaties terug naar hun eigen wettelijke grondslag (de Awb, het evenredigheidsbeginsel van art. 3:4 Awb en de zorgplicht van art. 2.1.1 Wmo).
 * Het herstelt de balans tussen de Grondwet en de ambtelijke praktijk.
 * De wet transformeert van een theoretisch document in een stoffige bibliotheek naar **uitvoerbare, beschermende code in de handen van de meest kwetsbare burger**.
@@ -297,7 +297,7 @@ In plaats van een vijandige machine die de staat wil ontwrichten, fungeert het C
 
 ## 10. Conclusie
 
-Het Civic Exoskeleton bewijst dat kunstmatige intelligentie niet hoeft te worden gereduceerd tot commerciële advertentiemodellen of ambtelijke surveillance. 
+Het CIVIC HELPER bewijst dat kunstmatige intelligentie niet hoeft te worden gereduceerd tot commerciële advertentiemodellen of ambtelijke surveillance. 
 
 In de handen van de burger is een lokaal, agentisch LLM-ensemble — uitgerust met een volwaardige sensorimotorische schil van desktop-bridges, mobiele koppelingen en e-mail-automatisering, en verankerd in de wiskunde van Constraint Topologie en de ethiek van The Velvet Glove — het ultieme instrument voor **emancipatie, zelfbehoud en democratisch herstel**. 
 

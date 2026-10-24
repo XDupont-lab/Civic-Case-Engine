@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-CIVIC CASE ENGINE — CIVIC LEGAL KERNEL (FORENSIC TIMELINE & INTEGRITY WEAVER v2.0)
-Civic Exoskeleton Forensic Evidence Engine.
+CIVIC HELPER — CIVIC LEGAL KERNEL (FORENSIC TIMELINE & INTEGRITY WEAVER v2.0)
+CIVIC HELPER Forensic Evidence Engine.
 Pure Python Standard Library (Zero External Dependencies).
 
 Rol in de architectuur:

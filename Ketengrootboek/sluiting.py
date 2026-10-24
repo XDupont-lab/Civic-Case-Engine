@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-CIVIC CASE ENGINE — SLUITING & PROEFBALANS (Ketengrootboek v1.0)
+CIVIC HELPER — SLUITING & PROEFBALANS (Ketengrootboek v1.0)
 Pure Python Standard Library (Zero External Dependencies).
 
 Toetst of grootboekposten tussen instanties sluiten op basis van het journaal:

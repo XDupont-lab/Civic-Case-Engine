@@ -1,11 +1,38 @@
 @echo off
-title Civic Case Engine - Cybernetische Regressietests (T1-T6)
+setlocal enabledelayedexpansion
+title Civic Helper - Een poort, alle invarianten
 cd /d "%~dp0"
+
+set PY=python
+if exist "C:\Users\Gebruiker\AppData\Local\Programs\Python\Python312\python.exe" set PY=C:\Users\Gebruiker\AppData\Local\Programs\Python\Python312\python.exe
+
 echo =======================================================================
-echo     CIVIC CASE ENGINE - CYBERNETISCHE REGRESSIETESTS (T1 t/m T6)
+echo     CIVIC HELPER - POORT: ALLE INVARIANTEN IN EEN RUN
 echo =======================================================================
 echo.
-python _engine\test_cybernetic_invariants.py
-echo.
+
+set FAILED=0
+set RAN=0
+
+for %%F in (_engine\test_*.py Ketengrootboek\test_*.py) do (
+    set /a RAN+=1
+    echo [test] %%F
+    "%PY%" "%%F"
+    if errorlevel 1 (
+        echo   ^>^>^> FAALT: %%F
+        set FAILED=1
+    ) else (
+        echo   ok
+    )
+    echo.
+)
+
 echo =======================================================================
-pause
+if "%FAILED%"=="1" (
+    echo   POORT GESLOTEN - minstens een invariant is geschonden.
+    echo =======================================================================
+    endlocal & exit /b 1
+)
+echo   POORT OPEN - %RAN% testbestanden, alle groen.
+echo =======================================================================
+endlocal & exit /b 0
