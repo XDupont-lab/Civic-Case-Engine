@@ -8,6 +8,7 @@ echo =======================================================================
 echo              CIVIC HELPER — CIVIC HELPER HUB
 echo =======================================================================
 echo.
+echo [T] Multi-Agent Tafelvenster GUI (CivicHelper.cmd)
 echo [0] Inrichtings- & Onboarding Wizard (bootstrap.py)
 echo [1] Multi-Model Dialectic Audit (AUDIT_DRAFT.cmd)
 echo [2] Forensische Tijdlijn & Hashes (WEAVE_TIMELINE.cmd)
@@ -20,8 +21,9 @@ echo [8] G-TID Veld-Diagnose & Ambtelijke Agency-Hack (GTID_FIELD_AUDIT.cmd)
 echo [9] Mappen openen in Verkenner
 echo [10] Afsluiten
 echo.
-set /p opt="Kies een optie (0-10): "
+set /p opt="Kies een optie (T, 0-10): "
 
+if /i "%opt%"=="T" call CivicHelper.cmd
 if "%opt%"=="0" python bootstrap.py
 if "%opt%"=="1" call AUDIT_DRAFT.cmd
 if "%opt%"=="2" call WEAVE_TIMELINE.cmd

@@ -29,7 +29,8 @@ Whether a handover closes is tested by `Ketengrootboek/sluiting.py`. If the coun
 
 | Piece | Role |
 |---|---|
-| `hulp/` | The window. `venster.py` draws it. `lus.py` talks to the local agent. |
+| `gui/` | Civic Helper 0.3 multi-agent Tafel interface (PyQt6, indexer, archiver, dispatch). |
+| `hulp/` | The lightweight classic window. `venster.py` draws it. `lus.py` talks to the local agent. |
 | `Ketengrootboek/` | The chain ledger. `sluiting.py` tests the counter-entry. |
 | `_engine/` | Clocks, timeline, gates, and the glue check. No vector search. A repeated word is not a link. |
 | `APPLICATIE_SPECIFICATIE.md` | What the program is for, and the order in which it is built. |

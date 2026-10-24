@@ -132,7 +132,16 @@ Civic_Helper/
 ├── CivicHelper.cmd            # Opent het venster op Windows
 ├── ontkiem.py                 # Eerste start op een schone computer
 ├── Ketengrootboek/            # Tegenboeking en proefbalans
-├── hulp/                      # Het venster (venster.py, lus.py)
+├── gui/                       # Civic Helper 0.3 — Multi-Agent Tafelvenster (PyQt6)
+│   ├── tafel_gui.py           # Native desktopvenster met actieve Tafel, stoelen en klok
+│   ├── tafel_indexer.py       # Forensische beurten- en stok-indexering (zero-pip)
+│   ├── tafel_archiver.py      # Rolling archivering (max. 20 actieve beurten)
+│   ├── tafel_chat.py          # Multi-agent dispatch daemon (Grok, agy, DeepSeek)
+│   ├── tafel_search.py        # Razendsnelle non-RAG beraadslagingen-zoekmachine
+│   ├── tafel_relation_engine.py # Causale trace en gap-analyse (delta > 0)
+│   ├── model_bus.py           # Eén deur naar modelhuizen met lokale PII-kluis
+│   └── pii_mask.py            # Deterministische maskering van BSN/IBAN/adres
+├── hulp/                      # Klassiek navigatiescherm (venster.py, lus.py)
 │
 ├── _engine/                   # De Civic Legal Kernel & Agentic Harness
 │   ├── audit_engine.py        # Multi-model dialectic auditor (DeepSeek + Grok)
