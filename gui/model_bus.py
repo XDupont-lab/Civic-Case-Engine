@@ -117,7 +117,7 @@ def complete(house, system, user, model=None, temperature=0.2, max_tokens=2048):
 
 def _post(url, payload, bearer):
     data = json.dumps(payload).encode("utf-8")
-    headers = {"Content-Type": "application/json; charset=utf-8"}
+    headers = {"Content-Type": "application/json; charset=utf-8", "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Antigravity-ModelBus/1.0"}
     if bearer:
         headers["Authorization"] = f"Bearer {bearer}"
     req = urllib.request.Request(url, data=data, headers=headers, method="POST")
