@@ -57,6 +57,8 @@ SEATS = (
     ("DeepSeek", "deepseek", None),
     ("Argon", "gemini", "gemini-4-argon"),
     ("Gemini", "gemini", "gemini-3.8-flash"),
+    ("Qwen", "qwen", "qwen/qwen3.8-27b"),
+    ("Mistral", "mistral", "mistral-large-latest"),
 )
 ALLEN_SEATS = SEATS[:3]
 
@@ -272,6 +274,11 @@ def _complete_house(house: str, model: str | None, label: str, body: str, contex
     text = complete(house, system, user, model=model, temperature=0.2, max_tokens=1200)
     if house == "gemini" and str(text).startswith("[FOUT"):
         text = complete(house, system, user, model="gemini-pro-latest", temperature=0.2, max_tokens=1200)
+    elif str(text).startswith("[FOUT"):
+        if "geen MISTRAL_API_KEY" in str(text):
+            text = f"({label} kan nog niet antwoorden: MISTRAL_API_KEY ontbreekt in .env. Voeg je sleutel toe om {label} te laten meepraten.)"
+        elif "geen GROQ_API_KEY" in str(text):
+            text = f"({label} kan nog niet antwoorden: GROQ_API_KEY ontbreekt in .env. Voeg je sleutel toe om {label} te laten meepraten.)"
     return str(text).strip()
 
 

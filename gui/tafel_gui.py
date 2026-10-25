@@ -619,6 +619,8 @@ class TafelWindow(QMainWindow):
         lbl_extra = QLabel("ON-DEMAND MODELLEN")
         lbl_extra.setStyleSheet("color: #64748b; font-size: 10px; font-weight: bold; letter-spacing: 1px; margin-top: 10px;")
         nick_layout.addWidget(lbl_extra)
+        self.nick_layout = nick_layout
+        self._on_demand_cards = set(["argon", "gemini", "qwen"])
 
         # +Gemini Argon CLI SDK
         self.card_argon, self.badge_argon = self._create_summon_action_card(
@@ -632,14 +634,18 @@ class TafelWindow(QMainWindow):
         nick_layout.addWidget(self.card_argon)
 
         # +Gemini Flash
-        card_gemini = self._create_summon_card("+Gemini 3.8 Flash", "Zittende sessie", "#10b981", "+", "gemini 3.8")
+        card_gemini = self._create_summon_card("+Gemini 3.8 Flash", "Zittende sessie", "#10b981", "+", "gemini")
         nick_layout.addWidget(card_gemini)
 
+        # +Qwen 2.5 32B
+        card_qwen = self._create_summon_card("+Qwen 2.5 32B", "Groq LPU · online", "#a855f7", "+", "qwen")
+        nick_layout.addWidget(card_qwen)
+
         # Knop Model Aanschuiven
-        btn_add_model = QPushButton("+ Model Aanschuiven...")
-        btn_add_model.setObjectName("btn-add-model")
-        btn_add_model.clicked.connect(self.action_add_model)
-        nick_layout.addWidget(btn_add_model)
+        self.btn_add_model = QPushButton("+ Model Aanschuiven...")
+        self.btn_add_model.setObjectName("btn-add-model")
+        self.btn_add_model.clicked.connect(self.action_add_model)
+        nick_layout.addWidget(self.btn_add_model)
 
         lbl_stok = QLabel("STOK OP BESTANDEN")
         lbl_stok.setStyleSheet("color: #64748b; font-size: 10px; font-weight: bold; letter-spacing: 1px; margin-top: 10px;")
@@ -1394,9 +1400,15 @@ class TafelWindow(QMainWindow):
         elif "gemini" in low:
             nick_color = "#10b981"
             border_color = "rgba(16, 185, 129, 0.35)"
-        else:
+        elif "qwen" in low:
             nick_color = "#a855f7"
             border_color = "rgba(168, 85, 247, 0.35)"
+        elif "mistral" in low:
+            nick_color = "#f97316"
+            border_color = "rgba(249, 115, 22, 0.35)"
+        else:
+            nick_color = "#94a3b8"
+            border_color = "rgba(148, 163, 184, 0.35)"
 
         card.setStyleSheet(f"""
             QFrame {{
@@ -1636,10 +1648,16 @@ class TafelWindow(QMainWindow):
 
     def address_seat(self, seat_key: str):
         """Zet de ontvanger klaar. De zittende sessie antwoordt zelf."""
+        found = False
         for i in range(self.combo_recipient.count()):
             if seat_key.lower() in self.combo_recipient.itemText(i).lower():
                 self.combo_recipient.setCurrentIndex(i)
+                found = True
                 break
+        if not found:
+            label = f"@{seat_key.capitalize()}"
+            self.combo_recipient.addItem(label)
+            self.combo_recipient.setCurrentIndex(self.combo_recipient.count() - 1)
         self.input_edit.setFocus()
 
     def action_archive(self):
@@ -1666,16 +1684,115 @@ class TafelWindow(QMainWindow):
 
     def action_add_model(self):
         items = [
+            "Qwen 2.5 32B (Groq LPU — direct beschikbaar)",
+            "Mistral Large (Mistral AI API)",
             "Gemini Argon CLI SDK (gemini-4-argon)",
             "Gemini 3.8 Flash (Google API)",
-            "Mistral 7B Instruct (Hugging Face)",
-            "Qwen 2.5 32B (Hugging Face)",
         ]
         item, ok = QInputDialog.getItem(self, "Model Aanschuiven", "Kies een model om aan tafel te schuiven:", items, 0, False)
-        if ok and item:
-            label = "@Gemini Argon CLI SDK" if "argon" in item.lower() else f"@{item.split()[0]}"
+        if not ok or not item:
+            return
+
+        low = item.lower()
+        if "argon" in low:
+            seat_name = "Argon"
+            label = "@Gemini Argon CLI SDK"
+            model_key = "argon"
+            color = "#2dd4bf"
+            subtitle = "gemini-4-argon · 1M context"
+        elif "qwen" in low:
+            seat_name = "Qwen"
+            label = "@Qwen"
+            model_key = "qwen"
+            color = "#a855f7"
+            subtitle = "Groq LPU · online"
+        elif "mistral" in low:
+            seat_name = "Mistral"
+            label = "@Mistral"
+            model_key = "mistral"
+            color = "#f97316"
+            subtitle = "Mistral AI API"
+        elif "flash" in low or "gemini" in low:
+            seat_name = "Gemini"
+            label = "@Gemini 3.8 Flash"
+            model_key = "gemini"
+            color = "#10b981"
+            subtitle = "Zittende sessie"
+        else:
+            seat_name = item.split()[0]
+            label = f"@{seat_name}"
+            model_key = seat_name.lower()
+            color = "#94a3b8"
+            subtitle = "On-demand model"
+
+        # 1. Ontvanger in combobox selecteren of toevoegen
+        found = False
+        for i in range(self.combo_recipient.count()):
+            if label.lower() == self.combo_recipient.itemText(i).lower():
+                self.combo_recipient.setCurrentIndex(i)
+                found = True
+                break
+        if not found:
             self.combo_recipient.addItem(label)
-            QMessageBox.information(self, "Model Toegevoegd", f"{item} is aangeschoven en staat nu in de ontvanger-keuzelijst!")
+            self.combo_recipient.setCurrentIndex(self.combo_recipient.count() - 1)
+
+        # 2. Visuele kaart toevoegen aan rechterkolom indien nog niet aanwezig
+        if hasattr(self, "_on_demand_cards") and hasattr(self, "nick_layout"):
+            if model_key not in self._on_demand_cards:
+                card = self._create_summon_card(f"+{seat_name}", subtitle, color, "+", model_key)
+                idx = self.nick_layout.indexOf(self.btn_add_model)
+                if idx >= 0:
+                    self.nick_layout.insertWidget(idx, card)
+                else:
+                    self.nick_layout.addWidget(card)
+                self._on_demand_cards.add(model_key)
+
+        # 3. Sleutel-controle in de omgeving
+        try:
+            from model_bus import _load_env
+            _load_env()
+        except Exception:
+            pass
+
+        missing_key = None
+        if model_key == "mistral":
+            val = os.environ.get("MISTRAL_API_KEY", "")
+            if not val or val == "vul_hier_in":
+                missing_key = "MISTRAL_API_KEY"
+        elif model_key == "qwen":
+            val = os.environ.get("GROQ_API_KEY", "")
+            if not val or val == "vul_hier_in":
+                missing_key = "GROQ_API_KEY"
+
+        if missing_key:
+            reply_key, ok_key = QInputDialog.getText(
+                self,
+                f"Sleutel Nodig: {missing_key}",
+                f"{seat_name} is aangeschoven, maar {missing_key} ontbreekt nog in .env.\n\n"
+                f"Plak hier je {missing_key} om hem direct op te slaan (of klik Annuleren om later toe te voegen):"
+            )
+            if ok_key and reply_key.strip():
+                key_clean = reply_key.strip()
+                os.environ[missing_key] = key_clean
+                env_file = WORKSPACE / ".env"
+                if env_file.exists():
+                    txt = env_file.read_text(encoding="utf-8")
+                    if f"{missing_key}=" in txt:
+                        txt = re.sub(rf"^{missing_key}=.*$", f"{missing_key}={key_clean}", txt, flags=re.MULTILINE)
+                    else:
+                        txt += f"\n{missing_key}={key_clean}\n"
+                    env_file.write_text(txt, encoding="utf-8")
+                QMessageBox.information(self, "Sleutel Opgeslagen", f"{missing_key} is opgeslagen in .env!\n\n{seat_name} is nu gereed.")
+            else:
+                QMessageBox.warning(self, "Let Op", f"{seat_name} is aangeschoven en geselecteerd als ontvanger, maar heeft {missing_key} nodig in .env om te kunnen antwoorden.")
+        else:
+            QMessageBox.information(
+                self,
+                "Model Aangeschoven",
+                f"{seat_name} is aangeschoven aan tafel en geselecteerd als ontvanger ({label}).\n\n"
+                f"Typ je vraag in het invoerveld onderaan en druk op Enter om {seat_name} aan te spreken."
+            )
+        self.input_edit.setFocus()
 
     def toggle_sound(self):
         self.sound_enabled = not self.sound_enabled
