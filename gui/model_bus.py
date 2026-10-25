@@ -35,6 +35,12 @@ _HOUSES = {
         "model": "qwen/qwen3.8-27b",
         "style": "openai",
     },
+    "nvidia": {
+        "env": "NVIDIA_API_KEY",
+        "url": "https://integrate.api.nvidia.com/v1/chat/completions",
+        "model": "mistralai/mistral-large-2-instruct",
+        "style": "openai",
+    },
     "grok": {
         "env": "OPENROUTER_API_KEY",
         "url": "https://openrouter.ai/api/v1/chat/completions",
@@ -79,6 +85,17 @@ def complete(house, system, user, model=None, temperature=0.2, max_tokens=2048):
     spec = _HOUSES[name]
     _load_env()
     key = os.environ.get(spec["env"], "")
+    url = spec["url"]
+    chosen = model or spec["model"]
+
+    if name == "mistral" and (not key or key == "vul_hier_in"):
+        nv_key = os.environ.get("NVIDIA_API_KEY", "")
+        if nv_key and nv_key != "vul_hier_in":
+            key = nv_key
+            url = "https://integrate.api.nvidia.com/v1/chat/completions"
+            if not model or model == "mistral-large-latest":
+                chosen = "mistralai/mistral-large-2-instruct"
+
     if not key or key == "vul_hier_in":
         return f"[FOUT]: geen {spec['env']}"
 
@@ -86,7 +103,6 @@ def complete(house, system, user, model=None, temperature=0.2, max_tokens=2048):
     system_m, vault = mask(system or "")
     user_m, vault = mask(user or "", vault)
     vault_holder["v"] = vault
-    chosen = model or spec["model"]
 
     try:
         if spec["style"] == "gemini":
@@ -108,7 +124,7 @@ def complete(house, system, user, model=None, temperature=0.2, max_tokens=2048):
                 "temperature": temperature,
                 "max_tokens": max_tokens,
             }
-            raw = _post(spec["url"], payload, key)
+            raw = _post(url, payload, key)
             text = raw["choices"][0]["message"]["content"]
     except Exception as exc:
         return f"[FOUT {name}]: {exc}"

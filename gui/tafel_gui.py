@@ -1711,7 +1711,7 @@ class TafelWindow(QMainWindow):
             label = "@Mistral"
             model_key = "mistral"
             color = "#f97316"
-            subtitle = "Mistral AI API"
+            subtitle = "Mistral AI / NVIDIA NIM"
         elif "flash" in low or "gemini" in low:
             seat_name = "Gemini"
             label = "@Gemini 3.8 Flash"
@@ -1757,8 +1757,9 @@ class TafelWindow(QMainWindow):
         missing_key = None
         if model_key == "mistral":
             val = os.environ.get("MISTRAL_API_KEY", "")
-            if not val or val == "vul_hier_in":
-                missing_key = "MISTRAL_API_KEY"
+            nv_val = os.environ.get("NVIDIA_API_KEY", "")
+            if (not val or val == "vul_hier_in") and (not nv_val or nv_val == "vul_hier_in"):
+                missing_key = "MISTRAL_API_KEY of NVIDIA_API_KEY"
         elif model_key == "qwen":
             val = os.environ.get("GROQ_API_KEY", "")
             if not val or val == "vul_hier_in":

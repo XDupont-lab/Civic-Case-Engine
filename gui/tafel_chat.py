@@ -59,6 +59,7 @@ SEATS = (
     ("Gemini", "gemini", "gemini-3.8-flash"),
     ("Qwen", "qwen", "qwen/qwen3.8-27b"),
     ("Mistral", "mistral", "mistral-large-latest"),
+    ("NVIDIA", "nvidia", "mistralai/mistral-large-2-instruct"),
 )
 ALLEN_SEATS = SEATS[:3]
 
