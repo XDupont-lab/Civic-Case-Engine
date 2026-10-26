@@ -605,7 +605,7 @@ class TafelWindow(QMainWindow):
         self.mirror_view = QTextEdit()
         self.list_lijnen = QListWidget()
 
-        # TAB 3: ANALYSE
+        # TAB 3: ANALYSE (Uitsluitend burger-basisadministratie in gewone taal, zonder HVM/beurs/fysica-lab)
         analyse_page = QWidget()
         analyse_layout = QVBoxLayout(analyse_page)
         analyse_layout.setContentsMargins(6, 6, 6, 6)
@@ -619,26 +619,15 @@ class TafelWindow(QMainWindow):
         self._analyse_active_titel = ""
         self._analyse_active_toelichting = ""
 
-        cat_row = QHBoxLayout()
-        cat_row.setContentsMargins(0, 0, 0, 0)
-        cat_row.setSpacing(4)
-        self.btn_cat_zaak = QPushButton("Mijn Zaak & Loket")
-        self.btn_cat_zaak.setCheckable(True)
-        self.btn_cat_zaak.setChecked(True)
-        self.btn_cat_zaak.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.btn_cat_zaak.clicked.connect(lambda: self._wissel_analyse_categorie("zaak"))
-        self.btn_cat_lab = QPushButton("Onderzoek & Markt Lab")
-        self.btn_cat_lab.setCheckable(True)
-        self.btn_cat_lab.setChecked(False)
-        self.btn_cat_lab.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.btn_cat_lab.clicked.connect(lambda: self._wissel_analyse_categorie("lab"))
-        cat_row.addWidget(self.btn_cat_zaak)
-        cat_row.addWidget(self.btn_cat_lab)
-        analyse_layout.addLayout(cat_row)
+        lbl_analyse_kop = QLabel("CONTROLES OP JOUW BASISADMINISTRATIE")
+        lbl_analyse_kop.setStyleSheet(
+            "color: #D4AF37; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: bold; letter-spacing: 1px;"
+        )
+        analyse_layout.addWidget(lbl_analyse_kop)
 
         self.analyse_list = QListWidget()
         self.analyse_list.setObjectName("case-list")
-        self.analyse_list.setMaximumHeight(200)
+        self.analyse_list.setMaximumHeight(225)
         self.analyse_list.setCursor(Qt.CursorShape.PointingHandCursor)
         self.analyse_list.itemDoubleClicked.connect(lambda _item: self._start_analyse())
 
@@ -1235,9 +1224,7 @@ class TafelWindow(QMainWindow):
         self.mirror_view.setTextCursor(cursor)
 
     def _wissel_analyse_categorie(self, cat: str):
-        self.analyse_categorie = cat
-        self.btn_cat_zaak.setChecked(cat == "zaak")
-        self.btn_cat_lab.setChecked(cat == "lab")
+        self.analyse_categorie = "zaak"
         self._vul_analyses()
 
     def _wissel_analyse_weergave(self):
@@ -1248,15 +1235,12 @@ class TafelWindow(QMainWindow):
             self.analyse_toggle_tech.setText("Toon gewone taal")
             self.analyse_out.setPlainText(self._analyse_raw_text)
         else:
-            self.analyse_toggle_tech.setText("Toon technisch rapport")
+            self.analyse_toggle_tech.setText("Volledig rapport")
             self.analyse_out.setPlainText(self._analyse_human_text)
 
     def _vul_analyses(self):
         self.analyse_list.clear()
-        cat = getattr(self, "analyse_categorie", "zaak")
-        for key, item_cat, titel, toelichting, _argv in self._analyse_keuzes():
-            if item_cat != cat:
-                continue
+        for key, _item_cat, titel, toelichting, _argv in self._analyse_keuzes():
             item = QListWidgetItem(f"{titel}\n   ↳ {toelichting}")
             item.setData(Qt.ItemDataRole.UserRole, key)
             item.setToolTip(toelichting)
@@ -1266,7 +1250,6 @@ class TafelWindow(QMainWindow):
 
     def _analyse_keuzes(self) -> list[tuple[str, str, str, str, list[str] | None]]:
         engine = CASE_ROOT / "_engine"
-        analyses_root = WORKSPACE / "Analyses"
         py = PYTHON_EXE
         drafts = []
         for out_dir in (AGY_WERK / "outbox", CASE_ROOT / "Outgoing_Drafts"):
@@ -1276,188 +1259,72 @@ class TafelWindow(QMainWindow):
         nieuwste = drafts[0] if drafts else None
         chunk_arg = [py, str(engine / "chunk_audit.py"), str(nieuwste)] if nieuwste else None
 
+        bank_script = AGY_WERK / "scratch" / "veld_empirisch.py"
+        if not bank_script.exists():
+            bank_script = engine / "bank_audit.py"
+
         base: list[tuple[str, str, str, str, list[str] | None]] = [
-            # --- STAND 1: MIJN ZAAK & LOKET (Mensentaal voor elke burger) ---
-            (
-                "termijnen",
-                "zaak",
-                "1. Welke antwoorden van instanties zijn te laat?",
-                "Controleert wettelijke beslistermijnen en mogelijke dwangsommen",
-                [py, str(engine / "statutory_clock.py"), "status"],
-            ),
             (
                 "keten_stevin",
                 "zaak",
-                "1b. Waar is een dossier op papier gesloten maar materieel nog open?",
-                "Toetst het 3-boekenstelsel (Memoriaal, Journaal, Grootboek) op schijnsluiting en tegenstrijdige registraties",
+                "1. Ketensluiting & Schijnsluiting (Drie Boeken van Stevin)",
+                "Toetst per overdracht of het rekenkundig, procedureel én materieel sluit, en waar loketten elkaar tegenspreken",
                 [py, str(CASE_ROOT / "Ketengrootboek" / "sluiting.py"), "--integriteit"],
             ),
             (
-                "welstand",
+                "ketenbreuk_chrono",
                 "zaak",
-                "2. Hoeveel druk en ruimte ligt er bij de loketten?",
-                "Meet de administratieve druk op wonen/zorg, inkomen en openstaande brieven (niet je lichamelijke ontsteking)",
-                [py, str(SHARED_TOOLS / "welstand_model.py")],
+                "2. Chronologische Ketenbreuken & Voorganger-Reconstructie",
+                "Spoort tijdsgaten en afkapgrenzen op (zoals vóór 2009 of 2014–2017) en wijst aan bij welke voorganger stukken liggen",
+                [py, str(engine / "chronologische_ketenbreuk_scanner.py")],
             ),
             (
                 "cytokine_vt",
                 "zaak",
-                "2b. Waarom voel ik cytokinestormen terwijl de loketten op 'rust' staan?",
-                "Legt de trage loketklok (0,83) naast jouw 13-jarige bloedwaarden, IL-6/plasmacellen en lichamelijke uitputting",
+                "3. De Twee Klokken (Loket-rust vs. Lichamelijke Uitputting)",
+                "Legt de trage brievenbus-stand bij de loketten (83%) naast je 13-jarige bloedreeks en fysieke draagkracht (6% bij storm)",
                 [py, str(SHARED_TOOLS / "drager_cytokine_klok_vt.py")],
             ),
             (
                 "veld_emp",
                 "zaak",
-                "3. Kloppen mijn vaste lasten, bank en toeslagen?",
-                "Controleert 118 maanden aan huur, energie, water, zorg en toeslagen op hiaten",
-                [py, str(AGY_WERK / "scratch" / "veld_empirisch.py")],
-            ),
-            (
-                "wwb_spec",
-                "zaak",
-                "4. Klopt mijn uitkeringsspecificatie (2018–2025)?",
-                "Controleert inhoudingen, vakantiegeld en verrekeningen van de gemeente",
-                [py, str(AGY_WERK / "scratch" / "parse_wwb_spec.py")],
+                "4. Bankoverzicht, Huurbewijs & Bestaansminimum (CSV / CAMT)",
+                "Controleert vaste lasten, stipte huurbetalingen, toeslagen en of inhoudingen onder de beslagvrije voet zakken",
+                [py, str(bank_script)],
             ),
             (
                 "tikhonov",
                 "zaak",
-                "5. Wat doet financiële stress met mijn gezondheid?",
-                "Laat zien hoe schokken in inkomen of incasso doorwerken in doktersbezoek",
+                "5. Doorwerking van Financiële Schokken op Gezondheid",
+                "Laat zien hoe maanden met terugvorderingen of incasso's een maand later doorwerken in extra arts- en ziekenhuisbezoek",
                 [py, str(AGY_WERK / "scratch" / "tikhonov_lekstroom_toets.py")],
             ),
             (
-                "monodromy",
+                "termijnen",
                 "zaak",
-                "6. Waar lijkt op papier alles in orde, maar loopt het toch vast?",
-                "Spoort maanden op waarin vaste lasten doorliepen maar de druk naar zorg verschoof",
-                [py, str(SHARED_Tools_or := (SHARED_TOOLS / "canon_transaction_monodromy.py"))],
-            ),
-            (
-                "clash",
-                "zaak",
-                "7. Controleer een brief van een instantie op schijnbeloftes",
-                "Haalt vertragende taal en kastje-naar-de-muur patronen uit een brief",
-                [py, str(engine / "systeem_clash_sentiment.py")],
+                "6. Wettelijke Beslistermijnen & Openstaande Antwoorden",
+                "Controleert welke brieven of inzageverzoeken bij instanties openstaan en hoeveel dagen ze nog hebben",
+                [py, str(engine / "statutory_clock.py"), "status"],
             ),
             (
                 "chunk",
                 "zaak",
-                "8. Controleer mijn eigen conceptbrief vóór verzending",
-                f"Toetst of de brief kort, feitelijk en veilig is ({nieuwste.name if nieuwste else 'geen concept'})",
+                "7. Brief-Controle vóór Verzending (Kort, Veilig & Zonder Medisch Lek)",
+                f"Toetst of je eigen conceptbrief kort, feitelijk en vrij van medische lekken is ({nieuwste.name if nieuwste else 'geen concept'})",
                 chunk_arg,
             ),
             (
-                "veld_verhaal",
+                "clash",
                 "zaak",
-                "9. Klopt mijn tijdlijn met de officiële bewijsstukken?",
-                "Legt de 55 belangrijkste gebeurtenissen naast de bank- en medische stukken",
-                [py, str(AGY_WERK / "scratch" / "veld_verhaal.py")],
-            ),
-            (
-                "tijdlijn",
-                "zaak",
-                "10. Werk het chronologisch dossieroverzicht bij",
-                "Zet alle binnengekomen brieven en besluiten op datum in 00_Master_Chronologie.md",
-                [
-                    py,
-                    str(engine / "timeline_weaver.py"),
-                    str(CASE_ROOT / "Dossier"),
-                    str(CASE_ROOT / "Dossier" / "00_Master_Chronologie.md"),
-                ],
-            ),
-            # --- STAND 2: ONDERZOEK & MARKT LAB (Wetenschap, Beurs & Canon-Proeven) ---
-            (
-                "lab_signals",
-                "lab",
-                "[Beurs Lab 1] Markt-Samenhang (S&P 500, Bitcoin & Goud)",
-                "Vergelijkt oude HVM-score met de nieuwe 3x3 Canon-samenhang op 5 jaar marktdata",
-                [py, str(SHARED_TOOLS / "nvidia_hvm_signal_lab.py")],
-            ),
-            (
-                "lab_buffers",
-                "lab",
-                "[Beurs Lab 2] Markt-Buffers & Verborgen Kwetsbaarheid",
-                "Meet stabilisatiekrachten en wanneer de dempingsbuffer van de beurs uitgeput raakt",
-                [py, str(SHARED_TOOLS / "nvidia_tikhonov_pontryagin_lab.py")],
-            ),
-            (
-                "lab_portfolio",
-                "lab",
-                "[Beurs Lab 3] Optimale Portefeuille-Verdeling (Aandelen / BTC / Goud / Kas)",
-                "Berekent veilige gewichten op basis van resterende markt-buffers (Sharpe 0.73 -> 0.81)",
-                [py, str(SHARED_TOOLS / "canon_portfolio_kkt.py")],
-            ),
-            (
-                "lab_distill",
-                "lab",
-                "[AI Lab 4] Klein AI-Model Traint op Systeemtheorie (120B -> 4B)",
-                "Grote NVIDIA-leraar traint het snelle 4B-model van 20% naar 100% begrip",
-                [py, str(SHARED_TOOLS / "nvidia_canon_distiller.py")],
-            ),
-            (
-                "lab_bio",
-                "lab",
-                "[Biologie & Stem Lab 5] Celsplitsing, 140 Natuur-Ratio's & Stem-Analyse",
-                "Toetst waarom volle cellen splitsen, scant 140 genoom-ratio's en meet stemspanning",
-                [py, str(SHARED_TOOLS / "canon_bio_genoom_cbs.py")],
-            ),
-            (
-                "lab_physics",
-                "lab",
-                "[Fysica & Audit Lab 6] Atoomrooster-Grens (IJzer) & Rapport-Controleur",
-                "Toetst trillingsgrens in bcc-ijzer en controleert alle rapporten op harde bewijsvoering",
-                [py, str(SHARED_TOOLS / "canon_physics_agent_trace.py")],
-            ),
-            (
-                "trf_sym3",
-                "lab",
-                "[Systeem Lab 7] Langetermijn Baansimulatie (2009–2026)",
-                "Simuleert het 3-assen krachtenspel over 8 kanalen van 2009 tot 2026",
-                [py, str(AGY_WERK / "scratch" / "trf_sym3_klok_kompas_engine.py")],
-            ),
-            (
-                "veldkaart",
-                "lab",
-                "[Systeem Lab 8] Topologische Veldkaart op Brief",
-                "Projecteert de nieuwste brief op de G-TID veldkaart",
-                [py, str(engine / "gtid_engine.py")],
-            ),
-            (
-                "invarianten",
-                "lab",
-                "[Systeem Lab 9] Veiligheidstoets Systeemregels (T1–T6)",
-                "Controleert of alle beschermingsregels van het programma sluitend zijn",
-                [py, str(engine / "test_cybernetic_invariants.py")],
+                "8. Controleer ontvangen loketbrief op schijnbeloftes en afwimpeling",
+                "Haalt vertragende standaardzinnen en kastje-naar-de-muur patronen uit een brief van een instantie",
+                [py, str(engine / "systeem_clash_sentiment.py")],
             ),
         ]
-
-        # Auto-discovery van eventuele nieuwe scripts in Analyses/Vast of Analyses/Experimenteel
-        known_stems = {
-            "01_welstand_model", "02_veld_empirisch", "03_wwb_specificaties_audit",
-            "04_bank_audit", "05_wettelijke_klok", "06_keten_glue_check",
-            "01_tikhonov_lekstroom_DI_naar_G", "02_trf_sym3_grondtonen_2009_2026",
-            "03_veld_verhaal_55_ankers", "04_systeem_clash_sentiment",
-            "05_gtid_veldkaart", "06_loket_patroon_scanner",
-            "07_hvm_canon_signal_lab", "08_tikhonov_pontryagin_buffer_lab",
-            "09_canon_model_distiller", "10_portfolio_kkt_pontryagin",
-            "11_transactie_monodromy_scanner", "12_bio_genoom_cbs_voice",
-            "13_physics_hal_nemoclaw_audit", "14_drager_cytokine_klok_vt",
-        }
-        for sub, item_cat, prefix in (("Vast", "zaak", "[Extra Controle]"), ("Experimenteel", "lab", "[Extra Lab]")):
-            folder = analyses_root / sub
-            if not folder.exists():
-                continue
-            for script in sorted(folder.glob("*.py")):
-                if script.stem in known_stems or script.name.startswith("_"):
-                    continue
-                pretty = script.stem.replace("_", " ").strip()
-                base.append((f"auto_{script.stem}", item_cat, f"{prefix} {pretty}", f"Script: Analyses/{sub}/{script.name}", [py, str(script)]))
         return base
 
     def _maak_mensentaal_samenvatting(self, key: str, titel: str, toelichting: str, raw: str) -> str:
-        """Vertaalt technische/wiskundige uitvoer naar een heldere samenvatting in gewone mensentaal."""
+        """Vertaalt uitvoer naar een heldere samenvatting in gewone mensentaal zonder intern jargon."""
         header = (
             f"=== UITKOMST IN GEWONE TAAL ===\n"
             f"Onderwerp: {titel}\n"
@@ -1465,12 +1332,6 @@ class TafelWindow(QMainWindow):
             f"{'-' * 56}\n\n"
         )
         uitleg_per_key = {
-            "termijnen": (
-                "Wat betekent dit voor jou?\n"
-                "• Hieronder zie je welke brieven of aanvragen nog openstaan bij een instantie en hoeveel dagen ze nog hebben.\n"
-                "• Als een wettelijke beslistermijn is verstreken, staat er direct bij of je een ingebrekestelling (dwangsom) kunt sturen.\n\n"
-                "Belangrijkste regels uit de controle:\n"
-            ),
             "keten_stevin": (
                 "Wat betekent dit voor jou?\n"
                 "• Deze controle kijkt met de drie boeken van Simon Stevin (Memoriaal, Journaal en Grootboek) naar drie losse vragen:\n"
@@ -1480,51 +1341,39 @@ class TafelWindow(QMainWindow):
                 "• Ook controleert het systeem dat geen enkel later loket-stempel (Laag 3) jouw oorspronkelijke bewijsstuk (Laag 1) heeft overschreven.\n\n"
                 "Overzicht uit de drie boeken:\n"
             ),
-            "welstand": (
+            "ketenbreuk_chrono": (
                 "Wat betekent dit voor jou?\n"
-                "• Deze meting kijkt alleen naar de BUITENKANT (de administratie bij de loketten): wonen/zorg (~81%), inkomen (~84%) en lopende brieven (~83%).\n"
-                "• Let op: omdat de brieven nu bij de loketten liggen (19 open posten), meldt dit administratieve model 'ontspanning'. Dat zegt niets over je lichamelijke ontsteking of cytokinestormen (klik daarvoor op punt 2b hieronder).\n\n"
-                "Kernpunten uit de loketmeting:\n"
+                "• Als je een dossier opvraagt bij je huidige huisarts of gemeente, stopt dat vaak bij het jaar waarin je verhuisde of waarin de praktijk van systeem wisselde (bijvoorbeeld 2009).\n"
+                "• Deze controle spoort zulke chronologische ketenbreuken op en laat zien via welke sporen (oude woonadressen, verwijsbrieven, WGBO 20-jaars bewaarplicht bij het ziekenhuis) je het ontbrekende deel bij de voorganger opvraagt.\n\n"
+                "Gevonden ketenbreuken en reconstructie-sporen:\n"
             ),
             "cytokine_vt": (
                 "Wat betekent dit voor jou?\n"
-                "• Dit is de TWEEDE KLOK (jouw lichaam en immuunsysteem naast de administratie).\n"
-                "• Terwijl het loketmodel op 0,83 ('rust') staat omdat de brieven de deur uit zijn, laat je 13-jarige bloedreeks zien dat je witte bloedcellen (leukocyten) in 13 jaar tijd NUL keer normaal zijn geweest (altijd verhoogd tussen 10,3 en 16,7).\n"
-                "• Zelfs in een 'rustige' maand staat je lichamelijke ontstekingsvloer al op 41% druk (waardoor je maximaal ~59% energie overhoudt).\n"
-                "• Tijdens een cytokinestorm / IL-6 opvlamming (met plasmacellen en bijna 1 miljard reactieve lymfocyten per liter in je bloed) schiet de storm-index v(t) naar 0,87 – 1,00 en zakt je beschikbare lichamelijke en mentale energie naar 0% tot 13% (gemiddeld 6%).\n"
-                "• Het verschil tussen wat het loket denkt (83%) en wat je lichaam tijdens een storm overheeft (6%) is een kloof van 77 procentpunt.\n\n"
-                "Overzicht van de twee klokken en je 13-jarige bloedreeks:\n"
+                "• Dit legt de TWEE KLOKKEN naast elkaar: de administratie buiten versus je lichaam binnen.\n"
+                "• Terwijl het loketmodel op 83% ('rust') staat omdat de brieven de deur uit zijn, laat je 13-jarige bloedreeks zien dat je witte bloedcellen (leukocyten) in 13 jaar tijd NUL keer normaal zijn geweest (altijd verhoogd tussen 10,3 en 16,7).\n"
+                "• Zelfs in een 'rustige' maand staat je lichamelijke ontstekingsvloer al op 41% druk (max ~59% energie).\n"
+                "• Tijdens een cytokinestorm / IL-6 opvlamming (met plasmacellen en bijna 1 miljard reactieve lymfocyten per liter) schiet de druk naar 94% en zakt je beschikbare energie naar gemiddeld 6% (een kloof van 77 procentpunt met hoe het loket naar je kijkt).\n\n"
+                "Overzicht van de twee klokken:\n"
             ),
             "veld_emp": (
                 "Wat betekent dit voor jou?\n"
-                "• Over bijna 10 jaar (118 maanden) zijn 8 vaste geldstromen gecontroleerd (huur, energie, water, toeslagen, gemeente, CAK en incasso).\n"
-                "• De grote vaste lasten (zoals de huur) zijn vrijwel altijd netjes op tijd betaald.\n"
-                "• Toch vielen er in ongeveer 1 op de 5 maanden (24 van de 118 maanden) gaten in één van de nevenstromen (zoals water, toeslagen of jaarafrekeningen).\n\n"
-                "Kernpunten uit het overzicht:\n"
-            ),
-            "wwb_spec": (
-                "Wat betekent dit voor jou?\n"
-                "• Dit overzicht controleert de maandelijkse uitkeringsspecificaties van 2018 t/m 2025.\n"
-                "• Het laat precies zien wanneer de norm is aangepast en of er bedragen zijn ingehouden of verrekend.\n\n"
-                "Gevonden regels:\n"
+                "• Over bijna 10 jaar (118 maanden) zijn de vaste geldstromen gecontroleerd (huur, energie, water, toeslagen, gemeente, CAK en incasso).\n"
+                "• De grote vaste lasten (zoals de huur) zijn stipt op tijd betaald (bewijs van goed huurderschap ex art. 7:231 BW).\n"
+                "• Tegelijk laat het overzicht zien waar inhoudingen of verrekeningen het besteedbaar inkomen onder druk zetten.\n\n"
+                "Kernpunten uit het bankoverzicht:\n"
             ),
             "tikhonov": (
                 "Wat betekent dit voor jou?\n"
                 "• We hebben gekeken of maanden met financiële klappen (zoals terugvorderingen, incasso's of uitval van toeslagen) gevolgen hebben voor je gezondheid.\n"
                 "• In de maanden vlak ná zo'n financiële schok (+1 maand later) ligt het aantal spoed- en huisartscontacten ruim 2 keer zo hoog als normaal (gemiddeld 0,62 acute zorgdagen tegen 0,26 normaal).\n"
-                "• Met andere woorden: ook als de huur gewoon doorloopt, betaalt je lichaam een maand later de rekening van de geldstress.\n\n"
+                "• Ook als de huur gewoon doorloopt, betaalt je lichaam een maand later dus de rekening van de geldstress.\n\n"
                 "Belangrijkste voorbeelden uit je dossier:\n"
             ),
-            "monodromy": (
+            "termijnen": (
                 "Wat betekent dit voor jou?\n"
-                "• Instanties wijzen er vaak op dat 'de vaste lasten toch gewoon betaald zijn'.\n"
-                "• Deze controle bewijst dat in 5 van de 8 zwaarste schokmaanden (zoals sept 2018, dec 2019 en mrt 2020) op papier inderdaad alles groen leek, maar dat de klap direct doorsloeg naar 5 tot 7 medische zorgdagen in de maand erna.\n\n"
-                "Overzicht van de 8 zwaarste maanden:\n"
-            ),
-            "clash": (
-                "Wat betekent dit voor jou?\n"
-                "• Deze controle leest de nieuwste brief van het loket en kijkt of de instantie je echt helpt of je met beleefde standaardzinnen afwimpelt.\n\n"
-                "Bevindingen:\n"
+                "• Hieronder zie je welke brieven of aanvragen nog openstaan bij een instantie en hoeveel dagen ze nog hebben.\n"
+                "• Zolang het gesprek aan de voorkant open is, blijft de ingebrekestelling in de achterzak.\n\n"
+                "Belangrijkste regels uit de controle:\n"
             ),
             "chunk": (
                 "Wat betekent dit voor jou?\n"
@@ -1532,36 +1381,10 @@ class TafelWindow(QMainWindow):
                 "• Hij controleert of je geen medische privégegevens weggeeft die het loket niet nodig heeft, en of de brief kort en zakelijk genoeg is.\n\n"
                 "Controle-uitslag:\n"
             ),
-            "lab_signals": (
-                "Samenvatting van het Beurs-Experiment (Samenhang):\n"
-                "• Getest op 5 jaar dagelijkse koersen van de S&P 500, Bitcoin en Goud.\n"
-                "• Door niet alleen naar losse scores te kijken, maar naar hoe sterk de richtingen op elkaar botsen, stijgt de voorspellende waarde voor koersschommelingen op de S&P 500 van +0,22 naar +0,27 en op Bitcoin van +0,36 naar +0,44.\n\n"
-            ),
-            "lab_buffers": (
-                "Samenvatting van het Beurs-Experiment (Marktbuffers):\n"
-                "• Waarom waarschuwt een gewone koersgrafiek vaak te laat voor een beursdip? Omdat grote partijen en centrale banken kleine schokken gladstrijken zolang ze nog buffer hebben.\n"
-                "• Zodra we meten hoeveel dempingsbuffer er nog over is, schiet de waarschuwingsscore voor een koersval op de S&P 500 omhoog van -0,12 (misleidend rustig) naar +0,19 (duidelijk waarschuwend).\n\n"
-            ),
-            "lab_portfolio": (
-                "Samenvatting van de Portefeuille-Verdeling:\n"
-                "• Als je je geld verdeelt tussen Aandelen (S&P 500), Bitcoin, Goud en Kasgeld op basis van de gemeten marktbuffers, groeit het rendement in de testperiode van 18,4% naar 21,5% per jaar.\n"
-                "• Op dit moment adviseert de buffer-meter een voorzichtige weging met nadruk op Goud (~62%), Aandelen (~21%), Bitcoin (~10%) en Kasreserve (~7%).\n\n"
-            ),
-            "lab_distill": (
-                "Samenvatting van de AI-Training:\n"
-                "• Het grote NVIDIA-model (120 miljard parameters) heeft 5 voorbeeld-analyses gemaakt.\n"
-                "• Met die 5 voorbeelden als spiekbriefje ging het kleinste, snelste model (4 miljard parameters) op nieuwe vraagstukken direct van 20% goed naar 100% goed.\n\n"
-            ),
-            "lab_bio": (
-                "Samenvatting van het Biologie- & Stem-Experiment:\n"
-                "• Celsplitsing: laat zien dat een cel die te veel taken tegelijk krijgt vastloopt, en dat splitsen in 2 gespecialiseerde dochtercellen het probleem direct oplost.\n"
-                "• Natuur-verhoudingen: 44% van de 140 geteste natuur- en genoom-getallen valt precies op de 10 vaste verhoudingsgetallen.\n"
-                "• Stem-analyse: meet uit een geluidsopname direct de toonhoogte, trilling en stemspanning.\n\n"
-            ),
-            "lab_physics": (
-                "Samenvatting van het Fysica- & Kwaliteitsexperiment:\n"
-                "• IJzer-atoomrooster: laat op echte meetdata van ijzer zien dat trillingen niet oneindig klein kunnen worden, maar stoppen bij de rand van het atoomrooster.\n"
-                "• Rapport-controleur: heeft alle onderzoeksrapporten nagekeken op harde getallen en afwezigheid van vage uitvluchten.\n\n"
+            "clash": (
+                "Wat betekent dit voor jou?\n"
+                "• Deze controle leest de nieuwste brief van het loket en kijkt of de instantie je echt helpt of je met beleefde standaardzinnen afwimpelt.\n\n"
+                "Bevindingen:\n"
             ),
         }
 
