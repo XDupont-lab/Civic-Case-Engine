@@ -6,8 +6,8 @@ Pure Python Standard Library (Zero External Dependencies).
 
 Bewaakt dat TAFEL.md nooit dichtslibt:
 - Houdt altijd exact de laatste 20 beurten in de actieve TAFEL.md.
-- Rolt oudere beurten automatisch door naar een gedateerd archiefbestand.
-- Voegt de archiefverwijzing toe aan de TAFEL.md-kop.
+- Rolt oudere beurten automatisch door naar agy_werk/archief/tafel.
+- Houdt in de kop één verwijzing naar die map.
 - Triggert direct de tafel_indexer.py om de zoekindex up-to-date te houden.
 """
 
@@ -32,6 +32,7 @@ REPO_ROOT = GUI_DIR.parent
 WORKSPACE = Path(os.environ.get("CIVIC_WORKSPACE", r"E:\LLM_Workspace" if Path(r"E:\LLM_Workspace").exists() else REPO_ROOT))
 AGY_WERK = WORKSPACE / "agy_werk" if (WORKSPACE / "agy_werk").exists() else (REPO_ROOT / "werk")
 TAFEL_MD = AGY_WERK / "TAFEL.md" if (AGY_WERK / "TAFEL.md").exists() else (REPO_ROOT / "TAFEL.md")
+ARCHIVE_DIR = TAFEL_MD.parent / "archief" / "tafel"
 
 if str(GUI_DIR) not in sys.path:
     sys.path.insert(0, str(GUI_DIR))
@@ -97,12 +98,12 @@ def archive_tafel_if_needed(threshold: int = MAX_ACTIVE_TURNS, dry_run: bool = F
     end_iso = parse_date_iso(last_archived_date_raw)
 
     archive_filename = f"TAFEL_ARCHIEF_{start_iso}_tot_{end_iso}.md"
-    archive_path = AGY_WERK / archive_filename
+    archive_path = ARCHIVE_DIR / archive_filename
 
     counter = 1
     while archive_path.exists():
         archive_filename = f"TAFEL_ARCHIEF_{start_iso}_tot_{end_iso}_deel{counter}.md"
-        archive_path = AGY_WERK / archive_filename
+        archive_path = ARCHIVE_DIR / archive_filename
         counter += 1
 
     archive_full_content = f"# Tafelarchief {start_iso} t/m {end_iso}\n\n"
@@ -110,24 +111,10 @@ def archive_tafel_if_needed(threshold: int = MAX_ACTIVE_TURNS, dry_run: bool = F
     archive_full_content += "---\n\n"
     archive_full_content += archive_body + "\n"
 
-    archive_link_line = f"*Archief {start_iso} t/m {end_iso}:* [{archive_filename}]({archive_filename})"
-    
-    header_lines = header_part.splitlines()
-    new_header_lines = []
-    inserted_link = False
-    for line in header_lines:
-        new_header_lines.append(line)
-        if "*Archief" in line and not inserted_link:
-            pass
-
+    pointer = "*Oude beurten:* [archief/tafel](archief/tafel)"
     new_header_part = header_part
-    if "*Archief" in new_header_part:
-        lines = new_header_part.splitlines()
-        last_arc_idx = max(i for i, ln in enumerate(lines) if "*Archief" in ln)
-        lines.insert(last_arc_idx + 1, archive_link_line)
-        new_header_part = "\n".join(lines)
-    else:
-        new_header_part += f"\n\n{archive_link_line}\n"
+    if "*Oude beurten:*" not in new_header_part and "*Archief" not in new_header_part:
+        new_header_part = new_header_part.rstrip() + "\n\n" + pointer + "\n"
 
     new_tafel_content = f"{new_header_part}\n\n---\n\n{retained_turns_body}\n"
 
@@ -136,6 +123,7 @@ def archive_tafel_if_needed(threshold: int = MAX_ACTIVE_TURNS, dry_run: bool = F
         print(f"[DRY-RUN] Zou TAFEL.md verkleinen tot {len(retained_turns_body.splitlines())} regels.")
         return True
 
+    ARCHIVE_DIR.mkdir(parents=True, exist_ok=True)
     archive_path.write_text(archive_full_content, encoding="utf-8")
     print(f"[✓] Archiefbestand aangemaakt: {archive_path.name} ({len(archive_full_content.splitlines())} regels)")
 

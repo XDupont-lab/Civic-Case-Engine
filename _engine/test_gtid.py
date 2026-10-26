@@ -62,7 +62,7 @@ class TestGTIDFirstPass(unittest.TestCase):
 
     def test_live_conversation_waits(self):
         field = InstitutionalField(
-            entity_name="Lennart",
+            entity_name="Casemanager",
             conversation_live=True,
             closure="volgende",
             front_open=False,

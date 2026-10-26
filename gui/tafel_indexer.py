@@ -322,10 +322,21 @@ def index_file(filepath: Path) -> List[Dict[str, Any]]:
 
 
 def run_full_index() -> Dict[str, Any]:
-    archive_files = sorted(
-        list(AGY_WERK.glob("TAFEL_ARCHIEF_*.md")),
-        key=lambda p: p.name
-    )
+    roots = [AGY_WERK]
+    if REPO_ROOT != AGY_WERK:
+        roots.append(REPO_ROOT)
+    archive_dirs = [d for root in roots for d in (root / "archief" / "tafel", root)]
+    seen: set[str] = set()
+    archive_files = []
+    for archive_dir in archive_dirs:
+        if not archive_dir.is_dir():
+            continue
+        for archive_path in archive_dir.glob("TAFEL_ARCHIEF_*.md"):
+            if archive_path.name in seen:
+                continue
+            seen.add(archive_path.name)
+            archive_files.append(archive_path)
+    archive_files.sort(key=lambda p: p.name)
     tafel_live = AGY_WERK / "TAFEL.md"
     if not tafel_live.exists():
         tafel_live = REPO_ROOT / "TAFEL.md"

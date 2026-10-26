@@ -43,74 +43,85 @@ from PyQt6.QtWidgets import (
     QTabWidget, QListWidget, QListWidgetItem, QTextBrowser
 )
 
-# Paden
-GUI_DIR = Path(__file__).resolve().parent
-REPO_ROOT = GUI_DIR.parent
-WORKSPACE = Path(os.environ.get("CIVIC_WORKSPACE", r"E:\LLM_Workspace" if Path(r"E:\LLM_Workspace").exists() else REPO_ROOT))
-AGY_WERK = WORKSPACE / "agy_werk" if (WORKSPACE / "agy_werk").exists() else (REPO_ROOT / "werk")
-TAFEL_MD = AGY_WERK / "TAFEL.md" if (AGY_WERK / "TAFEL.md").exists() else (REPO_ROOT / "TAFEL.md")
-CHAT_DISPATCH = GUI_DIR / "tafel_chat.py" if (GUI_DIR / "tafel_chat.py").exists() else (WORKSPACE / "Shared_Tools" / "tafel_chat.py")
-INDEX_PATH = AGY_WERK / "TAFEL_INDEX.json" if AGY_WERK.exists() else (REPO_ROOT / "TAFEL_INDEX.json")
-SHARED_TOOLS = GUI_DIR
-if str(GUI_DIR) not in sys.path:
-    sys.path.insert(0, str(GUI_DIR))
+# Paden (werkt zowel vanuit Shared_Tools/ als vanuit CivicHelper/gui/)
+_HERE = Path(__file__).resolve().parent
+WORKSPACE = Path(os.environ.get("CIVIC_WORKSPACE", r"E:\LLM_Workspace" if Path(r"E:\LLM_Workspace").exists() else _HERE.parent))
+CASE_ROOT = WORKSPACE / "CivicHelper" if (WORKSPACE / "CivicHelper").exists() else _HERE.parent
+AGY_WERK = WORKSPACE / "agy_werk" if (WORKSPACE / "agy_werk").exists() else (CASE_ROOT / "werk")
+TAFEL_MD = AGY_WERK / "TAFEL.md" if (AGY_WERK / "TAFEL.md").exists() else (CASE_ROOT / "TAFEL.md")
+SHARED_TOOLS = WORKSPACE / "Shared_Tools" if (WORKSPACE / "Shared_Tools").exists() else _HERE
+CHAT_DISPATCH = SHARED_TOOLS / "tafel_chat.py" if (SHARED_TOOLS / "tafel_chat.py").exists() else (_HERE / "tafel_chat.py")
+INDEX_PATH = AGY_WERK / "TAFEL_INDEX.json"
+for _p in (str(SHARED_TOOLS), str(_HERE)):
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
 
-try:
-    from .tafel_indexer import claim_board, index_file
-    from .tafel_archiver import archive_tafel_if_needed
-except ImportError:
-    from tafel_indexer import claim_board, index_file
-    from tafel_archiver import archive_tafel_if_needed
+from tafel_indexer import claim_board, index_file
+from tafel_archiver import archive_tafel_if_needed
 
-CASE_ROOT = REPO_ROOT
-ZORG_ROOT = WORKSPACE / "Zorgdossier" if (WORKSPACE / "Zorgdossier").exists() else (REPO_ROOT / "Dossier")
+ZORG_ROOT = WORKSPACE / "Zorgdossier" if (WORKSPACE / "Zorgdossier").exists() else (CASE_ROOT / "Dossier")
 
-# Loketten die een eigen lijn kunnen hebben. De naam in het stuk moet een van de woorden dragen.
-ISLANDS = (
-    ("Gemeente / Wmo", ("gemeente", "wmo", "midden-groningen", "midden_groningen")),
+# Generieke loketcategorieën. Persoonlijke loketten worden lokaal geladen uit CivicHelper/werk/loketten.json (buiten git).
+_DEFAULT_ISLANDS = (
+    ("Gemeente / Wmo", ("gemeente", "wmo")),
     ("Dienst Toeslagen", ("toeslagen",)),
-    ("Menzis", ("menzis",)),
+    ("Zorgverzekeraar", ("zorgverzeker", "menzis")),
     ("CAK", ("cak", "lavg")),
-    ("Noordelijk Belastingkantoor", ("belasting",)),
-    ("UWV / Midwerk", ("midwerk", "uwv")),
-    ("Huisarts Oosterbroek", ("oosterbroek", "huisarts")),
-    ("Martini Ziekenhuis", ("martini", "mzh")),
-    ("UMCG", ("umcg",)),
-    ("Hersenz / Noorderbrug", ("hersenz", "noorderbrug", "dignis")),
-    ("Groninger Huis", ("groninger",)),
-    ("PRO Westerwolde", ("westerwolde", "pro_")),
+    ("Belastingkantoor", ("belasting",)),
+    ("UWV / Werk", ("uwv", "werk")),
+    ("Huisarts", ("huisarts",)),
+    ("Ziekenhuis", ("ziekenhuis",)),
+    ("Revalidatie & Zorg", ("revalidat", "ambulante")),
+    ("Woningcorporatie", ("woning", "corporatie", "huur")),
     ("BKR", ("bkr",)),
-    ("Energiewacht", ("energiewacht",)),
-    ("Prakken d'Oliveira", ("prakken", "oliveira")),
 )
 
-# Onderwerpen in de dossierkolom. Eerste treffer wint. De kleur hoort bij het onderwerp.
-SUBJECTS = (
+_DEFAULT_SUBJECTS = (
     ("Zorg", "#5eead4", (
-        "zorg", "gezond", "huisarts", "oosterbroek", "martini", "umcg", "beatrix",
-        "nah", "epd", "zieken", "medisch", "klinisch", "laboratorium", "farmacolog",
-        "hematolog", "lentis", "patient", "syncope", "hidradenitis", "schedel",
-        "neuro", "jansen", "antonius", "hersenz", "noorderbrug", "dignis", "rykmans", "brand",
+        "zorg", "gezond", "huisarts", "epd", "zieken", "medisch",
+        "klinisch", "laboratorium", "farmacolog", "hematolog", "patient", "neuro", "revalid",
     )),
-    ("Wmo", "#86efac", ("wmo", "gerdez", "teamleider", "casemanager", "lennart")),
+    ("Wmo", "#86efac", ("wmo", "teamleider", "casemanager", "consulent")),
     ("Ambulante zorg", "#67e8f9", ("ambulant", "begeleiding")),
     ("Cliëntondersteuning", "#c4b5fd", (
-        "clientondersteuning", "cliëntondersteuning", "metgezel", "mee noord",
-        "sjanneke", "mulder", "overdrachtsketen",
+        "clientondersteuning", "cliëntondersteuning", "overdrachtsketen",
     )),
-    ("Wonen", "#fbbf24", ("wonen", "huisvest", "beijum")),
-    ("Geld", "#4ade80", ("financ", "bank", "bkr")),
+    ("Wonen", "#fbbf24", ("wonen", "huisvest", "huur", "woning")),
+    ("Geld", "#4ade80", ("financ", "bank", "bkr", "incasso")),
     ("Bestuur", "#93c5fd", ("bestuur", "handhav", "politie", "vergun", "gemeente", "avg", "toezicht")),
     ("Identiteit", "#d8b4fe", ("brp", "adres", "verblijf", "immigr")),
     ("Werk", "#fdba74", ("werk", "uwv", "onderwijs", "leerplicht", "jeugd", "gezin")),
     ("Archief", "#e7e5e4", ("chronolog", "scan", "foto", "whatsapp", "afspraak", "bewijs")),
 )
 
+
+def _laad_lokale_loketten():
+    import json
+    islands = list(_DEFAULT_ISLANDS)
+    subjects = [list(s) for s in _DEFAULT_SUBJECTS]
+    for kandidaat in (CASE_ROOT / "werk" / "loketten.json", AGY_WERK / "loketten.json"):
+        if kandidaat.exists():
+            try:
+                data = json.loads(kandidaat.read_text(encoding="utf-8"))
+                if data.get("islands"):
+                    islands = [(naam, tuple(sleutels)) for naam, sleutels in data["islands"]]
+                extra = data.get("subject_extra_keys", {})
+                for item in subjects:
+                    if item[0] in extra:
+                        item[2] = tuple(list(item[2]) + list(extra[item[0]]))
+                break
+            except Exception:
+                pass
+    return tuple(islands), tuple((s[0], s[1], tuple(s[2])) for s in subjects)
+
+
+ISLANDS, SUBJECTS = _laad_lokale_loketten()
+
 # Het interne model. Een stuk kan twee toestanden raken.
 INTERN = (
-    ("Lichaam", "#5eead4", ("zorg", "gezond", "huisarts", "oosterbroek", "martini", "umcg", "beatrix", "epd", "zieken", "revalid", "lichaam")),
-    ("Geest", "#d8b4fe", ("geest", "mentaal", "cognit", "execut", "exoskelet", "frictie", "psych", "aandacht", "geheugen", "nah")),
-    ("Bestaan", "#4ade80", ("financ", "bank", "bkr", "belasting", "toeslagen", "uwv", "werk", "inkomen", "uitkering", "huur", "wmo", "cak", "menzis", "lavg")),
+    ("Lichaam", "#5eead4", ("zorg", "gezond", "huisarts", "epd", "zieken", "revalid", "lichaam", "medisch", "klinisch")),
+    ("Geest", "#d8b4fe", ("geest", "mentaal", "cognit", "execut", "exoskelet", "frictie", "psych", "aandacht", "geheugen")),
+    ("Bestaan", "#4ade80", ("financ", "bank", "bkr", "belasting", "toeslagen", "uwv", "werk", "inkomen", "uitkering", "huur", "wmo", "cak")),
 )
 
 
@@ -292,10 +303,10 @@ def structuur_markdown() -> str:
     return "\n".join(lines)
 
 
-PYTHON_EXE = sys.executable or r"C:\Users\Gebruiker\AppData\Local\Programs\Python\Python312\python.exe"
-GROK_STARTER = WORKSPACE / "start-grok.cmd" if (WORKSPACE / "start-grok.cmd").exists() else REPO_ROOT / "start-grok.cmd"
-DEEPSEEK_STARTER = WORKSPACE / "start-deepseek.cmd" if (WORKSPACE / "start-deepseek.cmd").exists() else REPO_ROOT / "start-deepseek.cmd"
-ARGON_STARTER = WORKSPACE / "start-gemini-argon.cmd" if (WORKSPACE / "start-gemini-argon.cmd").exists() else REPO_ROOT / "start-gemini-argon.cmd"
+PYTHON_EXE = r"C:\Users\Gebruiker\AppData\Local\Programs\Python\Python312\python.exe"
+GROK_STARTER = WORKSPACE / "start-grok.cmd"
+DEEPSEEK_STARTER = WORKSPACE / "start-deepseek.cmd"
+ARGON_STARTER = WORKSPACE / "start-gemini-argon.cmd"
 
 
 class ChatInputEdit(QTextEdit):
@@ -391,6 +402,7 @@ class TafelWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("Civic Helper 0.3 — Tafel")
         self.resize(1480, 860)
+        self.move(486, 189)
 
         self.last_hash = ""
         self.last_turn_count = 0
@@ -436,6 +448,13 @@ class TafelWindow(QMainWindow):
         tb_layout.addWidget(lbl_app)
         tb_layout.addWidget(lbl_chan)
         tb_layout.addStretch()
+
+        btn_setup_env = QPushButton("🛠️ Omgeving Inrichten")
+        btn_setup_env.setObjectName("btn-action-gold")
+        btn_setup_env.setCursor(Qt.CursorShape.PointingHandCursor)
+        btn_setup_env.setToolTip("Richt de lokale werkomgeving en Python-tools in en open het begeleide stappenplan (Waarom & Doel).")
+        btn_setup_env.clicked.connect(self.action_setup_environment)
+        tb_layout.addWidget(btn_setup_env)
 
         btn_start_all = QPushButton("🚀 Start Allen")
         btn_start_all.setObjectName("btn-action")
@@ -499,50 +518,155 @@ class TafelWindow(QMainWindow):
         self.case_tabs.setObjectName("case-tabs")
         self.case_tabs.setDocumentMode(True)
 
+        # TAB 0: OVERZICHT (Twee Klokken + Intern + Loketten In/Uit)
         self.model_view = QTextBrowser()
         self.model_view.setObjectName("case-mirror")
         self.model_view.setReadOnly(True)
         self.model_view.setOpenExternalLinks(False)
         self.model_view.anchorClicked.connect(self._model_link_clicked)
-        self.case_tabs.addTab(self.model_view, "Model")
+        self.case_tabs.addTab(self.model_view, "Overzicht")
 
-        self.mirror_view = QTextEdit()
-        self.mirror_view.setObjectName("case-mirror")
-        self.mirror_view.setReadOnly(True)
-        self.mirror_view.setPlaceholderText("Het gesprek verschijnt hier nog eens, korter.")
-        self.case_tabs.addTab(self.mirror_view, "Scherm")
+        # TAB 1: DOSSIERS (Met snelle zoek-/filterbalk)
+        dossiers_page = QWidget()
+        dossiers_layout = QVBoxLayout(dossiers_page)
+        dossiers_layout.setContentsMargins(6, 6, 6, 6)
+        dossiers_layout.setSpacing(6)
+        dos_filter_row = QHBoxLayout()
+        dos_filter_row.setContentsMargins(0, 0, 0, 0)
+        dos_filter_row.setSpacing(4)
+        self.dossier_filter_edit = QLineEdit()
+        self.dossier_filter_edit.setPlaceholderText("Filter dossiers (bijv. zorg, wmo, umcg, cak)...")
+        self.dossier_filter_edit.setStyleSheet(
+            "background: #161024; color: #e2e8f0; border: 1px solid rgba(212,175,55,0.28); "
+            "border-radius: 4px; padding: 4px 8px; font-size: 11px; font-family: 'JetBrains Mono', monospace;"
+        )
+        self.dossier_filter_edit.textChanged.connect(self._apply_dossier_filter)
+        btn_dos_clear = QPushButton("Alles")
+        btn_dos_clear.setCursor(Qt.CursorShape.PointingHandCursor)
+        btn_dos_clear.clicked.connect(lambda: self.dossier_filter_edit.setText(""))
+        dos_filter_row.addWidget(self.dossier_filter_edit, 1)
+        dos_filter_row.addWidget(btn_dos_clear)
+        dossiers_layout.addLayout(dos_filter_row)
 
         self.list_dossiers = QListWidget()
+        self.list_dossiers.setObjectName("case-list")
         self.list_dossiers.setCursor(Qt.CursorShape.PointingHandCursor)
         self.list_dossiers.itemClicked.connect(self._open_dossier)
-        self.list_stukken = QListWidget()
-        self.list_stukken.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.list_stukken.itemClicked.connect(self._open_stuk)
-        self.list_lijnen = QListWidget()
-        for widget in (self.list_dossiers, self.list_stukken, self.list_lijnen):
-            widget.setObjectName("case-list")
-        self.case_tabs.addTab(self.list_dossiers, "Dossiers")
-        self.case_tabs.addTab(self.list_stukken, "Stukken")
-        self.case_tabs.addTab(self.list_lijnen, "Lijnen")
+        dossiers_layout.addWidget(self.list_dossiers, 1)
+        self.case_tabs.addTab(dossiers_page, "Dossiers")
 
+        # TAB 2: POST & BRIEF (In/Uit filter + Veto/Poort-toets & Sein naar mailprogramma)
+        post_page = QWidget()
+        post_layout = QVBoxLayout(post_page)
+        post_layout.setContentsMargins(6, 6, 6, 6)
+        post_layout.setSpacing(6)
+        self._post_filter_mode = "alle"
+        post_filter_row = QHBoxLayout()
+        post_filter_row.setContentsMargins(0, 0, 0, 0)
+        post_filter_row.setSpacing(4)
+        self.btn_post_all = QPushButton("Alle stukken")
+        self.btn_post_uit = QPushButton("📤 Uitgaand")
+        self.btn_post_in = QPushButton("📥 Binnen")
+        for b, mode in ((self.btn_post_all, "alle"), (self.btn_post_uit, "uit"), (self.btn_post_in, "binnen")):
+            b.setCheckable(True)
+            b.setCursor(Qt.CursorShape.PointingHandCursor)
+            b.clicked.connect(lambda _c=False, m=mode: self._set_post_filter(m))
+            post_filter_row.addWidget(b)
+        self.btn_post_all.setChecked(True)
+        post_layout.addLayout(post_filter_row)
+
+        self.list_stukken = QListWidget()
+        self.list_stukken.setObjectName("case-list")
+        self.list_stukken.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.list_stukken.itemDoubleClicked.connect(self._open_stuk)
+        post_layout.addWidget(self.list_stukken, 1)
+
+        post_actie_row = QHBoxLayout()
+        post_actie_row.setContentsMargins(0, 0, 0, 0)
+        post_actie_row.setSpacing(4)
+        btn_open_stuk = QPushButton("📄 Lezen")
+        btn_open_stuk.setCursor(Qt.CursorShape.PointingHandCursor)
+        btn_open_stuk.clicked.connect(self._open_selected_stuk)
+        btn_toets_stuk = QPushButton("🛡️ Toets Poort")
+        btn_toets_stuk.setObjectName("btn-action")
+        btn_toets_stuk.setCursor(Qt.CursorShape.PointingHandCursor)
+        btn_toets_stuk.clicked.connect(self._toets_selected_stuk)
+        btn_sein_stuk = QPushButton("✉️ Sein (Mail)")
+        btn_sein_stuk.setObjectName("btn-action-gold")
+        btn_sein_stuk.setCursor(Qt.CursorShape.PointingHandCursor)
+        btn_sein_stuk.clicked.connect(self._sein_selected_stuk)
+        post_actie_row.addWidget(btn_open_stuk)
+        post_actie_row.addWidget(btn_toets_stuk)
+        post_actie_row.addWidget(btn_sein_stuk)
+        post_layout.addLayout(post_actie_row)
+        self.case_tabs.addTab(post_page, "Brieven")
+
+        # Verborgen compatibiliteitswidgets voor legacy methodes
+        self.mirror_view = QTextEdit()
+        self.list_lijnen = QListWidget()
+
+        # TAB 3: ANALYSE
         analyse_page = QWidget()
         analyse_layout = QVBoxLayout(analyse_page)
         analyse_layout.setContentsMargins(6, 6, 6, 6)
         analyse_layout.setSpacing(6)
+
+        self.analyse_categorie = "zaak"
+        self._analyse_raw_text = ""
+        self._analyse_human_text = ""
+        self._analyse_toon_technisch = False
+        self._analyse_active_key = ""
+        self._analyse_active_titel = ""
+        self._analyse_active_toelichting = ""
+
+        cat_row = QHBoxLayout()
+        cat_row.setContentsMargins(0, 0, 0, 0)
+        cat_row.setSpacing(4)
+        self.btn_cat_zaak = QPushButton("Mijn Zaak & Loket")
+        self.btn_cat_zaak.setCheckable(True)
+        self.btn_cat_zaak.setChecked(True)
+        self.btn_cat_zaak.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.btn_cat_zaak.clicked.connect(lambda: self._wissel_analyse_categorie("zaak"))
+        self.btn_cat_lab = QPushButton("Onderzoek & Markt Lab")
+        self.btn_cat_lab.setCheckable(True)
+        self.btn_cat_lab.setChecked(False)
+        self.btn_cat_lab.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.btn_cat_lab.clicked.connect(lambda: self._wissel_analyse_categorie("lab"))
+        cat_row.addWidget(self.btn_cat_zaak)
+        cat_row.addWidget(self.btn_cat_lab)
+        analyse_layout.addLayout(cat_row)
+
         self.analyse_list = QListWidget()
         self.analyse_list.setObjectName("case-list")
-        self.analyse_list.setMaximumHeight(132)
+        self.analyse_list.setMaximumHeight(200)
         self.analyse_list.setCursor(Qt.CursorShape.PointingHandCursor)
         self.analyse_list.itemDoubleClicked.connect(lambda _item: self._start_analyse())
-        self.analyse_start = QPushButton("Start analyse")
+
+        actie_row = QHBoxLayout()
+        actie_row.setContentsMargins(0, 0, 0, 0)
+        actie_row.setSpacing(4)
+        self.analyse_start = QPushButton("▶ Start controle")
         self.analyse_start.setObjectName("btn-action")
         self.analyse_start.clicked.connect(self._start_analyse)
+        self.analyse_toggle_tech = QPushButton("Technisch rapport")
+        self.analyse_toggle_tech.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.analyse_toggle_tech.setEnabled(False)
+        self.analyse_toggle_tech.clicked.connect(self._wissel_analyse_weergave)
+        self.analyse_to_tafel = QPushButton("📌 Op Tafel")
+        self.analyse_to_tafel.setObjectName("btn-action-gold")
+        self.analyse_to_tafel.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.analyse_to_tafel.setEnabled(False)
+        self.analyse_to_tafel.clicked.connect(self._leg_analyse_op_tafel)
+        actie_row.addWidget(self.analyse_start, 2)
+        actie_row.addWidget(self.analyse_toggle_tech, 1)
+        actie_row.addWidget(self.analyse_to_tafel, 1)
+
         self.analyse_out = QTextEdit()
         self.analyse_out.setObjectName("case-mirror")
         self.analyse_out.setReadOnly(True)
-        self.analyse_out.setPlaceholderText("Kies een analyse en start haar. De uitkomst komt hier.")
+        self.analyse_out.setPlaceholderText("Kies hierboven een vraag en klik op 'Start controle'. Je krijgt eerst een uitleg in gewone taal.")
         analyse_layout.addWidget(self.analyse_list)
-        analyse_layout.addWidget(self.analyse_start)
+        analyse_layout.addLayout(actie_row)
         analyse_layout.addWidget(self.analyse_out, 1)
         self.case_tabs.addTab(analyse_page, "Analyse")
         self._vul_analyses()
@@ -620,7 +744,7 @@ class TafelWindow(QMainWindow):
         lbl_extra.setStyleSheet("color: #64748b; font-size: 10px; font-weight: bold; letter-spacing: 1px; margin-top: 10px;")
         nick_layout.addWidget(lbl_extra)
         self.nick_layout = nick_layout
-        self._on_demand_cards = set(["argon", "gemini", "qwen"])
+        self._on_demand_cards = set(["argon", "gemini", "qwen", "nvidia"])
 
         # +Gemini Argon CLI SDK
         self.card_argon, self.badge_argon = self._create_summon_action_card(
@@ -640,6 +764,10 @@ class TafelWindow(QMainWindow):
         # +Qwen 2.5 32B
         card_qwen = self._create_summon_card("+Qwen 2.5 32B", "Groq LPU · online", "#a855f7", "+", "qwen")
         nick_layout.addWidget(card_qwen)
+
+        # +NVIDIA Super 120B
+        card_nvidia = self._create_summon_card("+NVIDIA Super 120B", "Nemotron 3.5 · online", "#76b900", "+", "nvidia")
+        nick_layout.addWidget(card_nvidia)
 
         # Knop Model Aanschuiven
         self.btn_add_model = QPushButton("+ Model Aanschuiven...")
@@ -687,7 +815,8 @@ class TafelWindow(QMainWindow):
             "@DeepSeek",
             "@agy",
             "@Gemini Argon CLI SDK",
-            "@Gemini 3.8 Flash"
+            "@Gemini 3.8 Flash",
+            "@NVIDIA"
         ])
         rec_box.addWidget(rec_lbl)
         rec_box.addWidget(self.combo_recipient)
@@ -1105,37 +1234,132 @@ class TafelWindow(QMainWindow):
         cursor.movePosition(QTextCursor.MoveOperation.End)
         self.mirror_view.setTextCursor(cursor)
 
+    def _wissel_analyse_categorie(self, cat: str):
+        self.analyse_categorie = cat
+        self.btn_cat_zaak.setChecked(cat == "zaak")
+        self.btn_cat_lab.setChecked(cat == "lab")
+        self._vul_analyses()
+
+    def _wissel_analyse_weergave(self):
+        if not self._analyse_raw_text:
+            return
+        self._analyse_toon_technisch = not self._analyse_toon_technisch
+        if self._analyse_toon_technisch:
+            self.analyse_toggle_tech.setText("Toon gewone taal")
+            self.analyse_out.setPlainText(self._analyse_raw_text)
+        else:
+            self.analyse_toggle_tech.setText("Toon technisch rapport")
+            self.analyse_out.setPlainText(self._analyse_human_text)
+
     def _vul_analyses(self):
         self.analyse_list.clear()
-        for key, titel, toelichting, _argv in self._analyse_keuzes():
-            item = QListWidgetItem(f"{titel}    {toelichting}")
+        cat = getattr(self, "analyse_categorie", "zaak")
+        for key, item_cat, titel, toelichting, _argv in self._analyse_keuzes():
+            if item_cat != cat:
+                continue
+            item = QListWidgetItem(f"{titel}\n   ↳ {toelichting}")
             item.setData(Qt.ItemDataRole.UserRole, key)
             item.setToolTip(toelichting)
             self.analyse_list.addItem(item)
         if self.analyse_list.count():
             self.analyse_list.setCurrentRow(0)
 
-    def _analyse_keuzes(self) -> list[tuple[str, str, str, list[str] | None]]:
+    def _analyse_keuzes(self) -> list[tuple[str, str, str, str, list[str] | None]]:
         engine = CASE_ROOT / "_engine"
+        analyses_root = WORKSPACE / "Analyses"
         py = PYTHON_EXE
         drafts = []
-        out_dir = CASE_ROOT / "Outgoing_Drafts"
-        if out_dir.exists():
-            drafts = sorted(
-                (p for p in out_dir.glob("*.md") if p.is_file()),
-                key=lambda p: p.stat().st_mtime,
-                reverse=True,
-            )
+        for out_dir in (AGY_WERK / "outbox", CASE_ROOT / "Outgoing_Drafts"):
+            if out_dir.exists():
+                drafts.extend(p for p in out_dir.glob("*.md") if p.is_file())
+        drafts.sort(key=lambda p: p.stat().st_mtime, reverse=True)
         nieuwste = drafts[0] if drafts else None
         chunk_arg = [py, str(engine / "chunk_audit.py"), str(nieuwste)] if nieuwste else None
-        return [
-            ("termijnen", "Termijnen", "klok en dwangsom, schrijft niets", [py, str(engine / "statutory_clock.py"), "status"]),
-            ("chunk", "Chunk-toets", nieuwste.name if nieuwste else "geen concept", chunk_arg),
-            ("invarianten", "Invarianten", "T1 tot en met T6, schrijft niets", [py, str(engine / "test_cybernetic_invariants.py")]),
+
+        base: list[tuple[str, str, str, str, list[str] | None]] = [
+            # --- STAND 1: MIJN ZAAK & LOKET (Mensentaal voor elke burger) ---
+            (
+                "termijnen",
+                "zaak",
+                "1. Welke antwoorden van instanties zijn te laat?",
+                "Controleert wettelijke beslistermijnen en mogelijke dwangsommen",
+                [py, str(engine / "statutory_clock.py"), "status"],
+            ),
+            (
+                "keten_stevin",
+                "zaak",
+                "1b. Waar is een dossier op papier gesloten maar materieel nog open?",
+                "Toetst het 3-boekenstelsel (Memoriaal, Journaal, Grootboek) op schijnsluiting en tegenstrijdige registraties",
+                [py, str(CASE_ROOT / "Ketengrootboek" / "sluiting.py"), "--integriteit"],
+            ),
+            (
+                "welstand",
+                "zaak",
+                "2. Hoeveel druk en ruimte ligt er bij de loketten?",
+                "Meet de administratieve druk op wonen/zorg, inkomen en openstaande brieven (niet je lichamelijke ontsteking)",
+                [py, str(SHARED_TOOLS / "welstand_model.py")],
+            ),
+            (
+                "cytokine_vt",
+                "zaak",
+                "2b. Waarom voel ik cytokinestormen terwijl de loketten op 'rust' staan?",
+                "Legt de trage loketklok (0,83) naast jouw 13-jarige bloedwaarden, IL-6/plasmacellen en lichamelijke uitputting",
+                [py, str(SHARED_TOOLS / "drager_cytokine_klok_vt.py")],
+            ),
+            (
+                "veld_emp",
+                "zaak",
+                "3. Kloppen mijn vaste lasten, bank en toeslagen?",
+                "Controleert 118 maanden aan huur, energie, water, zorg en toeslagen op hiaten",
+                [py, str(AGY_WERK / "scratch" / "veld_empirisch.py")],
+            ),
+            (
+                "wwb_spec",
+                "zaak",
+                "4. Klopt mijn uitkeringsspecificatie (2018–2025)?",
+                "Controleert inhoudingen, vakantiegeld en verrekeningen van de gemeente",
+                [py, str(AGY_WERK / "scratch" / "parse_wwb_spec.py")],
+            ),
+            (
+                "tikhonov",
+                "zaak",
+                "5. Wat doet financiële stress met mijn gezondheid?",
+                "Laat zien hoe schokken in inkomen of incasso doorwerken in doktersbezoek",
+                [py, str(AGY_WERK / "scratch" / "tikhonov_lekstroom_toets.py")],
+            ),
+            (
+                "monodromy",
+                "zaak",
+                "6. Waar lijkt op papier alles in orde, maar loopt het toch vast?",
+                "Spoort maanden op waarin vaste lasten doorliepen maar de druk naar zorg verschoof",
+                [py, str(SHARED_Tools_or := (SHARED_TOOLS / "canon_transaction_monodromy.py"))],
+            ),
+            (
+                "clash",
+                "zaak",
+                "7. Controleer een brief van een instantie op schijnbeloftes",
+                "Haalt vertragende taal en kastje-naar-de-muur patronen uit een brief",
+                [py, str(engine / "systeem_clash_sentiment.py")],
+            ),
+            (
+                "chunk",
+                "zaak",
+                "8. Controleer mijn eigen conceptbrief vóór verzending",
+                f"Toetst of de brief kort, feitelijk en veilig is ({nieuwste.name if nieuwste else 'geen concept'})",
+                chunk_arg,
+            ),
+            (
+                "veld_verhaal",
+                "zaak",
+                "9. Klopt mijn tijdlijn met de officiële bewijsstukken?",
+                "Legt de 55 belangrijkste gebeurtenissen naast de bank- en medische stukken",
+                [py, str(AGY_WERK / "scratch" / "veld_verhaal.py")],
+            ),
             (
                 "tijdlijn",
-                "Tijdlijn",
-                "schrijft 00_Master_Chronologie.md",
+                "zaak",
+                "10. Werk het chronologisch dossieroverzicht bij",
+                "Zet alle binnengekomen brieven en besluiten op datum in 00_Master_Chronologie.md",
                 [
                     py,
                     str(engine / "timeline_weaver.py"),
@@ -1143,14 +1367,228 @@ class TafelWindow(QMainWindow):
                     str(CASE_ROOT / "Dossier" / "00_Master_Chronologie.md"),
                 ],
             ),
-            ("veldkaart", "Veldkaart", "leest de nieuwste brief, schrijft niets", [py, str(engine / "gtid_engine.py")]),
+            # --- STAND 2: ONDERZOEK & MARKT LAB (Wetenschap, Beurs & Canon-Proeven) ---
             (
-                "clash",
-                "Systeem-Clash",
-                "sentiment via TRF 2.1, 3.5 en Canon 11",
-                [py, str(engine / "systeem_clash_sentiment.py")],
+                "lab_signals",
+                "lab",
+                "[Beurs Lab 1] Markt-Samenhang (S&P 500, Bitcoin & Goud)",
+                "Vergelijkt oude HVM-score met de nieuwe 3x3 Canon-samenhang op 5 jaar marktdata",
+                [py, str(SHARED_TOOLS / "nvidia_hvm_signal_lab.py")],
+            ),
+            (
+                "lab_buffers",
+                "lab",
+                "[Beurs Lab 2] Markt-Buffers & Verborgen Kwetsbaarheid",
+                "Meet stabilisatiekrachten en wanneer de dempingsbuffer van de beurs uitgeput raakt",
+                [py, str(SHARED_TOOLS / "nvidia_tikhonov_pontryagin_lab.py")],
+            ),
+            (
+                "lab_portfolio",
+                "lab",
+                "[Beurs Lab 3] Optimale Portefeuille-Verdeling (Aandelen / BTC / Goud / Kas)",
+                "Berekent veilige gewichten op basis van resterende markt-buffers (Sharpe 0.73 -> 0.81)",
+                [py, str(SHARED_TOOLS / "canon_portfolio_kkt.py")],
+            ),
+            (
+                "lab_distill",
+                "lab",
+                "[AI Lab 4] Klein AI-Model Traint op Systeemtheorie (120B -> 4B)",
+                "Grote NVIDIA-leraar traint het snelle 4B-model van 20% naar 100% begrip",
+                [py, str(SHARED_TOOLS / "nvidia_canon_distiller.py")],
+            ),
+            (
+                "lab_bio",
+                "lab",
+                "[Biologie & Stem Lab 5] Celsplitsing, 140 Natuur-Ratio's & Stem-Analyse",
+                "Toetst waarom volle cellen splitsen, scant 140 genoom-ratio's en meet stemspanning",
+                [py, str(SHARED_TOOLS / "canon_bio_genoom_cbs.py")],
+            ),
+            (
+                "lab_physics",
+                "lab",
+                "[Fysica & Audit Lab 6] Atoomrooster-Grens (IJzer) & Rapport-Controleur",
+                "Toetst trillingsgrens in bcc-ijzer en controleert alle rapporten op harde bewijsvoering",
+                [py, str(SHARED_TOOLS / "canon_physics_agent_trace.py")],
+            ),
+            (
+                "trf_sym3",
+                "lab",
+                "[Systeem Lab 7] Langetermijn Baansimulatie (2009–2026)",
+                "Simuleert het 3-assen krachtenspel over 8 kanalen van 2009 tot 2026",
+                [py, str(AGY_WERK / "scratch" / "trf_sym3_klok_kompas_engine.py")],
+            ),
+            (
+                "veldkaart",
+                "lab",
+                "[Systeem Lab 8] Topologische Veldkaart op Brief",
+                "Projecteert de nieuwste brief op de G-TID veldkaart",
+                [py, str(engine / "gtid_engine.py")],
+            ),
+            (
+                "invarianten",
+                "lab",
+                "[Systeem Lab 9] Veiligheidstoets Systeemregels (T1–T6)",
+                "Controleert of alle beschermingsregels van het programma sluitend zijn",
+                [py, str(engine / "test_cybernetic_invariants.py")],
             ),
         ]
+
+        # Auto-discovery van eventuele nieuwe scripts in Analyses/Vast of Analyses/Experimenteel
+        known_stems = {
+            "01_welstand_model", "02_veld_empirisch", "03_wwb_specificaties_audit",
+            "04_bank_audit", "05_wettelijke_klok", "06_keten_glue_check",
+            "01_tikhonov_lekstroom_DI_naar_G", "02_trf_sym3_grondtonen_2009_2026",
+            "03_veld_verhaal_55_ankers", "04_systeem_clash_sentiment",
+            "05_gtid_veldkaart", "06_loket_patroon_scanner",
+            "07_hvm_canon_signal_lab", "08_tikhonov_pontryagin_buffer_lab",
+            "09_canon_model_distiller", "10_portfolio_kkt_pontryagin",
+            "11_transactie_monodromy_scanner", "12_bio_genoom_cbs_voice",
+            "13_physics_hal_nemoclaw_audit", "14_drager_cytokine_klok_vt",
+        }
+        for sub, item_cat, prefix in (("Vast", "zaak", "[Extra Controle]"), ("Experimenteel", "lab", "[Extra Lab]")):
+            folder = analyses_root / sub
+            if not folder.exists():
+                continue
+            for script in sorted(folder.glob("*.py")):
+                if script.stem in known_stems or script.name.startswith("_"):
+                    continue
+                pretty = script.stem.replace("_", " ").strip()
+                base.append((f"auto_{script.stem}", item_cat, f"{prefix} {pretty}", f"Script: Analyses/{sub}/{script.name}", [py, str(script)]))
+        return base
+
+    def _maak_mensentaal_samenvatting(self, key: str, titel: str, toelichting: str, raw: str) -> str:
+        """Vertaalt technische/wiskundige uitvoer naar een heldere samenvatting in gewone mensentaal."""
+        header = (
+            f"=== UITKOMST IN GEWONE TAAL ===\n"
+            f"Onderwerp: {titel}\n"
+            f"Wat dit doet: {toelichting}\n"
+            f"{'-' * 56}\n\n"
+        )
+        uitleg_per_key = {
+            "termijnen": (
+                "Wat betekent dit voor jou?\n"
+                "• Hieronder zie je welke brieven of aanvragen nog openstaan bij een instantie en hoeveel dagen ze nog hebben.\n"
+                "• Als een wettelijke beslistermijn is verstreken, staat er direct bij of je een ingebrekestelling (dwangsom) kunt sturen.\n\n"
+                "Belangrijkste regels uit de controle:\n"
+            ),
+            "keten_stevin": (
+                "Wat betekent dit voor jou?\n"
+                "• Deze controle kijkt met de drie boeken van Simon Stevin (Memoriaal, Journaal en Grootboek) naar drie losse vragen:\n"
+                "  1. Kloppen de boekingen tussen de loketten onderling? -> NEE (2 tegenstrijdige registraties: Vektis zegt 'niet verzekerd' terwijl Menzis/CAK premie int; DACAS boekt verrekeningen terwijl de bank € 0,00 toont).\n"
+                "  2. Hebben de loketten hun eigen processtap afgerond? -> JA (5 van de 5 loketten hebben hun vinkje of besluit gezet).\n"
+                "  3. Is de hulp of rectificatie feitelijk geleverd? -> NEE (0 van de 5 posten zijn materieel vereffend).\n"
+                "• Ook controleert het systeem dat geen enkel later loket-stempel (Laag 3) jouw oorspronkelijke bewijsstuk (Laag 1) heeft overschreven.\n\n"
+                "Overzicht uit de drie boeken:\n"
+            ),
+            "welstand": (
+                "Wat betekent dit voor jou?\n"
+                "• Deze meting kijkt alleen naar de BUITENKANT (de administratie bij de loketten): wonen/zorg (~81%), inkomen (~84%) en lopende brieven (~83%).\n"
+                "• Let op: omdat de brieven nu bij de loketten liggen (19 open posten), meldt dit administratieve model 'ontspanning'. Dat zegt niets over je lichamelijke ontsteking of cytokinestormen (klik daarvoor op punt 2b hieronder).\n\n"
+                "Kernpunten uit de loketmeting:\n"
+            ),
+            "cytokine_vt": (
+                "Wat betekent dit voor jou?\n"
+                "• Dit is de TWEEDE KLOK (jouw lichaam en immuunsysteem naast de administratie).\n"
+                "• Terwijl het loketmodel op 0,83 ('rust') staat omdat de brieven de deur uit zijn, laat je 13-jarige bloedreeks zien dat je witte bloedcellen (leukocyten) in 13 jaar tijd NUL keer normaal zijn geweest (altijd verhoogd tussen 10,3 en 16,7).\n"
+                "• Zelfs in een 'rustige' maand staat je lichamelijke ontstekingsvloer al op 41% druk (waardoor je maximaal ~59% energie overhoudt).\n"
+                "• Tijdens een cytokinestorm / IL-6 opvlamming (met plasmacellen en bijna 1 miljard reactieve lymfocyten per liter in je bloed) schiet de storm-index v(t) naar 0,87 – 1,00 en zakt je beschikbare lichamelijke en mentale energie naar 0% tot 13% (gemiddeld 6%).\n"
+                "• Het verschil tussen wat het loket denkt (83%) en wat je lichaam tijdens een storm overheeft (6%) is een kloof van 77 procentpunt.\n\n"
+                "Overzicht van de twee klokken en je 13-jarige bloedreeks:\n"
+            ),
+            "veld_emp": (
+                "Wat betekent dit voor jou?\n"
+                "• Over bijna 10 jaar (118 maanden) zijn 8 vaste geldstromen gecontroleerd (huur, energie, water, toeslagen, gemeente, CAK en incasso).\n"
+                "• De grote vaste lasten (zoals de huur) zijn vrijwel altijd netjes op tijd betaald.\n"
+                "• Toch vielen er in ongeveer 1 op de 5 maanden (24 van de 118 maanden) gaten in één van de nevenstromen (zoals water, toeslagen of jaarafrekeningen).\n\n"
+                "Kernpunten uit het overzicht:\n"
+            ),
+            "wwb_spec": (
+                "Wat betekent dit voor jou?\n"
+                "• Dit overzicht controleert de maandelijkse uitkeringsspecificaties van 2018 t/m 2025.\n"
+                "• Het laat precies zien wanneer de norm is aangepast en of er bedragen zijn ingehouden of verrekend.\n\n"
+                "Gevonden regels:\n"
+            ),
+            "tikhonov": (
+                "Wat betekent dit voor jou?\n"
+                "• We hebben gekeken of maanden met financiële klappen (zoals terugvorderingen, incasso's of uitval van toeslagen) gevolgen hebben voor je gezondheid.\n"
+                "• In de maanden vlak ná zo'n financiële schok (+1 maand later) ligt het aantal spoed- en huisartscontacten ruim 2 keer zo hoog als normaal (gemiddeld 0,62 acute zorgdagen tegen 0,26 normaal).\n"
+                "• Met andere woorden: ook als de huur gewoon doorloopt, betaalt je lichaam een maand later de rekening van de geldstress.\n\n"
+                "Belangrijkste voorbeelden uit je dossier:\n"
+            ),
+            "monodromy": (
+                "Wat betekent dit voor jou?\n"
+                "• Instanties wijzen er vaak op dat 'de vaste lasten toch gewoon betaald zijn'.\n"
+                "• Deze controle bewijst dat in 5 van de 8 zwaarste schokmaanden (zoals sept 2018, dec 2019 en mrt 2020) op papier inderdaad alles groen leek, maar dat de klap direct doorsloeg naar 5 tot 7 medische zorgdagen in de maand erna.\n\n"
+                "Overzicht van de 8 zwaarste maanden:\n"
+            ),
+            "clash": (
+                "Wat betekent dit voor jou?\n"
+                "• Deze controle leest de nieuwste brief van het loket en kijkt of de instantie je echt helpt of je met beleefde standaardzinnen afwimpelt.\n\n"
+                "Bevindingen:\n"
+            ),
+            "chunk": (
+                "Wat betekent dit voor jou?\n"
+                "• Deze controle kijkt je eigen conceptbrief na voordat je hem verstuurt.\n"
+                "• Hij controleert of je geen medische privégegevens weggeeft die het loket niet nodig heeft, en of de brief kort en zakelijk genoeg is.\n\n"
+                "Controle-uitslag:\n"
+            ),
+            "lab_signals": (
+                "Samenvatting van het Beurs-Experiment (Samenhang):\n"
+                "• Getest op 5 jaar dagelijkse koersen van de S&P 500, Bitcoin en Goud.\n"
+                "• Door niet alleen naar losse scores te kijken, maar naar hoe sterk de richtingen op elkaar botsen, stijgt de voorspellende waarde voor koersschommelingen op de S&P 500 van +0,22 naar +0,27 en op Bitcoin van +0,36 naar +0,44.\n\n"
+            ),
+            "lab_buffers": (
+                "Samenvatting van het Beurs-Experiment (Marktbuffers):\n"
+                "• Waarom waarschuwt een gewone koersgrafiek vaak te laat voor een beursdip? Omdat grote partijen en centrale banken kleine schokken gladstrijken zolang ze nog buffer hebben.\n"
+                "• Zodra we meten hoeveel dempingsbuffer er nog over is, schiet de waarschuwingsscore voor een koersval op de S&P 500 omhoog van -0,12 (misleidend rustig) naar +0,19 (duidelijk waarschuwend).\n\n"
+            ),
+            "lab_portfolio": (
+                "Samenvatting van de Portefeuille-Verdeling:\n"
+                "• Als je je geld verdeelt tussen Aandelen (S&P 500), Bitcoin, Goud en Kasgeld op basis van de gemeten marktbuffers, groeit het rendement in de testperiode van 18,4% naar 21,5% per jaar.\n"
+                "• Op dit moment adviseert de buffer-meter een voorzichtige weging met nadruk op Goud (~62%), Aandelen (~21%), Bitcoin (~10%) en Kasreserve (~7%).\n\n"
+            ),
+            "lab_distill": (
+                "Samenvatting van de AI-Training:\n"
+                "• Het grote NVIDIA-model (120 miljard parameters) heeft 5 voorbeeld-analyses gemaakt.\n"
+                "• Met die 5 voorbeelden als spiekbriefje ging het kleinste, snelste model (4 miljard parameters) op nieuwe vraagstukken direct van 20% goed naar 100% goed.\n\n"
+            ),
+            "lab_bio": (
+                "Samenvatting van het Biologie- & Stem-Experiment:\n"
+                "• Celsplitsing: laat zien dat een cel die te veel taken tegelijk krijgt vastloopt, en dat splitsen in 2 gespecialiseerde dochtercellen het probleem direct oplost.\n"
+                "• Natuur-verhoudingen: 44% van de 140 geteste natuur- en genoom-getallen valt precies op de 10 vaste verhoudingsgetallen.\n"
+                "• Stem-analyse: meet uit een geluidsopname direct de toonhoogte, trilling en stemspanning.\n\n"
+            ),
+            "lab_physics": (
+                "Samenvatting van het Fysica- & Kwaliteitsexperiment:\n"
+                "• IJzer-atoomrooster: laat op echte meetdata van ijzer zien dat trillingen niet oneindig klein kunnen worden, maar stoppen bij de rand van het atoomrooster.\n"
+                "• Rapport-controleur: heeft alle onderzoeksrapporten nagekeken op harde getallen en afwezigheid van vage uitvluchten.\n\n"
+            ),
+        }
+
+        intro = uitleg_per_key.get(
+            key,
+            "Wat betekent dit voor jou?\n• Hieronder staan de belangrijkste begrijpelijke regels uit de controle.\n• Klik rechtsboven op 'Toon technisch rapport' als je alle wiskundige tabellen en formules wilt zien.\n\n",
+        )
+
+        # Filter de meest leesbare regels uit de ruwe output (zonder zware LaTeX/formule-regels)
+        schone_regels = []
+        for line in raw.splitlines():
+            s = line.strip()
+            if not s:
+                continue
+            # Vervang LaTeX wiskunde door rustige tekst
+            s_clean = re.sub(r"\$[^$]+\$", "", s)
+            s_clean = s_clean.replace("**", "").replace("`", "")
+            if any(skip in s_clean for skip in ("Sym^+(3)", "\\mathcal", "\\lambda", "\\rho_\\perp", "det(g)")):
+                continue
+            schone_regels.append(s_clean)
+
+        kern_preview = "\n".join(schone_regels[:28])
+        footer = (
+            f"\n\n{'-' * 56}\n"
+            f"Tip: Wil je alle exacte tabellen en wiskundige formules zien? Klik dan op de knop 'Toon technisch rapport'."
+        )
+        return header + intro + kern_preview + footer
 
     def _start_analyse(self):
         item = self.analyse_list.currentItem()
@@ -1158,11 +1596,21 @@ class TafelWindow(QMainWindow):
             return
         key = item.data(Qt.ItemDataRole.UserRole)
         keuze = next((row for row in self._analyse_keuzes() if row[0] == key), None)
-        if keuze is None or not keuze[3]:
-            self.analyse_out.setPlainText("Deze analyse heeft nog geen stuk om op te lopen.")
+        if keuze is None or not keuze[4]:
+            self.analyse_out.setPlainText("Deze controle heeft nog geen bestand om op te draaien.")
             return
-        _key, titel, toelichting, argv = keuze
-        self.analyse_out.setPlainText(f"{titel}\n{toelichting}\n\n")
+        _key, _cat, titel, toelichting, argv = keuze
+        self._analyse_active_key = key
+        self._analyse_active_titel = titel
+        self._analyse_active_toelichting = toelichting
+        self._analyse_raw_text = f"{titel}\n{toelichting}\n\n"
+        self._analyse_human_text = ""
+        self._analyse_toon_technisch = False
+        self.analyse_toggle_tech.setEnabled(False)
+        self.analyse_toggle_tech.setText("Technisch rapport")
+        if hasattr(self, "analyse_to_tafel"):
+            self.analyse_to_tafel.setEnabled(False)
+        self.analyse_out.setPlainText(f"Bezig met controle:\n{titel}\n{toelichting}\n\nEven geduld...\n")
         self.analyse_start.setEnabled(False)
         self.analyse_process.start(argv[0], argv[1:])
 
@@ -1170,52 +1618,273 @@ class TafelWindow(QMainWindow):
         data = bytes(self.analyse_process.readAllStandardOutput()).decode("utf-8", errors="replace")
         if not data:
             return
-        self.analyse_out.moveCursor(QTextCursor.MoveOperation.End)
-        self.analyse_out.insertPlainText(data)
-        self.analyse_out.moveCursor(QTextCursor.MoveOperation.End)
+        self._analyse_raw_text += data
 
     def _analyse_klaar(self, code: int, _status):
         self.analyse_start.setEnabled(True)
-        self.analyse_out.moveCursor(QTextCursor.MoveOperation.End)
-        self.analyse_out.insertPlainText(f"\n\nKlaar, code {code}.\n")
+        self._analyse_raw_text += f"\n\n[Controle afgerond, code {code}]\n"
+        self._analyse_human_text = self._maak_mensentaal_samenvatting(
+            self._analyse_active_key,
+            self._analyse_active_titel,
+            self._analyse_active_toelichting,
+            self._analyse_raw_text,
+        )
+        self.analyse_toggle_tech.setEnabled(True)
+        if hasattr(self, "analyse_to_tafel"):
+            self.analyse_to_tafel.setEnabled(True)
+        self._analyse_toon_technisch = False
+        self.analyse_toggle_tech.setText("Technisch rapport")
+        self.analyse_out.setPlainText(self._analyse_human_text)
+
+    def _leg_analyse_op_tafel(self):
+        if not self._analyse_human_text:
+            return
+        kort = "\n".join(self._analyse_human_text.splitlines()[:16])
+        self.input_edit.setPlainText(f"Uitkomst uit Analyse ({self._analyse_active_titel}):\n{kort}\n\nWat is hierop jullie oordeel en eerstvolgende zet?")
+        self.input_edit.setFocus()
 
     def _refresh_case_tabs(self):
-        """Vult dossiers, stukken en de lijnen naar de loketten."""
+        """Vult dossiers, stukken en het overzicht."""
         dossiers, stukken, lijnen = self._read_case_shelves()
-        self._fill_dossiers(dossiers)
-        self._fill_stukken(stukken)
+        self._all_dossier_rows = dossiers
+        self._all_stukken_rows = stukken
+        self._apply_dossier_filter()
+        self._apply_post_filter()
         self._fill_list(self.list_lijnen, lijnen)
         self._vul_model()
 
+    def _apply_dossier_filter(self):
+        rows = getattr(self, "_all_dossier_rows", [])
+        query = (self.dossier_filter_edit.text().strip().lower() if hasattr(self, "dossier_filter_edit") else "")
+        if not query:
+            self._fill_dossiers(rows)
+            return
+        filtered = []
+        current_kop = None
+        kop_added = False
+        for kind, text, color, path in rows:
+            if kind == "kop":
+                current_kop = (kind, text, color, path)
+                kop_added = False
+                continue
+            hay = f"{text} {path or ''} {current_kop[1] if current_kop else ''}".lower()
+            if query in hay:
+                if current_kop and not kop_added:
+                    filtered.append(current_kop)
+                    kop_added = True
+                filtered.append((kind, text, color, path))
+        self._fill_dossiers(filtered)
+
+    def _set_post_filter(self, mode: str):
+        self._post_filter_mode = mode
+        if hasattr(self, "btn_post_all"):
+            self.btn_post_all.setChecked(mode == "alle")
+            self.btn_post_uit.setChecked(mode == "uit")
+            self.btn_post_in.setChecked(mode == "binnen")
+        self._apply_post_filter()
+
+    def _apply_post_filter(self):
+        rows = getattr(self, "_all_stukken_rows", [])
+        mode = getattr(self, "_post_filter_mode", "alle")
+        if mode == "uit":
+            rows = [(lbl, p) for lbl, p in rows if lbl.startswith(("uit", "outbox"))]
+        elif mode == "binnen":
+            rows = [(lbl, p) for lbl, p in rows if lbl.startswith("binnen")]
+        self._fill_stukken(rows)
+
+    def _open_selected_stuk(self):
+        item = self.list_stukken.currentItem()
+        if item:
+            self._open_stuk(item)
+
+    def _toets_selected_stuk(self):
+        item = self.list_stukken.currentItem()
+        if not item:
+            QMessageBox.information(self, "Briefpoort", "Selecteer eerst een brief of concept in de lijst.")
+            return
+        raw = item.data(Qt.ItemDataRole.UserRole)
+        if not raw or not Path(str(raw)).is_file():
+            return
+        pad = Path(str(raw))
+        tekst = pad.read_text(encoding="utf-8", errors="replace")
+        engine_dir = CASE_ROOT / "_engine"
+        if str(engine_dir) not in sys.path:
+            sys.path.insert(0, str(engine_dir))
+        try:
+            from two_gate_dispatcher import TwoGateDispatcher
+            res = TwoGateDispatcher(root_dir=CASE_ROOT).dispatch(
+                tekst,
+                slot_metadata={"name": "lokaal loket", "ingest_capacity": ["productcodes", "termijnen", "privacy"]},
+            )
+            allowed = res.get("allowed", False)
+            status_kop = "✅ BEIDE POORTEN GROEN (Veilig voor verzending)" if allowed else "🛑 POORT HOUDT BRIEF TEGEN"
+            uitleg = f"{status_kop}\n\nBestand: {pad.name}\nOordeel: {res.get('reason', '')}"
+            for v in res.get("veto", []):
+                if not v.get("passed", True):
+                    uitleg += f"\n\n• [{v.get('severity')}] {v.get('rule')}:\n  {v.get('message')}\n  Tip: {v.get('suggestion')}"
+            QMessageBox.information(self, f"Briefpoort — {pad.name}", uitleg)
+        except Exception as exc:
+            QMessageBox.warning(self, "Briefpoort", f"Kon poorttoets niet uitvoeren: {exc}")
+
+    def _sein_selected_stuk(self):
+        item = self.list_stukken.currentItem()
+        if not item:
+            QMessageBox.information(self, "Sein", "Selecteer eerst een brief of concept in de lijst.")
+            return
+        raw = item.data(Qt.ItemDataRole.UserRole)
+        if not raw or not Path(str(raw)).is_file():
+            return
+        pad = Path(str(raw))
+        tekst = pad.read_text(encoding="utf-8", errors="replace")
+        engine_dir = CASE_ROOT / "_engine"
+        if str(engine_dir) not in sys.path:
+            sys.path.insert(0, str(engine_dir))
+        try:
+            from two_gate_dispatcher import TwoGateDispatcher
+            res = TwoGateDispatcher(root_dir=CASE_ROOT).dispatch(
+                tekst,
+                slot_metadata={"name": "lokaal loket", "ingest_capacity": ["productcodes", "termijnen", "privacy"]},
+            )
+            if not res.get("allowed", False):
+                QMessageBox.warning(
+                    self,
+                    "Poort houdt brief tegen",
+                    f"Deze brief komt nog niet door de poort:\n\n{res.get('reason', '')}\n\n"
+                    "Pas het concept eerst aan of klik op 'Toets Poort' voor details.",
+                )
+                return
+        except Exception:
+            pass
+
+        schone_tekst = tekst.split("\n\n---\nDeze brief is nog niet verstuurd.", 1)[0].strip()
+        eml_path = AGY_WERK / "scratch" / f"{pad.stem}.eml"
+        eml_path.parent.mkdir(parents=True, exist_ok=True)
+        eml_inhoud = (
+            "To: \r\n"
+            f"Subject: {pad.stem.replace('_', ' ')}\r\n"
+            "MIME-Version: 1.0\r\n"
+            "Content-Type: text/plain; charset=utf-8\r\n\r\n"
+            f"{schone_tekst}\r\n"
+        )
+        eml_path.write_text(eml_inhoud, encoding="utf-8")
+        os.startfile(str(eml_path))
+
     def _model_link_clicked(self, url: QUrl):
         raw = url.toString()
+        if raw == "welstand:rapport":
+            from welstand_model import compute_welstand, format_markdown_report
+            rep_path = AGY_WERK / "scratch" / "WELSTAND_RAPPORT_LIVE.md"
+            rep_path.parent.mkdir(parents=True, exist_ok=True)
+            rep_path.write_text(format_markdown_report(compute_welstand()), encoding="utf-8")
+            MarkdownViewer(rep_path, self).exec()
+            return
+        if raw == "welstand:cytokine":
+            rap = WORKSPACE / "Analyses" / "Rapporten" / "2026-10-25_TWEE_KLOKKEN_LOKET_VS_CYTOKINE_VT_RAPPORT.md"
+            if rap.exists():
+                MarkdownViewer(rap, self).exec()
+            return
+        if raw == "welstand:ketenstatus":
+            keten_dir = CASE_ROOT / "Ketengrootboek"
+            if str(keten_dir) not in sys.path:
+                sys.path.insert(0, str(keten_dir))
+            from sluiting import SluitingsToetser
+            md_txt = SluitingsToetser(root_dir=keten_dir).formatteer_ketenintegriteit_markdown()
+            rep_path = AGY_WERK / "scratch" / "KETENINTEGRITEIT_LIVE.md"
+            rep_path.parent.mkdir(parents=True, exist_ok=True)
+            rep_path.write_text(md_txt, encoding="utf-8")
+            MarkdownViewer(rep_path, self).exec()
+            return
         if raw.startswith("file:///"):
             path_str = url.toLocalFile()
             p = Path(path_str)
             if p.suffix.lower() == ".md":
-                self.open_source_document(p)
+                MarkdownViewer(p, self).exec()
             else:
                 try:
                     os.startfile(str(p))
                 except Exception:
-                    self.open_source_document(p)
+                    pass
         elif raw.startswith("filter:"):
-            self.case_tabs.setCurrentIndex(2)
+            domein = raw.split(":", 1)[1].strip().lower()
+            zoek_map = {"lichaam": "zorg", "geest": "wmo", "bestaan": "geld"}
+            if hasattr(self, "dossier_filter_edit"):
+                self.dossier_filter_edit.setText(zoek_map.get(domein, domein))
+            self.case_tabs.setCurrentIndex(1)
 
     def _vul_model(self):
         import html
+        from welstand_model import compute_welstand
+        snap = compute_welstand()
         intern, extern = model_overzicht()
+
+        # Lees ook de Tweede Klok v(t) (Lichaam / Cytokinestorm) indien aanwezig
+        v_vloer_pct = 41
+        c_vloer_pct = 59
+        v_storm_pct = 94
+        c_storm_pct = 6
+        kloof_pct = 77
+        vt_json = WORKSPACE / "Analyses" / "Rapporten" / "drager_cytokine_klok_vt.json"
+        if vt_json.exists():
+            try:
+                vt_data = json.loads(vt_json.read_text(encoding="utf-8"))
+                v_vloer_pct = round(float(vt_data.get("v_vloer_baseline", 0.41)) * 100)
+                c_vloer_pct = round(float(vt_data.get("C_exec_vloer", 0.59)) * 100)
+                v_storm_pct = round(float(vt_data.get("v_storm_mean", 0.94)) * 100)
+                c_storm_pct = round(float(vt_data.get("C_exec_storm_mean", 0.06)) * 100)
+                kloof_pct = round(float(vt_data.get("gemiddelde_gevel_kloof", 0.77)) * 100)
+            except Exception:
+                pass
+
         delen = [
-            "<div style='background:rgba(212,175,55,0.06); border:1px solid rgba(212,175,55,0.22); "
-            "border-radius:4px; padding:6px 10px; margin:0 0 14px 0; font-family:JetBrains Mono,monospace;'>"
-            "<span style='color:#D4AF37; font-size:11px; font-weight:700; letter-spacing:1px;'>CYBERNETISCH MODEL (TRF 2.1 / 3.5 & CANON 11)</span><br>"
-            "<span style='color:#94a3b8; font-size:11px;'>Agency w: <b style='color:#5eead4;'>0.18</b> | "
-            "θ_em: <b style='color:#fdba74;'>46°</b> | "
-            "Ψ_res: <b style='color:#f87171;'>-0.43</b> | "
-            "Regime: <b style='color:#cbd5e1;'>Regime C (Zelfbehoud)</b></span></div>",
-            "<p style='color:#D4AF37; font-family:JetBrains Mono,monospace; "
-            "font-size:12px; letter-spacing:1.2px; margin:0 0 8px 0; font-weight:700;'>INTERN (Lichaam, Geest, Bestaan)</p>"
+            # KLOK 1: LOKETTEN & BRIEVENBUS
+            "<div style='background:rgba(212,175,55,0.06); border:1px solid rgba(212,175,55,0.24); "
+            "border-radius:6px; padding:7px 10px; margin:0 0 8px 0; font-family:JetBrains Mono,monospace;'>"
+            "<a href='welstand:rapport' style='color:#D4AF37; font-size:11px; font-weight:700; text-decoration:none;'>"
+            "1. LOKET-KLOK (Brievenbus &amp; Administratie) ↗</a><br>"
+            f"<span style='color:#cbd5e1; font-size:11px;'>Wonen/Zorg <b style='color:#5eead4;'>{snap.q_G*100:.0f}%</b> · "
+            f"Brieven <b style='color:#d8b4fe;'>{snap.q_I*100:.0f}%</b> · "
+            f"Inkomen <b style='color:#4ade80;'>{snap.q_D*100:.0f}%</b></span><br>"
+            "<span style='color:#94a3b8; font-size:10px;'>Brieven liggen bij de 19 loketten — buitenkant staat daardoor op 'rust'.</span></div>",
+
+            # KLOK 2: LICHAAM & CYTOKINESTORM v(t)
+            "<div style='background:rgba(248,113,113,0.08); border:1px solid rgba(248,113,113,0.32); "
+            "border-radius:6px; padding:7px 10px; margin:0 0 8px 0; font-family:JetBrains Mono,monospace;'>"
+            "<a href='welstand:cytokine' style='color:#f87171; font-size:11px; font-weight:700; text-decoration:none;'>"
+            "2. LICHAAMS-KLOK v(t) (13 jr Bloedreeks &amp; Cytokinestorm) ↗</a><br>"
+            f"<span style='color:#cbd5e1; font-size:11px;'>Ontstekingsvloer: <b style='color:#fbbf24;'>{v_vloer_pct}% druk</b> "
+            f"(max <b style='color:#fbbf24;'>{c_vloer_pct}%</b> energie)</span><br>"
+            f"<span style='color:#cbd5e1; font-size:11px;'>Bij cytokinestorm: <b style='color:#f87171;'>{v_storm_pct}% druk</b> "
+            f"(nog <b style='color:#f87171;'>{c_storm_pct}%</b> energie · <b style='color:#f87171;'>{kloof_pct}% kloof</b>)</span></div>",
         ]
+
+        # BLOK 3: KETENINTEGRITEIT (Simon Stevin 3 Sluitingskenmerken: Rekenkundig, Procedureel, Materieel)
+        try:
+            keten_dir = CASE_ROOT / "Ketengrootboek"
+            if str(keten_dir) not in sys.path:
+                sys.path.insert(0, str(keten_dir))
+            from sluiting import SluitingsToetser
+            ks = SluitingsToetser(root_dir=keten_dir).ketenstatus_overzicht()
+            tot_p = ks["totaal_posten"]
+            rek_lbl = "<b style='color:#4ade80;'>Ja</b>" if ks["rekenkundig_sluitend"] else f"<b style='color:#f87171;'>Nee ({len(ks['tegenstrijdigheden'])} conflict)</b>"
+            proc_lbl = f"<b style='color:#fbbf24;'>Ja ({ks['procedureel_gesloten_aantal']}/{tot_p})</b>"
+            mat_lbl = "<b style='color:#4ade80;'>Ja</b>" if ks["materieel_vereffend"] else f"<b style='color:#f87171;'>Nee ({ks['materieel_vereffend_aantal']}/{tot_p})</b>"
+            delen.append(
+                "<div style='background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.32); "
+                "border-radius:6px; padding:7px 10px; margin:0 0 14px 0; font-family:JetBrains Mono,monospace;'>"
+                "<a href='welstand:ketenstatus' style='color:#60a5fa; font-size:11px; font-weight:700; text-decoration:none;'>"
+                "3. KETENSTATUS (Stevin 3 Boeken &amp; Sluiting) ↗</a><br>"
+                f"<span style='color:#cbd5e1; font-size:11px;'>Rekenkundig: {rek_lbl} · "
+                f"Procedureel: {proc_lbl} · "
+                f"Materieel: {mat_lbl}</span><br>"
+                "<span style='color:#fbbf24; font-size:10px;'>⚠️ Schijnsluiting &amp; Tegenstrijdige Registratie — klik voor de 9 velden per post.</span></div>"
+            )
+        except Exception:
+            pass
+
+        delen.append(
+            "<p style='color:#D4AF37; font-family:JetBrains Mono,monospace; "
+            "font-size:12px; letter-spacing:1.2px; margin:0 0 8px 0; font-weight:700;'>INTERN (Klik om Dossiers te filteren)</p>"
+        )
         for title, color, aantal, laatst, p_laatst in intern:
             if p_laatst:
                 uri = QUrl.fromLocalFile(str(p_laatst)).toString()
@@ -1224,30 +1893,36 @@ class TafelWindow(QMainWindow):
                 laatst_html = html.escape(laatst) if laatst else "nog geen stuk"
             delen.append(
                 f"<p style='margin:0 0 12px 0; line-height:1.45; font-family:JetBrains Mono,monospace;'>"
-                f"<a href='filter:{title}' style='color:{color}; font-size:15px; font-weight:700; text-decoration:none;'>{html.escape(title)}</a><br>"
-                f"<span style='color:#cbd5e1; font-size:12px;'>{aantal} stukken</span><br>"
+                f"<a href='filter:{title}' style='color:{color}; font-size:14px; font-weight:700; text-decoration:none;'>{html.escape(title)} ({aantal} stukken) 🔎</a><br>"
                 f"<span style='font-size:11px;'>● {laatst_html}</span></p>"
             )
         delen.append(
             "<p style='color:#D4AF37; font-family:JetBrains Mono,monospace; "
-            "font-size:12px; letter-spacing:1.2px; margin:14px 0 8px 0; font-weight:700;'>EXTERN (Loketten & In/Uit Lijnen)</p>"
+            "font-size:12px; letter-spacing:1.2px; margin:14px 0 8px 0; font-weight:700;'>LOKETTEN (In &amp; Uit Lijnen)</p>"
         )
         for label, binnen, p_in, uit, p_uit in extern:
             if p_in:
                 uri_in = QUrl.fromLocalFile(str(p_in)).toString()
-                in_html = f"<a href='{uri_in}' style='color:#93c5fd; text-decoration:none;'>in  {html.escape(binnen)}</a>"
+                in_html = f"<a href='{uri_in}' style='color:#93c5fd; text-decoration:none;'>📥 in:  {html.escape(binnen)}</a>"
             else:
-                in_html = f"<span style='color:#64748b;'>in  {html.escape(binnen)}</span>"
+                in_html = f"<span style='color:#64748b;'>📥 in:  {html.escape(binnen)}</span>"
 
             if p_uit:
                 uri_uit = QUrl.fromLocalFile(str(p_uit)).toString()
-                uit_html = f"<a href='{uri_uit}' style='color:#fdba74; text-decoration:none;'>uit {html.escape(uit)}</a>"
+                uit_html = f"<a href='{uri_uit}' style='color:#fdba74; text-decoration:none;'>📤 uit: {html.escape(uit)}</a>"
             else:
-                uit_html = f"<span style='color:#64748b;'>uit {html.escape(uit)}</span>"
+                uit_html = f"<span style='color:#64748b;'>📤 uit: {html.escape(uit)}</span>"
+
+            if p_uit and (not p_in or p_uit.stat().st_mtime >= p_in.stat().st_mtime):
+                status_badge = "<span style='color:#fbbf24; font-size:10px;'>⏳ wacht op loket</span>"
+            elif p_in:
+                status_badge = "<span style='color:#4ade80; font-size:10px;'>🟢 stuk binnen</span>"
+            else:
+                status_badge = "<span style='color:#64748b; font-size:10px;'>⚪ stil</span>"
 
             delen.append(
                 "<p style='margin:0 0 10px 0; line-height:1.4; font-family:JetBrains Mono,monospace;'>"
-                f"<span style='color:#e2e8f0; font-size:13px; font-weight:600;'>{html.escape(label)}</span><br>"
+                f"<span style='color:#e2e8f0; font-size:13px; font-weight:600;'>{html.escape(label)}</span> {status_badge}<br>"
                 f"<span style='font-size:11px;'>{in_html}</span><br>"
                 f"<span style='font-size:11px;'>{uit_html}</span></p>"
             )
@@ -1644,6 +2319,8 @@ class TafelWindow(QMainWindow):
             return "Mistral"
         if "qwen" in low:
             return "Qwen"
+        if "nvidia" in low or "nemotron" in low:
+            return "NVIDIA"
         return "Xander"
 
     def address_seat(self, seat_key: str):
@@ -1688,6 +2365,7 @@ class TafelWindow(QMainWindow):
             "Mistral Large (Mistral AI API)",
             "Gemini Argon CLI SDK (gemini-4-argon)",
             "Gemini 3.8 Flash (Google API)",
+            "NVIDIA Nemotron 3.5 Super VL (vrij eindpunt)",
         ]
         item, ok = QInputDialog.getItem(self, "Model Aanschuiven", "Kies een model om aan tafel te schuiven:", items, 0, False)
         if not ok or not item:
@@ -1711,7 +2389,13 @@ class TafelWindow(QMainWindow):
             label = "@Mistral"
             model_key = "mistral"
             color = "#f97316"
-            subtitle = "Mistral AI / NVIDIA NIM"
+            subtitle = "Mistral AI API"
+        elif "nvidia" in low or "nemotron" in low:
+            seat_name = "NVIDIA"
+            label = "@NVIDIA"
+            model_key = "nvidia"
+            color = "#76b900"
+            subtitle = "nemotron-3.5-super-vl · vrij eindpunt"
         elif "flash" in low or "gemini" in low:
             seat_name = "Gemini"
             label = "@Gemini 3.8 Flash"
@@ -1757,9 +2441,8 @@ class TafelWindow(QMainWindow):
         missing_key = None
         if model_key == "mistral":
             val = os.environ.get("MISTRAL_API_KEY", "")
-            nv_val = os.environ.get("NVIDIA_API_KEY", "")
-            if (not val or val == "vul_hier_in") and (not nv_val or nv_val == "vul_hier_in"):
-                missing_key = "MISTRAL_API_KEY of NVIDIA_API_KEY"
+            if not val or val == "vul_hier_in":
+                missing_key = "MISTRAL_API_KEY"
         elif model_key == "qwen":
             val = os.environ.get("GROQ_API_KEY", "")
             if not val or val == "vul_hier_in":
@@ -1798,6 +2481,133 @@ class TafelWindow(QMainWindow):
     def toggle_sound(self):
         self.sound_enabled = not self.sound_enabled
         self.btn_sound.setText("🔔 Geluid: AAN" if self.sound_enabled else "🔕 Geluid: UIT")
+
+    def action_setup_environment(self):
+        """Richt de lokale omgeving in, toont het stappenplan met Waarom & Doel en start de agent-begeleiding."""
+        try:
+            from omgeving_inrichter import (
+                genereer_stappenplan_markdown,
+                plaats_start_op_tafel,
+                voer_inrichting_uit,
+            )
+        except Exception as exc:
+            QMessageBox.warning(self, "Omgeving Inrichten", f"Kon inrichter niet laden: {exc}")
+            return
+
+        status = voer_inrichting_uit()
+        md_tekst = genereer_stappenplan_markdown(status)
+        stappen_pad = AGY_WERK / "scratch" / "OMGEVING_INRICHTEN_STAPPENPLAN.md"
+        stappen_pad.parent.mkdir(parents=True, exist_ok=True)
+        stappen_pad.write_text(md_tekst, encoding="utf-8")
+
+        dlg = QDialog(self)
+        dlg.setWindowTitle("🛠️ Omgeving Inrichten — Stappenplan, Waarom & Doel")
+        dlg.resize(880, 720)
+        lay = QVBoxLayout(dlg)
+        lay.setContentsMargins(18, 16, 18, 16)
+        lay.setSpacing(10)
+
+        view = QTextEdit()
+        view.setReadOnly(True)
+        view.setObjectName("md-view")
+        font = QFont("JetBrains Mono", 13)
+        font.setStyleHint(QFont.StyleHint.Monospace)
+        view.setFont(font)
+        view.document().setDefaultFont(font)
+        view.setStyleSheet(
+            "QTextEdit#md-view { background: #100b1c; color: #e2e8f0; "
+            "font-family: 'JetBrains Mono', monospace; font-size: 13pt; "
+            "border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 6px; padding: 10px; }"
+        )
+        view.setMarkdown(md_tekst)
+        MarkdownViewer._zet_regelafstand(view, font)
+        lay.addWidget(view, 1)
+
+        knop_rij = QHBoxLayout()
+        btn_tafel = QPushButton("💬 Leg Stappenplan op Tafel & Start met Agent (+agy)")
+        btn_tafel.setObjectName("btn-send")
+        btn_tafel.setCursor(Qt.CursorShape.PointingHandCursor)
+
+        def _op_tafel():
+            plaats_start_op_tafel(status)
+            self.check_and_refresh_tafel()
+            self.address_seat("agy")
+            dlg.accept()
+
+        btn_tafel.clicked.connect(_op_tafel)
+
+        btn_open_nv = QPushButton("🌐 1. Haal Gratis NVIDIA-Sleutel (via Google-login)")
+        btn_open_nv.setObjectName("btn-action")
+        btn_open_nv.setCursor(Qt.CursorShape.PointingHandCursor)
+        btn_open_nv.setToolTip("Opent build.nvidia.com/settings/api-keys. Log daar in met 'Continue with Google' (je Gmail) en kopieer de nvapi-... sleutel.")
+        btn_open_nv.clicked.connect(lambda: os.startfile("https://build.nvidia.com/settings/api-keys"))
+
+        btn_plak_key = QPushButton("📋 2. Plak Sleutel van Klembord")
+        btn_plak_key.setObjectName("btn-action-gold")
+        btn_plak_key.setCursor(Qt.CursorShape.PointingHandCursor)
+        btn_plak_key.setToolTip("Leest de gekopieerde sleutel (nvapi-..., AIza..., gsk_..., sk-...) direct van je klembord en slaat hem veilig op in je Windows-omgeving.")
+
+        def _plak_sleutel():
+            clip_txt = (QApplication.clipboard().text() or "").strip()
+            if not clip_txt or len(clip_txt) < 12 or " " in clip_txt:
+                clip_txt, ok_in = QInputDialog.getText(
+                    dlg,
+                    "Sleutel Plakken",
+                    "Plak hier je gekopieerde API-sleutel (bijv. nvapi-... van NVIDIA of AIza... van Google):",
+                )
+                if not ok_in or not clip_txt.strip():
+                    return
+                clip_txt = clip_txt.strip()
+
+            if clip_txt.startswith("nvapi-"):
+                env_var = "NVIDIA_API_KEY"
+                huis_naam = "NVIDIA (Nemotron 120B + GPT-OSS 20B + MiniMax)"
+            elif clip_txt.startswith("AIza"):
+                env_var = "GOOGLE_API_KEY"
+                huis_naam = "Google Gemini"
+            elif clip_txt.startswith("gsk_"):
+                env_var = "GROQ_API_KEY"
+                huis_naam = "Groq (Qwen / Llama)"
+            elif clip_txt.startswith("sk-or-"):
+                env_var = "OPENROUTER_API_KEY"
+                huis_naam = "OpenRouter (Grok)"
+            else:
+                env_var = "DEEPSEEK_API_KEY"
+                huis_naam = "DeepSeek / Anders"
+
+            os.environ[env_var] = clip_txt
+            if os.name == "nt":
+                try:
+                    import winreg
+                    with winreg.OpenKey(winreg.HKEY_CURRENT_USER, "Environment", 0, winreg.KEY_SET_VALUE) as rk:
+                        winreg.SetValueEx(rk, env_var, 0, winreg.REG_SZ, clip_txt)
+                except Exception:
+                    pass
+            nieuw_st = voer_inrichting_uit()
+            view.setMarkdown(genereer_stappenplan_markdown(nieuw_st))
+            MarkdownViewer._zet_regelafstand(view, font)
+            QMessageBox.information(
+                dlg,
+                "Sleutel Geactiveerd",
+                f"✅ Herkend en veilig opgeslagen in je Windows-omgeving:\n\n"
+                f"• Variabele: {env_var}\n"
+                f"• Modelhuis: {huis_naam}\n\n"
+                f"Je hoeft geen terminal of bestand te openen; de modellen staan direct klaar!",
+            )
+
+        btn_plak_key.clicked.connect(_plak_sleutel)
+
+        btn_sluit = QPushButton("Sluiten")
+        btn_sluit.setObjectName("btn-sound")
+        btn_sluit.clicked.connect(dlg.reject)
+
+        knop_rij.addWidget(btn_tafel, 2)
+        knop_rij.addWidget(btn_open_nv, 1)
+        knop_rij.addWidget(btn_plak_key, 1)
+        knop_rij.addWidget(btn_sluit)
+        lay.addLayout(knop_rij)
+
+        dlg.exec()
 
 
 def main():

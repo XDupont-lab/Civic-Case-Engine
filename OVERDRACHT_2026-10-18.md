@@ -1,6 +1,13 @@
-# Overdracht Civic Helper — 18 oktober 2026
+# Overdracht Civic Helper — Bijgewerkt 25 oktober 2026
 
+> **BELANGRIJK VOOR ELKE AGENT (Actuele Stand 25 okt 2026):**
+> - **Het actuele venster is `Civic Helper 0.3 — Tafel`** (`E:\LLM_Workspace\Shared_Tools\tafel_gui.py`, gesynchroniseerd met `CivicHelper/gui/tafel_gui.py`). Starten via `CivicHelper.cmd` of `start-tafel.cmd`.
+> - **Werk NIET meer aan het oude roomwitte `hulp/venster.py`**; dat was de vroege tussenstap van 18 oktober en is volledig opgegaan in `Civic Helper 0.3 — Tafel` (met de 4 tabbladen `Overzicht | Dossiers | Brieven | Analyse`, de Twee Klokken én het 3-Boekenstelsel van Simon Stevin).
+> - **Voor het 3-Boeken-Registratiesysteem (Memoriaal, Journaal, Grootboek):** lees direct **`CivicHelper/Ketengrootboek/AGENTS.md`**.
 
+---
+
+*(Historische notitie van 18 oktober 2026 hieronder bewaard ter referentie)*
 
 Vers scherm: lees dit bestand. Daarna `APPLICATIE_SPECIFICATIE.md`. Bouw niet de hele tabel. De specificatie is de maat. Er is nog geen ontkieming gedraaid.
 

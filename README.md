@@ -23,7 +23,7 @@ Wat hieronder staat is de architectuurnotitie. De definitie hierboven is de deur
 3. Een schone computer begint bij `ontkiem.py`. Eén gewoon mailadres is genoeg om te starten. Een sleutel blijft in de omgeving. Het venster vraagt er niet om.
 4. `START.cmd` en `start_linux.sh` zijn het menu voor de bouwer. Dat menu is niet de deur.
 
-Of een overdracht sluit, toetst `Ketengrootboek/sluiting.py`. Ontbreekt de tegenboeking, dan blijft de post open. Het openbare voorbeeld heet Voorbeeldstad. Een pad naar een eigen dossier hoort niet in `interfaces.json`.
+Of een overdracht sluit, toetst `Ketengrootboek/sluiting.py` aan de hand van de drie boeken van Simon Stevin (Memoriaal, Journaal, Grootboek) en drie afzonderlijke sluitingskenmerken (*rekenkundig sluitend*, *procedureel gesloten*, *materieel vereffend*). De operationele gids voor agenten staat in [`Ketengrootboek/AGENTS.md`](Ketengrootboek/AGENTS.md). Ontbreekt de materiële tegenboeking, dan blijft de post open. Het openbare voorbeeld heet Voorbeeldstad. Een pad naar een eigen dossier hoort niet in `interfaces.json`.
 
 ---
 

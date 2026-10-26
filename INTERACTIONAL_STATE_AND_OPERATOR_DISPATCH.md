@@ -93,7 +93,7 @@ $$\Omega = \{\mathbf{ASK}, \; \mathbf{CONFIRM}, \; \mathbf{WAIT}, \; \mathbf{ESC
   {
     "action": "WAIT",
     "reason": "OTHER_ACTOR_HAS_OPEN_COMMITMENT",
-    "target_actor": "Lennart Top (Sociaal Team Oost)",
+    "target_actor": "Casemanager (Sociaal Team Voorbeeldstad)",
     "legal_risk": "LOW",
     "relational_risk_if_escalated": "CRITICAL",
     "timeout": "2026-10-09T17:00:00"

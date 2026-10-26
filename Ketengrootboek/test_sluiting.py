@@ -136,6 +136,85 @@ class TestKetengrootboekSluiting(unittest.TestCase):
         self.assertTrue(res["tegen_feit_ok"])
         self.assertEqual(len(res["ontbrekend"]), 0)
         self.assertTrue(res["fase"].startswith("FASE 3"))
+        self.assertTrue(res["rekenkundig_sluitend"])
+        self.assertTrue(res["procedureel_gesloten"])
+        self.assertTrue(res["materieel_vereffend"])
+        self.assertEqual(res["keten_diagnose"], "MATERIEEL_VEREFFEND")
+
+    def test_doorverwijzing_zonder_uitvoering_geeft_schijnsluiting(self):
+        """Test 2: Doorverwijzing zonder aantoonbare uitvoering is procedureel gesloten,
+        maar materieel NIET vereffend (SCHIJNSLUITING).
+        """
+        post = copy.deepcopy(next(p for p in self.posten_lijst if p["post_id"] == "POST-WONEN-WMO-001"))
+        feiten_mock = copy.deepcopy(self.feiten_index)
+        feiten_mock["EVT-DOORVERWIJZING-01"] = {
+            "id": "EVT-DOORVERWIJZING-01",
+            "type": "doorverwijzing_zonder_uitvoering",
+            "bestand_gevonden": True,
+            "sha256": "11223344556677889900",
+            "omschrijving": "Loket verwijst door naar ander team en sluit eigen melding af.",
+        }
+        post["tegen_feit"] = "EVT-DOORVERWIJZING-01"
+        res = self.toetser.toets_post(post, feiten_mock)
+        self.assertTrue(res["rekenkundig_sluitend"])
+        self.assertTrue(res["procedureel_gesloten"])
+        self.assertFalse(res["materieel_vereffend"])
+        self.assertEqual(res["keten_diagnose"], "SCHIJNSLUITING")
+        self.assertEqual(res["werklexicon_code"], "ATE_LOKALE_AFSLUITING_ZONDER_KETENVERVOLG")
+
+    def test_niet_overschrijvings_invariant_laag1_vs_laag3(self):
+        """Test 4: Een latere interpretatie (Laag 3) mag de oorspronkelijke waarneming (Laag 1)
+        nooit wijzigen, verwijderen of stilzwijgend vervangen.
+        """
+        origineel = copy.deepcopy(self.feiten_index["EVT-CORP-20260715"])
+        met_interpretatie = self.toetser.voeg_interpretatie_toe(
+            origineel,
+            classificatie="Geen acute Wmo-hulpvraag volgens loket",
+            actor="Sociaal Team",
+            datum="2026-07-17",
+            betwist=True,
+        )
+        # Laag 1 moet 100% intact zijn
+        self.assertTrue(self.toetser.verifieer_niet_overschrijving(origineel, met_interpretatie))
+        self.assertEqual(met_interpretatie["omschrijving"], origineel["omschrijving"])
+        self.assertEqual(met_interpretatie["sha256"], origineel["sha256"])
+        self.assertTrue(met_interpretatie["betwist"])
+        self.assertEqual(
+            len(met_interpretatie["interpretatie_historie"]),
+            len(origineel.get("interpretatie_historie", [])) + 1,
+        )
+
+        # Poging om Laag 1 waarneming te overschrijven moet falen
+        vervalst = copy.deepcopy(met_interpretatie)
+        vervalst["omschrijving"] = "Cliënt had geen zorgvraag"
+        with self.assertRaises(ValueError):
+            self.toetser.verifieer_niet_overschrijving(origineel, vervalst)
+
+    def test_tegenstrijdige_registraties_tussen_twee_loketten(self):
+        """Test 5: Tegenstrijdige registraties bij twee loketten (bijv. Vektis Status N vs. Menzis premie-incasso)
+        moeten als rekenkundig_sluitend=False en TEGENSTRIJDIGE_REGISTRATIE zichtbaar blijven,
+        ook wanneer beide administraties procedureel gesloten zijn.
+        """
+        post_vektis = next(p for p in self.posten_lijst if p["post_id"] == "POST-VEKTIS-MENZIS-004")
+        res = self.toetser.toets_post(post_vektis, self.feiten_index)
+        self.assertFalse(res["rekenkundig_sluitend"])
+        self.assertTrue(res["procedureel_gesloten"])
+        self.assertFalse(res["materieel_vereffend"])
+        self.assertEqual(res["keten_diagnose"], "TEGENSTRIJDIGE_REGISTRATIE")
+        self.assertEqual(res["werklexicon_code"], "STASIS_TEGENSTRIJDIGE_WERKELIJKHEID")
+
+    def test_drie_boeken_rekeningen_grootboek_en_terugwaartse_herleidbaarheid(self):
+        """Test 6: Boek 3 (Grootboek per Rekening) reconstrueert de positie per loket
+        en herleidt elke rekening terug naar het Journaal (Boek 2) en het Memoriaal (Boek 1).
+        """
+        grootboek = self.toetser.bouw_rekeningen_grootboek()
+        self.assertGreaterEqual(len(grootboek), 5)
+        wmo_rekeningen = self.toetser.herleid_rekening("wmo")
+        self.assertTrue(len(wmo_rekeningen) >= 1)
+        wmo = wmo_rekeningen[0]
+        self.assertFalse(wmo["materieel_vereffend"])
+        self.assertGreaterEqual(wmo["open_verplichtingen_aantal"], 1)
+        self.assertTrue(any("EVT-" in spoor for spoor in wmo["herleidbare_bewijsstukken"]))
 
 
 if __name__ == "__main__":
