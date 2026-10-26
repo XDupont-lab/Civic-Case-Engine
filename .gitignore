@@ -26,6 +26,7 @@ send_*.py
 # Ketengrootboek persoonlijke saldi
 Ketengrootboek/journaal.json
 Ketengrootboek/saldo.json
+Ketengrootboek/*.beancount
 
 
 # Dynamische inkomende en uitgaande post (alleen templates en .gitkeep blijven getrackt)

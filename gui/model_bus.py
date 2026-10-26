@@ -1,8 +1,9 @@
 """Eén deur naar de modelhuizen.
 
-DeepSeek, Gemini, Mistral, Qwen en Grok. De sleutel blijft in de omgeving.
-Elke tekst wordt gemaskeerd voordat zij het huis bereikt, en lokaal hersteld
-in het antwoord.
+Gratis instap met 1 Gmail-account (agy / Gemini Flash) + 1 gratis NVIDIA-registratie
+(meerdere onafhankelijke modelfamilies op integrate.api.nvidia.com: Nemotron 120B,
+OpenAI GPT-OSS 20B, MiniMax M3.1 Flash), plus optioneel DeepSeek, Mistral, Qwen en Grok.
+De sleutel blijft in de omgeving. Elke tekst wordt lokaal gemaskeerd via pii_mask.py.
 """
 
 import json
@@ -38,7 +39,19 @@ _HOUSES = {
     "nvidia": {
         "env": "NVIDIA_API_KEY",
         "url": "https://integrate.api.nvidia.com/v1/chat/completions",
-        "model": "mistralai/mistral-large-2-instruct",
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "style": "openai",
+    },
+    "nvidia_gpt": {
+        "env": "NVIDIA_API_KEY",
+        "url": "https://integrate.api.nvidia.com/v1/chat/completions",
+        "model": "openai/gpt-oss-20b",
+        "style": "openai",
+    },
+    "nvidia_minimax": {
+        "env": "NVIDIA_API_KEY",
+        "url": "https://integrate.api.nvidia.com/v1/chat/completions",
+        "model": "minimaxai/minimax-m3.1-flash",
         "style": "openai",
     },
     "grok": {
@@ -57,12 +70,33 @@ _HOUSES = {
 
 
 def _load_env():
-    # Zoekt naar .env in huidige map, bovenliggende map, of workspace
+    if os.name == "nt":
+        try:
+            import winreg
+            with winreg.OpenKey(winreg.HKEY_CURRENT_USER, "Environment") as reg_key:
+                for env_name in (
+                    "DEEPSEEK_API_KEY",
+                    "MISTRAL_API_KEY",
+                    "GROQ_API_KEY",
+                    "NVIDIA_API_KEY",
+                    "OPENROUTER_API_KEY",
+                    "GOOGLE_API_KEY",
+                ):
+                    if env_name not in os.environ:
+                        try:
+                            val, _ = winreg.QueryValueEx(reg_key, env_name)
+                            if val and str(val).strip() and str(val).strip() != "vul_hier_in":
+                                os.environ[env_name] = str(val).strip()
+                        except FileNotFoundError:
+                            pass
+        except Exception:
+            pass
     candidates = [
         Path(__file__).resolve().parent / ".env",
         Path(__file__).resolve().parent.parent / ".env",
+        Path(__file__).resolve().parent.parent / "Shared_Tools" / ".env",
+        Path(__file__).resolve().parent.parent.parent / "Shared_Tools" / ".env",
         Path(os.environ.get("CIVIC_WORKSPACE", "")) / ".env" if os.environ.get("CIVIC_WORKSPACE") else None,
-        Path(r"E:\LLM_Workspace\.env") if Path(r"E:\LLM_Workspace\.env").exists() else None,
     ]
     for env_path in candidates:
         if env_path and env_path.exists():
@@ -77,6 +111,20 @@ def _load_env():
                     os.environ[key] = value
 
 
+def available():
+    """Geeft per modelhuis terug of er een sleutel in de omgeving staat (zonder de sleutel zelf te tonen)."""
+    _load_env()
+    status = {}
+    nv_ok = bool(os.environ.get("NVIDIA_API_KEY", "") and os.environ.get("NVIDIA_API_KEY") != "vul_hier_in")
+    for name, spec in _HOUSES.items():
+        val = os.environ.get(spec["env"], "")
+        if name in ("mistral", "deepseek", "grok") and (not val or val == "vul_hier_in") and nv_ok:
+            status[name] = True
+        else:
+            status[name] = bool(val and val != "vul_hier_in")
+    return status
+
+
 def complete(house, system, user, model=None, temperature=0.2, max_tokens=2048):
     """Stuur system en user naar één huis. Antwoord is lokaal hersteld."""
     name = (house or "").strip().lower()
@@ -88,13 +136,16 @@ def complete(house, system, user, model=None, temperature=0.2, max_tokens=2048):
     url = spec["url"]
     chosen = model or spec["model"]
 
-    if name == "mistral" and (not key or key == "vul_hier_in"):
-        nv_key = os.environ.get("NVIDIA_API_KEY", "")
-        if nv_key and nv_key != "vul_hier_in":
+    nv_key = os.environ.get("NVIDIA_API_KEY", "")
+    if (not key or key == "vul_hier_in") and nv_key and nv_key != "vul_hier_in":
+        if name in ("mistral", "deepseek"):
             key = nv_key
             url = "https://integrate.api.nvidia.com/v1/chat/completions"
-            if not model or model == "mistral-large-latest":
-                chosen = "mistralai/mistral-large-2-instruct"
+            chosen = "nvidia/nemotron-3.5-super-vl-120b-a12b"
+        elif name == "grok":
+            key = nv_key
+            url = "https://integrate.api.nvidia.com/v1/chat/completions"
+            chosen = "openai/gpt-oss-20b"
 
     if not key or key == "vul_hier_in":
         return f"[FOUT]: geen {spec['env']}"
@@ -105,7 +156,7 @@ def complete(house, system, user, model=None, temperature=0.2, max_tokens=2048):
     vault_holder["v"] = vault
 
     try:
-        if spec["style"] == "gemini":
+        if spec["style"] == "gemini" and url.startswith("https://generativelanguage"):
             url = spec["url"].format(model=chosen) + f"?key={key}"
             payload = {
                 "system_instruction": {"parts": [{"text": system_m}]},
@@ -124,16 +175,40 @@ def complete(house, system, user, model=None, temperature=0.2, max_tokens=2048):
                 "temperature": temperature,
                 "max_tokens": max_tokens,
             }
+            if any(tag in chosen for tag in ("nemotron", "gpt-oss", "minimax")):
+                payload["chat_template_kwargs"] = {"enable_thinking": False}
             raw = _post(url, payload, key)
-            text = raw["choices"][0]["message"]["content"]
+            msg = raw["choices"][0]["message"]
+            text = msg.get("content") or msg.get("reasoning_content") or ""
     except Exception as exc:
+        if name == "gemini" and ("402" in str(exc) or "429" in str(exc)) and nv_key and nv_key != "vul_hier_in":
+            try:
+                nv_payload = {
+                    "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+                    "messages": [
+                        {"role": "system", "content": system_m},
+                        {"role": "user", "content": user_m},
+                    ],
+                    "temperature": temperature,
+                    "max_tokens": max_tokens,
+                    "chat_template_kwargs": {"enable_thinking": False},
+                }
+                raw = _post("https://integrate.api.nvidia.com/v1/chat/completions", nv_payload, nv_key)
+                msg = raw["choices"][0]["message"]
+                text = msg.get("content") or msg.get("reasoning_content") or ""
+                return restore(text, vault_holder["v"])
+            except Exception:
+                pass
         return f"[FOUT {name}]: {exc}"
     return restore(text, vault_holder["v"])
 
 
 def _post(url, payload, bearer):
     data = json.dumps(payload).encode("utf-8")
-    headers = {"Content-Type": "application/json; charset=utf-8", "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Antigravity-ModelBus/1.0"}
+    headers = {
+        "Content-Type": "application/json; charset=utf-8",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Antigravity-ModelBus/1.0",
+    }
     if bearer:
         headers["Authorization"] = f"Bearer {bearer}"
     req = urllib.request.Request(url, data=data, headers=headers, method="POST")

@@ -1,9 +1,11 @@
 """Vier startvoorwaarden, daarna vier kiem-prompts aan agy.
 
 De persoon typt geen PATH en geen terminal. Start dit bestand.
-Het stuurt agy pas aan nadat het scherm is ingevuld.
+Het vraagt nooit om een API-sleutel op het scherm en schrijft geen sleutels in bestanden.
+Met `--check` of `--test` voert het een snelle, netwerkvrije verificatie van de startvoorwaarden uit.
 """
 
+import json
 import shutil
 import subprocess
 import sys
@@ -65,16 +67,80 @@ def registreer(programma):
 
 def schrijf_profiel(naam, plaats, email):
     WERK.mkdir(parents=True, exist_ok=True)
+    naam_s = naam.strip() or "De persoon aan dit venster"
+    plaats_s = plaats.strip() or "Onbekend"
+    email_s = email.strip()
     PROFIEL.write_text(
-        f"Naam: {naam.strip()}\nWoonplaats: {plaats.strip()}\nE-mail: {email.strip()}\n",
+        f"Naam: {naam_s}\nWoonplaats: {plaats_s}\nE-mail: {email_s}\n",
         encoding="utf-8",
     )
+    kompas = WERK / "00_Kompas.md"
+    if kompas.exists():
+        huidig = kompas.read_text(encoding="utf-8").strip()
+        if "Wie: de persoon aan dit venster." in huidig:
+            kompas.write_text(
+                f"# Kompas\n\nWie: {naam_s} ({plaats_s}).\nE-mail: {email_s or 'nog niet ingevuld'}.\nOpen: nog geen loket.\n",
+                encoding="utf-8",
+            )
 
 
 def werk_klaar():
-    sys.path.insert(0, str(ZAAD))
+    if str(ZAAD) not in sys.path:
+        sys.path.insert(0, str(ZAAD))
     from hulp.lus import werkmap
     werkmap()
+    keten_dir = ZAAD / "Ketengrootboek"
+    keten_dir.mkdir(exist_ok=True)
+    grootboek = keten_dir / "grootboek.json"
+    if not grootboek.exists():
+        grootboek.write_text("[]\n", encoding="utf-8")
+
+
+def controleer_startvoorwaarden():
+    """Verifieert de vier startvoorwaarden lokaal en zonder netwerkverkeer."""
+    werk_klaar()
+    from hulp.lus import test_briefketen_offline
+
+    # 1. agy & werkmap
+    prog = agy_pad()
+    werk_ok = (WERK / "00_Kompas.md").exists() and (WERK / "tijdlijn.md").exists()
+
+    # 2. PII-masker (BSN, IBAN, huisadres)
+    for kandidaat in (HUB / "Shared_Tools", ZAAD / "gui"):
+        if kandidaat.exists() and str(kandidaat) not in sys.path:
+            sys.path.insert(0, str(kandidaat))
+    import model_bus
+    import pii_mask
+
+    proef_zin = "BSN: 123456789, rekening NL91ABNA0417164300, adres Voorbeeldstraat 12, 1234 AB Voorbeeldstad."
+    gemaskeerd, kluis = pii_mask.mask(proef_zin)
+    hersteld = pii_mask.restore(gemaskeerd, kluis)
+    masker_ok = (
+        "123456789" not in gemaskeerd
+        and "NL91ABNA0417164300" not in gemaskeerd
+        and "Voorbeeldstraat 12" not in gemaskeerd
+        and hersteld == proef_zin
+    )
+
+    # 3. Briefketen (Veto -> Audit -> TwoGateDispatcher) zonder netwerk
+    brief_test = test_briefketen_offline()
+
+    # 4. Modelbus-overzicht (zonder sleutels te tonen)
+    huizen = model_bus.available()
+
+    rapport = {
+        "1_agy_aanwezig": bool(prog),
+        "1_werkmap_gereed": werk_ok,
+        "2_pii_masker_sluitend": masker_ok,
+        "2_modelhuizen_in_omgeving": [k for k, v in huizen.items() if v],
+        "3_briefketen_offline_geslaagd": brief_test["passed"],
+        "3_poort_reden": brief_test["reason"],
+        "4_venster_gereed": (ZAAD / "hulp" / "venster.py").exists(),
+    }
+    rapport["alle_voorwaarden_ok"] = (
+        werk_ok and masker_ok and brief_test["passed"] and rapport["4_venster_gereed"]
+    )
+    return rapport
 
 
 def geef_kiem(programma, tekst):
@@ -117,9 +183,16 @@ def scherm():
 
 
 def main():
+    if "--check" in sys.argv or "--test" in sys.argv:
+        rapport = controleer_startvoorwaarden()
+        print(json.dumps(rapport, indent=2, ensure_ascii=False))
+        sys.exit(0 if rapport["alle_voorwaarden_ok"] else 1)
+
     programma = agy_pad()
     print(registreer(programma))
-    werk_klaar()
+    rapport = controleer_startvoorwaarden()
+    print(json.dumps(rapport, indent=2, ensure_ascii=False))
+
     if not PROFIEL.exists():
         ingevuld = scherm()
         if ingevuld:
@@ -127,8 +200,9 @@ def main():
     if not programma:
         print("Zonder agy gaan de kiem-prompts niet weg.")
         return
-    for _nummer, tekst in KIEMEN:
-        geef_kiem(programma, tekst)
+    if "--kiem" in sys.argv:
+        for _nummer, tekst in KIEMEN:
+            geef_kiem(programma, tekst)
 
 
 if __name__ == "__main__":

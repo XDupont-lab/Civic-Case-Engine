@@ -1,40 +1,42 @@
 @echo off
-title Civic Helper (CIVIC HELPER)
+title Civic Helper — Bouwersmenu
 cd /d "%~dp0"
 
 :menu
 cls
 echo =======================================================================
-echo              CIVIC HELPER — CIVIC HELPER HUB
+echo              CIVIC HELPER — WERKOMGEVING & BOUWERSMENU
 echo =======================================================================
 echo.
-echo [T] Multi-Agent Tafelvenster GUI (CivicHelper.cmd)
-echo [0] Inrichtings- & Onboarding Wizard (bootstrap.py)
-echo [1] Multi-Model Dialectic Audit (AUDIT_DRAFT.cmd)
-echo [2] Forensische Tijdlijn & Hashes (WEAVE_TIMELINE.cmd)
-echo [3] Termijnen & Dwangsommen Tracker (CHECK_TERMIJNEN.cmd)
-echo [4] Bank CSV Auditen op bronheffingen & huur (AUDIT_BANK_CSV.cmd)
-echo [5] Procesbundel Exporteren met SHA-256 (EXPORT_BUNDEL.cmd)
-echo [6] Rechtsdomein / Doctrine Wisselen (SWITCH_DOMAIN.cmd)
-echo [7] Chunk-Audit v0.3 — Cognitieve Werkgeheugentoets (CHUNK_AUDIT.cmd)
-echo [8] G-TID Veld-Diagnose & Ambtelijke Agency-Hack (GTID_FIELD_AUDIT.cmd)
-echo [9] Mappen openen in Verkenner
-echo [10] Afsluiten
+echo  [C] Civic Helper Navigatievenster (hulp\venster.py)
+echo  [T] De Tafel — Multi-Agent Beraadslaging (gui\tafel_gui.py)
+echo  [0] Ontkiemen en Zelftest Startvoorwaarden (ontkiem.py --check)
 echo.
-set /p opt="Kies een optie (T, 0-10): "
+echo  --- Gereedschap en Toetsen ---
+echo  [1] Briefketen en Dialectische Audit (AUDIT_DRAFT.cmd)
+echo  [2] Forensische Tijdlijn en Hashes (WEAVE_TIMELINE.cmd)
+echo  [3] Termijnklokken nakijken (CHECK_TERMIJNEN.cmd)
+echo  [4] Ketengrootboek en Overdrachtstoets (Ketengrootboek\sluiting.py ALL)
+echo  [5] Bank-CSV Auditen op inhoudingen en huur (AUDIT_BANK_CSV.cmd)
+echo  [6] Procesbundel Exporteren met SHA-256 (EXPORT_BUNDEL.cmd)
+echo  [7] Alle Unit- en Invariantentests draaien (TEST_INVARIANTS.cmd)
+echo  [8] Werkmap openen in Verkenner
+echo  [9] Afsluiten
+echo.
+set /p opt="Kies een optie (C, T, 0-9): "
 
-if /i "%opt%"=="T" call CivicHelper.cmd
-if "%opt%"=="0" python bootstrap.py
+if /i "%opt%"=="C" call CivicHelper.cmd
+if /i "%opt%"=="T" call CivicHelper.cmd --tafel
+if "%opt%"=="0" python ontkiem.py --check
 if "%opt%"=="1" call AUDIT_DRAFT.cmd
 if "%opt%"=="2" call WEAVE_TIMELINE.cmd
 if "%opt%"=="3" call CHECK_TERMIJNEN.cmd
-if "%opt%"=="4" call AUDIT_BANK_CSV.cmd
-if "%opt%"=="5" call EXPORT_BUNDEL.cmd
-if "%opt%"=="6" call SWITCH_DOMAIN.cmd
-if "%opt%"=="7" call CHUNK_AUDIT.cmd
-if "%opt%"=="8" call GTID_FIELD_AUDIT.cmd
-if "%opt%"=="9" explorer .
-if "%opt%"=="10" exit /b
+if "%opt%"=="4" python Ketengrootboek\sluiting.py ALL
+if "%opt%"=="5" call AUDIT_BANK_CSV.cmd
+if "%opt%"=="6" call EXPORT_BUNDEL.cmd
+if "%opt%"=="7" call TEST_INVARIANTS.cmd
+if "%opt%"=="8" explorer .
+if "%opt%"=="9" exit /b
 
 echo.
 pause
