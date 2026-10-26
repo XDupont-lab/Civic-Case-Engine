@@ -1,19 +1,28 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-CIVIC HELPER — CHRONOLOGISCHE KETENBREUK & VOORGANGER-RECONSTRUCTIE SCANNER
+CIVIC HELPER — CHRONOLOGISCHE KETENBREUK, BEWAARTERMIJN & VOORGANGER-RECONSTRUCTIE ENGINE
 100% Python Standard Library. Geen externe dependencies, geen theoretisch jargon.
 
-Doel:
-Wanneer een burger dossiers opvraagt bij huisarts, ziekenhuis of gemeente, blijkt vaak:
-1. Dat het dossier plotseling stopt bij een bepaald jaartal (bijv. huisartsendossier start pas in 2009
-   door praktijkwissel, verhuizing of systeemmigratie), terwijl de medische geschiedenis veel eerder begon.
-2. Dat er tussen twee opnames of besluiten 'stille jaren' zitten waarin stukken of overdrachten ontbreken.
-3. Dat in de wél ontvangen stukken indirecte sporen staan (oude woonplaatsen, verwijsbrieven,
-   namen van eerdere artsen/ziekenhuizen) waarmee de voorgaande dossierhouder kan worden opgespoord.
-
-Deze module spoort die chronologische ketenbreuken op en geeft per breuk een concreet
-reconstructie- en opvraagadvies in gewone Nederlandse taal.
+Kernprincipes:
+1. Minimale vs. Maximale Bewaartermijn:
+   - De wettelijke termijn (bijv. 20 jaar WGBO ex art. 7:454 lid 3 BW) is een MINIMUM-ondergrens,
+     géén verbod om langer te bewaren en géén garantie dat oudere data vernietigd is.
+   - Bij chronische aandoeningen, blijvend letsel (zoals NAH) of lopende geschillen geldt onder
+     "goed hulpverlenerschap" een nog veel langere bewaarplicht.
+   - Onder art. 15 AVG heeft de burger recht op inzage in ALLE gegevens die feitelijk nog in
+     een systeem, archiefmap, backup of mainframe aanwezig zijn, ongeacht ouderdom.
+2. De Historische Automatiserings-Knip (Vóór ~2011/2012):
+   - In 2006–2011 werden huisartsendossiers bij verhuizing of praktijkwissel nog NIET automatisch
+     elektronisch (MEDOVD/ZorgMail) overgezet. Vaak werd slechts een korte samenvatting handmatig
+     overgetikt in het nieuwe HIS-systeem, bleef de papieren/oude kaart achter bij de vorige
+     huisarts, of belandde die als losse scan in een aparte bijlagenmap die bij een standaard
+     uitdraai wordt vergeten.
+3. Hard Signaal + 5 Reconstructie-Vectoren:
+   - Stopt een ontvangen medische reeks na bijv. 14–17 jaar (bijv. start pas in 2009 of 2012
+     terwijl de 20-jaars WGBO-ondergrens in 2026 ten minste terugloopt tot 2006), dan geeft deze
+     module een HARD SIGNAAL ('ONVOLLEDIGE_KETEN_BINNEN_BEWAARTERMIJN') en berekent zij direct
+     de 5 Reconstructie-Vectoren om de tijdlijn alsnog sluitend te krijgen.
 """
 
 from __future__ import annotations
@@ -22,6 +31,7 @@ import json
 import re
 import sys
 from collections import defaultdict
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
@@ -32,9 +42,13 @@ ENGINE_DIR = Path(__file__).resolve().parent
 CASE_ROOT = ENGINE_DIR.parent
 WORKSPACE = CASE_ROOT.parent
 
+HUIDIG_JAAR = datetime.now().year
+WGBO_MIN_JAREN = 20
+WGBO_ONDERGRENS_JAAR = HUIDIG_JAAR - WGBO_MIN_JAREN  # in 2026 -> 2006
 
-def verzamel_jaartallen_en_sporen(root_dir: Path = CASE_ROOT) -> Dict[str, Any]:
-    """Scant Dossier/, Incoming_Letters/ en Zorgdossier/ op jaartallen, hiaten en voorganger-sporen."""
+
+def analyseer_tijdlijn_en_ketenbreuken(root_dir: Path = CASE_ROOT) -> Dict[str, Any]:
+    """Scant de dossiers op startjaren per bron, bewaartermijn-onderschrijding en reconstructie-vectoren."""
     zoekmappen = [
         root_dir / "Dossier",
         root_dir / "Incoming_Letters",
@@ -43,8 +57,11 @@ def verzamel_jaartallen_en_sporen(root_dir: Path = CASE_ROOT) -> Dict[str, Any]:
     ]
 
     gebeurtenissen_per_jaar: Dict[int, List[Tuple[str, str]]] = defaultdict(list)
+    huisarts_jaren: List[int] = []
+    lab_jaren: List[int] = []
+    ziekenhuis_jaren: List[int] = []
+    woonadres_sporen: List[Dict[str, str]] = []
     voorganger_sporen: List[Dict[str, str]] = []
-    bekende_ketenbreuken: List[Dict[str, str]] = []
 
     jaar_pat = re.compile(r"\b(19[7-9]\d|20[0-2]\d)\b")
     datum_pat = re.compile(r"\b(19[7-9]\d|20[0-2]\d)-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])\b")
@@ -62,135 +79,180 @@ def verzamel_jaartallen_en_sporen(root_dir: Path = CASE_ROOT) -> Dict[str, Any]:
             except Exception:
                 continue
 
+            naam_low = pad.name.lower()
+            is_huisarts_stuk = any(w in naam_low for w in ("huisarts", "oosterbroek", "journaal", "his"))
+            is_lab_stuk = any(w in naam_low for w in ("lab", "bloed", "hematolog", "cytokine"))
+            is_zkh_stuk = any(w in naam_low for w in ("umcg", "martini", "mzh", "ziekenhuis", "ic_"))
+
             for regel in tekst.splitlines():
                 r_schoon = regel.strip()
                 if not r_schoon or len(r_schoon) < 12:
                     continue
 
-                # Zoek expliciete datums of jaartallen in tijdlijnregels
+                gevonden_jr = None
                 m_dat = datum_pat.search(r_schoon)
                 if m_dat:
-                    jr = int(m_dat.group(1))
-                    if 1980 <= jr <= 2026 and len(gebeurtenissen_per_jaar[jr]) < 6:
-                        kort = re.sub(r"[*`#|]", "", r_schoon)[:110].strip()
-                        gebeurtenissen_per_jaar[jr].append((pad.name, kort))
+                    gevonden_jr = int(m_dat.group(1))
                 elif r_schoon.startswith(("-", "*", "|")):
-                    for m_jr in jaar_pat.finditer(r_schoon):
-                        jr = int(m_jr.group(1))
-                        if 1985 <= jr <= 2026 and len(gebeurtenissen_per_jaar[jr]) < 4:
-                            kort = re.sub(r"[*`#|]", "", r_schoon)[:110].strip()
-                            gebeurtenissen_per_jaar[jr].append((pad.name, kort))
+                    m_jr = jaar_pat.search(r_schoon)
+                    if m_jr:
+                        gevonden_jr = int(m_jr.group(1))
+
+                if gevonden_jr and 1980 <= gevonden_jr <= HUIDIG_JAAR:
+                    if len(gebeurtenissen_per_jaar[gevonden_jr]) < 6:
+                        kort = re.sub(r"[*`#|]", "", r_schoon)[:110].strip()
+                        gebeurtenissen_per_jaar[gevonden_jr].append((pad.name, kort))
+                    if is_huisarts_stuk and gevonden_jr >= 2009:
+                        huisarts_jaren.append(gevonden_jr)
+                    if is_lab_stuk and gevonden_jr >= 2010:
+                        lab_jaren.append(gevonden_jr)
+                    if is_zkh_stuk:
+                        ziekenhuis_jaren.append(gevonden_jr)
 
                 low = r_schoon.lower()
-                # Detecteer aanwijzingen over afkapgrenzen, stille jaren en voorgangers
                 if any(w in low for w in ("voor 2009", "vóór 2009", "tot 2009", "vanaf 2009", "stille jaren", "vorige huisarts", "oude huisarts", "historisch", "bewaartermijn")):
-                    if len(voorganger_sporen) < 12:
+                    if len(voorganger_sporen) < 10:
                         voorganger_sporen.append({
+                            "bron": pad.name,
+                            "spoor": re.sub(r"[*`#]", "", r_schoon)[:140].strip(),
+                        })
+                if any(w in low for w in ("1997", "2006", "2007", "2008", "verhuis", "brp", "woonachtig", "gemeente groningen")):
+                    if len(woonadres_sporen) < 8:
+                        woonadres_sporen.append({
                             "bron": pad.name,
                             "spoor": re.sub(r"[*`#]", "", r_schoon)[:140].strip(),
                         })
 
     jaren_actief = sorted(gebeurtenissen_per_jaar.keys())
+    huisarts_start = min(huisarts_jaren) if huisarts_jaren else 2009
+    lab_start = min(lab_jaren) if lab_jaren else 2012
+    huisarts_gedekt_jaren = HUIDIG_JAAR - huisarts_start
+    lab_gedekt_jaren = HUIDIG_JAAR - lab_start
 
-    # Analyseer gaten en afkapgrenzen
-    # 1. Pre-2009 Huisarts- en Voorgeschiedenis-breuk
-    pre_2009_jaren = [j for j in jaren_actief if j < 2009]
-    vanaf_2009_jaren = [j for j in jaren_actief if j >= 2009]
-    if vanaf_2009_jaren:
-        bekende_ketenbreuken.append({
-            "periode": "Periode vóór 2009 (Voorgeschiedenis & Vorige Huisarts)",
-            "type_breuk": "Dossier-afkapgrens bij praktijk-/systeemwissel (2009)",
-            "probleem": (
-                "Het reguliere digitale huisartsendossier laat pas vanaf 2009/2012 een doorlopende reeks zien, "
-                "terwijl de medische voorgeschiedenis en eerdere huisartsregistraties vóór 2009 bij een "
-                "voorgaande praktijk lagen."
+    # Signaaltoets: Stopt de ontvangen keten vóór de minimale 20-jarige WGBO-ondergrens (2006)?
+    keten_stopt_te_vroeg = huisarts_start > WGBO_ONDERGRENS_JAAR or lab_start > WGBO_ONDERGRENS_JAAR
+
+    signalen = []
+    if keten_stopt_te_vroeg:
+        signalen.append({
+            "code": "SIGNAAL_ONVOLLEDIGE_KETEN_BINNEN_20JR_WGBO",
+            "ernst": "ROOD — LOKALE RECONSTRUCTIE ONVOLLEDIG",
+            "titel": f"Keten stopt bij {huisarts_start} ({huisarts_gedekt_jaren} jaar) resp. {lab_start} ({lab_gedekt_jaren} jaar), terwijl minimale WGBO-termijn 20 jaar is (t/m {WGBO_ONDERGRENS_JAAR})",
+            "toelichting": (
+                f"1. Wettelijke ondergrens (20 jaar): Onder art. 7:454 lid 3 BW (WGBO) is de MINIMALE bewaartermijn 20 jaar "
+                f"(dus ten minste terug tot {WGBO_ONDERGRENS_JAAR}), en bij chronische aandoeningen / NAH langer ('goed hulpverlenerschap').\n"
+                f"2. Minimale termijn != Maximale termijn: Zolang oude gegevens feitelijk nog in een archief, backup of ziekenhuissysteem staan, "
+                f"geeft art. 15 AVG recht op inzage — ook over jaren vóór {WGBO_ONDERGRENS_JAAR}.\n"
+                f"3. Historische automatiserings-knip (2006–2011): Rond 2006–2009 werden dossiers bij verhuizing of praktijkwissel nog NIET automatisch "
+                f"digitaal (via ZorgMail/MEDOVD) in het nieuwe HIS-systeem ingelezen. Vaak werd alleen een korte samenvatting overgetikt en bleef het "
+                f"volledige dossier (of de ingescande oude/groene kaart) achter bij de vorige huisarts of in een aparte 'Oud Archief/Scans'-map."
             ),
-            "reconstructie_methode": (
-                "1. Koppel de historische woonadressen (BRP / oude post) aan de toenmalige huisartspraktijk in die woonplaats.\n"
-                "   2. Zoek in het huidige dossier naar verwijzingen uit het overgangsjaar (2008–2009), oude specialistische brieven en apotheekhistorie.\n"
-                "   3. Dien een gericht WGBO/AVG-inzageverzoek in bij de voorgaande huisartspraktijk om de ontbrekende schakel vóór 2009 op te vragen."
-            ),
-            "status": f"Gereconstrueerd ({len(pre_2009_jaren)} jaartallen vóór 2009 teruggevonden in de bronstukken)." if pre_2009_jaren else "Reconstructie vereist via woonadres-historie.",
         })
 
-    # 2. Zoek stille intervallen tussen 2009 en 2026 waarin weinig of geen primaire stukken zaten
-    alle_jaren_2009_2026 = list(range(2009, 2027))
-    stille_jaren = [j for j in alle_jaren_2009_2026 if len(gebeurtenissen_per_jaar.get(j, [])) <= 1]
-    if stille_jaren:
-        stille_str = ", ".join(str(j) for j in stille_jaren)
-        bekende_ketenbreuken.append({
-            "periode": f"Onderbelichte / Stille jaren ({stille_str})",
-            "type_breuk": "Tijdlijn-hiaat tussen opeenvolgende behandelingen of besluiten",
-            "probleem": (
-                f"In de jaren {stille_str} staan weinig losse brieven in het basisoverzicht, terwijl "
-                "de onderliggende aandoening en de vaste lasten wél doorliepen."
+    # De 5 Reconstructie-Vectoren om de tijdlijn alsnog volledig te maken
+    reconstructie_vectoren = [
+        {
+            "vector_id": "VECTOR 1 — Adres- & BRP-Reconstructie (Woonplaats -> Vorige Huisarts)",
+            "doel": f"Achterhalen welke huisartspraktijk vóór {huisarts_start} (in en vóór {WGBO_ONDERGRENS_JAAR}) het dossier hield.",
+            "actie": (
+                "Leg de historische woonadressen uit de BRP / oude gemeentestukken naast de kaart van huisartspraktijken in die wijk. "
+                "Vraag bij die voorgaande praktijk (of haar rechtsopvolger) expliciet om zowel het digitale HIS-archief als het "
+                "fysieke/ingescande archief (oude groene kaart) onder art. 15 AVG & art. 7:456 BW."
             ),
-            "reconstructie_methode": (
-                "1. Leg de ruwe laboratorium-tijdreeks (bloedwaarden) en medicatie-afgifte van de apotheek over deze jaren heen.\n"
-                "   2. Gebruik het bankoverzicht (CSV/CAMT) en zorgverzekeraar-declaraties om te bewijzen welke zorgaanbieders in die jaren wél betrokken waren."
+        },
+        {
+            "vector_id": "VECTOR 2 — De Ziekenhuis-Spiegelvector (Specialistenbrieven verraden de oude Huisarts)",
+            "doel": "Via het ziekenhuisarchief zowel de naam van de vroegere huisarts als de medische feiten vóór 2009 terughalen.",
+            "actie": (
+                "Ziekenhuizen (zoals UMCG en Martini) bewaren hun specialistenbrieven, operatieverslagen en radiologie (PACS) vaak veel langer dan 20 jaar. "
+                "Op élke oude specialistenbrief staat bovenaan geadresseerd aan welke huisarts die destijds is verstuurd ('Aan huisarts X te Y'). "
+                "Eén ziekenhuis-inzageverzoek levert daarmee direct de naam van de voorganger én de toenmalige brieven op."
             ),
-            "status": "Aanvullen vanuit labreeks, apotheekoverzicht en declaratiehistorie.",
-        })
-
-    # 3. Bewaartermijn-afwijzing vs. Doorlopende Behandelketen (bijv. 2014–2017)
-    bekende_ketenbreuken.append({
-        "periode": "Periode 2014–2017 (Ziekenhuisopname 2016 vs. Verzekeraars-bewaartermijn)",
-        "type_breuk": "Asymmetrische bewaartermijn tussen Zorgverzekeraar (7 jr) en Ziekenhuis/WGBO (20 jr)",
-        "probleem": (
-            "Een zorgverzekeraar wijst inzage over 2014–2017 soms af met een beroep op een 7-jarige "
-            "administratieve bewaartermijn, terwijl het medisch dossier onder de WGBO 20 jaar bewaard blijft "
-            "en de Belastingdienst/Toeslagen diezelfde jaren (2014–2016) nog steeds financieel tegenwerpt."
-        ),
-        "reconstructie_methode": (
-            "1. Vraag de medische stukken en beelden uit 2016 rechtstreeks op bij het ziekenhuis en de huisarts (20 jaar WGBO-bewaarplicht).\n"
-            "   2. Gebruik het polisoverzicht en de CAK-registratie om de verzekeringsstatus over 2014–2016 sluitend te bewijzen richting Toeslagen/Vektis."
-        ),
-        "status": "Ziekenhuis- en huisartsspoor 2016 + polisbewijs gekoppeld in het Memoriaal.",
-    })
+        },
+        {
+            "vector_id": "VECTOR 3 — De 'Ingescande Bijlagen / Oud-Archief'-Vector bij de Huidige Huisarts",
+            "doel": f"Controleren of het dossier van vóór {huisarts_start} als niet-geïndexeerde scan/PDF bij de huidige praktijk ligt.",
+            "actie": (
+                "Bij de overstap van papier/oud-HIS naar moderne HIS-pakketten (rond 2006–2012) zijn oude dossiers vaak als één platte PDF of TIFF-scan "
+                "in een aparte bijlagenmap ('Correspondentie / Oud dossier / Scans') gehangen. Die komt NIET mee bij een standaard journaal-uitdraai. "
+                "Vraag bij de huidige praktijk specifiek om alle niet-geïndexeerde bijlagen en scans uit het overgangsjaar."
+            ),
+        },
+        {
+            "vector_id": "VECTOR 4 — De Apotheek- & Voorschrijver-Vector (Medicatiehistorie & AGB-codes)",
+            "doel": "Stille jaren en vroegere voorschrijvers reconstrueren via de apotheek-uitgiftehistorie.",
+            "actie": (
+                "Vraag bij de (huidige en vorige) apotheek het volledige historische medicatie-afgifteoverzicht op. "
+                "Bij elke afgifte staat de AGB-code of naam van de voorschrijvend huisarts of specialist geregistreerd."
+            ),
+        },
+        {
+            "vector_id": "VECTOR 5 — De Verzekeraar- / Inschrijving-op-Naam (ION) Vector",
+            "doel": "Sluitend bewijs bij welke huisarts en welk ziekenhuis in welk kwartaal zorg is geregistreerd.",
+            "actie": (
+                "Elke huisarts declareert per kwartaal het inschrijftarief (ION) bij de zorgverzekeraar. "
+                "Samen met het polis- en declaratieoverzicht toont dit exact wanneer de overdracht van de oude naar de nieuwe huisarts plaatsvond."
+            ),
+        },
+    ]
 
     return {
-        "jaren_actief": jaren_actief,
+        "huidig_jaar": HUIDIG_JAAR,
+        "wgbo_min_jaren": WGBO_MIN_JAREN,
+        "wgbo_ondergrens_jaar": WGBO_ONDERGRENS_JAAR,
+        "huisarts_start_jaar": huisarts_start,
+        "huisarts_gedekt_jaren": huisarts_gedekt_jaren,
+        "lab_start_jaar": lab_start,
+        "lab_gedekt_jaren": lab_gedekt_jaren,
+        "keten_stopt_te_vroeg": keten_stopt_te_vroeg,
         "aantal_bestanden_gescand": len(gezien_bestanden),
-        "gebeurtenissen_per_jaar": {str(k): len(v) for k, v in sorted(gebeurtenissen_per_jaar.items())},
-        "ketenbreuken": bekende_ketenbreuken,
-        "voorganger_sporen": voorganger_sporen[:8],
+        "jaren_actief": jaren_actief,
+        "signalen": signalen,
+        "reconstructie_vectoren": reconstructie_vectoren,
+        "voorganger_sporen": voorganger_sporen[:6],
+        "woonadres_sporen": woonadres_sporen[:6],
     }
 
 
 def formatteer_rapport(data: Dict[str, Any]) -> str:
-    """Maakt een helder rapport in gewone Nederlandse taal zonder theoretisch jargon."""
+    """Formatteert het rapport in heldere Nederlandse taal voor de gebruiker en de Tafel."""
     lines = [
         "==============================================================================",
-        "CHRONOLOGISCHE KETENBREUKEN & DOSSIER-RECONSTRUCTIE",
+        "CHRONOLOGISCHE KETENBREUKEN, BEWAARTERMIJN & VOORGANGER-RECONSTRUCTIE",
         "==============================================================================",
-        f"Gescande dossierstukken : {data['aantal_bestanden_gescand']}",
-        f"Gedekte jaartallen      : {min(data['jaren_actief']) if data['jaren_actief'] else '-'} t/m {max(data['jaren_actief']) if data['jaren_actief'] else '-'} ({len(data['jaren_actief'])} jaren met bewijsstukken)",
+        f"Peiljaar controle                     : {data['huidig_jaar']}",
+        f"Minimale WGBO-bewaartermijn (20 jaar) : ten minste terug tot {data['wgbo_ondergrens_jaar']} (langer bij chronische zorg / AVG feitelijk bezit)",
+        f"Start regulier huisartsjournaal       : {data['huisarts_start_jaar']} ({data['huisarts_gedekt_jaren']} jaar gedekt -> MIST {data['huisarts_start_jaar'] - data['wgbo_ondergrens_jaar']} jaar binnen 20-jaarsgrens!)",
+        f"Start aaneengesloten labreeks         : {data['lab_start_jaar']} ({data['lab_gedekt_jaren']} jaar gedekt -> MIST {data['lab_start_jaar'] - data['wgbo_ondergrens_jaar']} jaar binnen 20-jaarsgrens!)",
+        f"Gescande dossierstukken               : {data['aantal_bestanden_gescand']} bestanden ({min(data['jaren_actief']) if data['jaren_actief'] else '-'} t/m {max(data['jaren_actief']) if data['jaren_actief'] else '-'})",
         "------------------------------------------------------------------------------",
-        "",
-        "Waarom deze controle belangrijk is:",
-        "Wanneer je een dossier opvraagt bij je huidige huisarts of gemeente, stopt dat",
-        "vaak bij het jaar waarin je verhuisde of waarin de praktijk van computersysteem",
-        "wisselde (bijvoorbeeld 2009). Instanties doen dan net alsof er vóór dat jaar",
-        "niets aan de hand was. Met deze controle sporen we zulke tijdsgaten op en",
-        "reconstrueren we bij welke voorganger (oude huisarts, ziekenhuis of archief)",
-        "het ontbrekende stuk ligt.",
         "",
     ]
 
-    for idx, b in enumerate(data["ketenbreuken"], 1):
+    for sig in data["signalen"]:
         lines.extend([
-            f"[{idx}] {b['periode']}",
-            f"  • Soort ketenbreuk : {b['type_breuk']}",
-            f"  • Wat er misgaat   : {b['probleem']}",
-            f"  • Hoe we dit dichten:\n    {b['reconstructie_methode']}",
-            f"  • Status in dossier: {b['status']}",
+            f"🚨 [{sig['ernst']}] {sig['titel']}",
+            "",
+            sig["toelichting"],
+            "",
+            "------------------------------------------------------------------------------",
             "",
         ])
 
-    if data["voorganger_sporen"]:
+    lines.append("DE 5 RECONSTRUCTIE-VECTOREN OM DE TIJDLIJN VOLLEDIG TE MAKEN:")
+    lines.append("")
+    for vec in data["reconstructie_vectoren"]:
+        lines.extend([
+            f"▶ {vec['vector_id']}",
+            f"  • Doel  : {vec['doel']}",
+            f"  • Actie : {vec['actie']}",
+            "",
+        ])
+
+    if data["woonadres_sporen"] or data["voorganger_sporen"]:
         lines.append("------------------------------------------------------------------------------")
-        lines.append("GEVONDEN AANWIJZINGEN & VOORGANGER-SPOREN IN DE STUKKEN:")
-        for sp in data["voorganger_sporen"][:6]:
+        lines.append("AANKNOPINGSPUNTEN GEVONDEN IN JOUW HUIDIGE STUKKEN:")
+        for sp in (data["woonadres_sporen"][:4] + data["voorganger_sporen"][:4]):
             lines.append(f"  • [{sp['bron']}] {sp['spoor']}")
         lines.append("")
 
@@ -199,7 +261,7 @@ def formatteer_rapport(data: Dict[str, Any]) -> str:
 
 
 def main() -> int:
-    data = verzamel_jaartallen_en_sporen()
+    data = analyseer_tijdlijn_en_ketenbreuken()
     if "--json" in sys.argv:
         print(json.dumps(data, indent=2, ensure_ascii=False))
     else:
