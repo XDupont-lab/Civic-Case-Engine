@@ -6,6 +6,14 @@
     "credit_rekening": "Gemeente X Slot Wmo (chart_wmo)",
     "anker_feit": "EVT-CORP-20260715",
     "tegen_feit": "EVT-WMO-20260717",
+    "tafel_besluit": "TAFEL-KWALIFICATIE-WMO-NOODSIGNAAL-20260717",
+    "termijn": {
+      "grondslag": "Art. 2.3.2 lid 1 Wmo 2015 (onderzoek binnen 6 weken na melding)",
+      "start_datum": "2026-07-15",
+      "verval_datum": "2026-08-26",
+      "uiterste_datum": "2026-08-26",
+      "vervolgstap_bij_overschrijding": "Vaststelling wettelijke termijnoverschrijding en ketenbreuk Wmo-onderzoeksplicht"
+    },
     "sluitings_conditie": {
       "vereist_feit_type": "intake_en_actie",
       "tussen_anker_en_tegenfeit": true
@@ -47,6 +55,14 @@
     "credit_rekening": "Sociale Dienst Gemeente X (chart_sozawe)",
     "anker_feit": "EVT-CAK-20260101",
     "tegen_feit": "EVT-SOZAWE-20260115",
+    "tafel_besluit": "TAFEL-KWALIFICATIE-CAK-BVV-20260115",
+    "termijn": {
+      "grondslag": "Art. 475d Rv jo. Art. 35 Participatiewet (doorlopende waarborg beslagvrije voet)",
+      "start_datum": "2026-01-15",
+      "verval_datum": "2026-03-01",
+      "uiterste_datum": "2026-03-01",
+      "vervolgstap_bij_overschrijding": "Herberekening bestaansminimum en verrekening met onverschuldigde inhoudingen"
+    },
     "sluitings_conditie": {
       "vereist_feit_type": "minimapolis_toetsing",
       "tussen_anker_en_tegenfeit": true
@@ -90,6 +106,7 @@
     "credit_rekening": "Woningcorporatie X (chart_wonen)",
     "anker_feit": "EVT-WMO-20260317",
     "tegen_feit": "EVT-CORP-20260715",
+    "tafel_besluit": "TAFEL-KWALIFICATIE-WMO-STILLE-STOP-20260317",
     "sluitings_conditie": {
       "vereist_feit_type": "formeel_intrekkingsbesluit_2_3_10",
       "tussen_anker_en_tegenfeit": true
@@ -130,6 +147,14 @@
     "credit_rekening": "Zorgverzekeraar Polisadministratie & CAK (chart_zvw)",
     "anker_feit": "EVT-TOESLAGEN-VEKTIS-20261020",
     "tegen_feit": "EVT-MENZIS-PREMIE-20261001",
+    "tafel_besluit": "TAFEL-KWALIFICATIE-VEKTIS-STATUS-N-20261020",
+    "termijn": {
+      "grondslag": "Art. 12 lid 3 AVG & Art. 15 AVG (inzageverzoek Vektis C.V. d.d. 23-10-2026 naar herkomst Status N, BASIC & RBVZ)",
+      "start_datum": "2026-10-23",
+      "verval_datum": "2026-11-23",
+      "uiterste_datum": "2026-11-23",
+      "vervolgstap_bij_overschrijding": "Rappel / klacht AP wegens niet-tijdig leveren herkomst Status N en UZOVI-aanlevering (4-2-2014 t/m 26-6-2016)"
+    },
     "sluitings_conditie": {
       "vereist_feit_type": "rectificatie_en_herziening_art16_avg",
       "tussen_anker_en_tegenfeit": false
@@ -171,6 +196,7 @@
     "credit_rekening": "Bankadministratie Burger (chart_bank)",
     "anker_feit": "EVT-DACAS-MAINFRAME-20261020",
     "tegen_feit": "EVT-BANK-ING-20261023",
+    "tafel_besluit": "TAFEL-KWALIFICATIE-DACAS-KASSTROOM-20261023",
     "sluitings_conditie": {
       "vereist_feit_type": "specificatie_onderliggende_beschikkingen_t8",
       "tussen_anker_en_tegenfeit": false

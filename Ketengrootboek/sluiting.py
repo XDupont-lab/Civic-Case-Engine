@@ -1,22 +1,30 @@
 #!/usr/bin/env python3
 """
-CIVIC HELPER — SLUITING & PROEFBALANS (Ketengrootboek v1.0)
+CIVIC HELPER — SLUITING, PROEFBALANS & DRIE-BOEKENSTELSEL (Ketengrootboek v2.0)
 Pure Python Standard Library (Zero External Dependencies).
 
-Toetst of grootboekposten tussen instanties sluiten op basis van het journaal:
-  - Post sluit      (ADMISSIBLE)      : Tegenboeking aanwezig, vaste posten behouden, velden compleet.
-  - Post sluit niet (GLUING_FAILURE) : Tegenboeking ontbreekt, Casimir-verlies, poort geblokkeerd.
-  - Nog niet gesteld (UNDECIDED)     : Ankerfeit of bewijsstuk ontbreekt op schijf.
+Implementeert het Drie-Boekenstelsel van Simon Stevin gekoppeld aan De Tafel:
+  - Boek 1 (Het Memoriaal)      : memoriaal.json      (spiegel: journaal.json)
+      Multimodale Laag-1 waarnemingen (PDF, WAV/MP3, e-mail, bank-CSV, zorgdossier) + SHA-256
+      én Laag-3 loket-interpretaties (betwist/onbetwist).
+  - Boek 2 (Het Journaal)       : boek2_journaal.json (spiegel: grootboek.json)
+      Gekoppelde ketenoverdrachten (POST-...) van Debet (Zender) naar Credit (Ontvanger),
+      inclusief Tafel-besluitreferentie (`tafel_besluit`) en wettelijke termijn (`termijn`).
+  - Boek 3 (Het Ketengrootboek) : ketengrootboek.json (spiegel: saldo.json)
+      100% automatisch afgeleide rekeningbalans per ketenpartij + De Klok (`openstaande_termijnen`).
 
 Aanroep:
-  python sluiting.py <post_id>   -> Toetst één specifieke grootboekpost
-  python sluiting.py ALL         -> Draait de volledige PROEFBALANS en ververst saldo.json
+  python sluiting.py <post_id>     -> Toetst één specifieke journaalpost
+  python sluiting.py ALL           -> Draait de volledige PROEFBALANS en ververst ketengrootboek.json & saldo.json
+  python sluiting.py --klok        -> Toont de automatisch afgeleide Klok (openstaande termijnen & vervaldata)
+  python sluiting.py --integriteit -> Print het volledige 3-Boeken Ketenintegriteitsrapport (Markdown)
+  python sluiting.py --rekening X  -> Herleidt één rekening vanuit het Grootboek terug naar Journaal & Memoriaal
 """
 
 from __future__ import annotations
 
 import argparse
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 import hashlib
 import json
 import os
@@ -50,11 +58,14 @@ FASE_3_FEITELIJKE_REALISATIE = "FASE 3: FEITELIJKE REALISATIE (Afgeletterd / zor
 # Feittypes die slechts administratieve ontvangst, doorverwijzing of stilzitten vaststellen en NOOIT een zorgpost sluiten
 NIET_SLUITENDE_TYPES = {
     "ontvangstbevestiging",
+    "ontvangstbevestiging_bezwaarschrift",
     "doorverwijzing_zonder_uitvoering",
     "ontkenning_ontvangst_wmo",
     "stilzitten_schuldhulpverlening",
     "signaal_ontvangen_zonder_actie",
     "automatisch_bericht_ontvangen",
+    "termijnverlenging_art_12_3_avg",
+    "schriftelijke_bevestiging_ketenbreuk_archief",
 }
 
 # Feittypes die een inter-loket tegenstrijdige registratie markeren (twee administraties sluiten elk intern maar spreken elkaar tegen)
@@ -76,33 +87,55 @@ class SluitingsToetser:
         else:
             self.keten_dir = Path(root_dir)
         self.workspace_root = self.keten_dir.parent
+        self.hub_root = self.workspace_root.parent
 
     def _los_bestand_op(self, rel_pad: str) -> Optional[Path]:
-        """Zoekt bestand lokaal in workspace of keten_dir."""
+        """Zoekt bestand lokaal in CivicHelper, Ketengrootboek of de hub-root (E:\\LLM_Workspace)."""
         if not rel_pad:
             return None
-        p1 = self.workspace_root / rel_pad
-        if p1.is_file():
-            return p1
-        p2 = self.keten_dir.parent / rel_pad
-        if p2.is_file():
-            return p2
-        p3 = self.keten_dir / rel_pad
-        if p3.is_file():
-            return p3
+        for basis in (self.workspace_root, self.keten_dir.parent, self.keten_dir, self.hub_root):
+            kandidaat = basis / rel_pad
+            if kandidaat.is_file():
+                return kandidaat
         return None
 
-    def laad_boeken(self) -> Tuple[Dict[str, Dict[str, Any]], List[Dict[str, Any]]]:
-        """Laadt journaal en grootboek in."""
-        journaal_pad = self.keten_dir / "journaal.json"
-        grootboek_pad = self.keten_dir / "grootboek.json"
+    def _boek1_paden(self) -> Tuple[Path, Path]:
+        """Geeft (primair memoriaal.json, legacy spiegel journaal.json) terug."""
+        return self.keten_dir / "memoriaal.json", self.keten_dir / "journaal.json"
 
-        if not journaal_pad.is_file() or not grootboek_pad.is_file():
-            raise FileNotFoundError("journaal.json of grootboek.json niet gevonden in Ketengrootboek/")
+    def _boek2_paden(self) -> Tuple[Path, Path]:
+        """Geeft (primair boek2_journaal.json, legacy spiegel grootboek.json) terug."""
+        return self.keten_dir / "boek2_journaal.json", self.keten_dir / "grootboek.json"
+
+    def _boek3_paden(self) -> Tuple[Path, Path]:
+        """Geeft (primair ketengrootboek.json, legacy spiegel saldo.json) terug."""
+        return self.keten_dir / "ketengrootboek.json", self.keten_dir / "saldo.json"
+
+    def synchroniseer_spiegelbestanden(self) -> None:
+        """Houdt Boek 1 (memoriaal.json -> journaal.json) synchroon (zonder publiek grootboek.json te overschrijven)."""
+        b1_prim, b1_leg = self._boek1_paden()
+        if b1_prim.is_file():
+            inhoud = b1_prim.read_text(encoding="utf-8")
+            if not b1_leg.is_file() or b1_leg.read_text(encoding="utf-8") != inhoud:
+                b1_leg.write_text(inhoud, encoding="utf-8")
+
+    def laad_boeken(self) -> Tuple[Dict[str, Dict[str, Any]], List[Dict[str, Any]]]:
+        """Laadt Boek 1 (Memoriaal) en Boek 2 (Journaal) in met multimodale SHA-256 verificatie."""
+        b1_prim, b1_leg = self._boek1_paden()
+        b2_prim, b2_leg = self._boek2_paden()
+
+        memoriaal_pad = b1_prim if b1_prim.is_file() else b1_leg
+        journaal_pad = b2_prim if b2_prim.is_file() else b2_leg
+
+        feiten_lijst = []
+        if memoriaal_pad.is_file():
+            with open(memoriaal_pad, "r", encoding="utf-8") as f:
+                feiten_lijst = json.load(f)
+
+        if not journaal_pad.is_file():
+            raise FileNotFoundError("Boek 2 (boek2_journaal.json of grootboek.json) niet gevonden")
 
         with open(journaal_pad, "r", encoding="utf-8") as f:
-            feiten_lijst = json.load(f)
-        with open(grootboek_pad, "r", encoding="utf-8") as f:
             posten_lijst = json.load(f)
 
         feiten_index = {}
@@ -115,13 +148,79 @@ class SluitingsToetser:
             else:
                 f_copy["sha256"] = None
                 f_copy["bestand_gevonden"] = False
+
+            # Multimodale bundel-verificatie (extra_bewijsstukken: WAV, PDF, MD, CSV)
+            extra_paden = feit.get("extra_bewijsstukken", [])
+            extra_hashes: Dict[str, Optional[str]] = {}
+            for ep in extra_paden:
+                ep_resolved = self._los_bestand_op(ep)
+                extra_hashes[ep] = sha256_bestand(ep_resolved) if ep_resolved else None
+            if extra_paden:
+                f_copy["extra_sha256"] = extra_hashes
+                f_copy["multimodale_bundel_compleet"] = all(v is not None for v in extra_hashes.values())
+            else:
+                f_copy["multimodale_bundel_compleet"] = f_copy["bestand_gevonden"]
+
             feiten_index[feit["id"]] = f_copy
 
         return feiten_index, posten_lijst
 
-    def toets_post(self, post: Dict[str, Any], feiten_index: Dict[str, Dict[str, Any]]) -> Dict[str, Any]:
-        """Toetst één grootboekpost tegen de feiten in het journaal.
-        
+    @staticmethod
+    def bereken_termijn_status(
+        termijn: Optional[Dict[str, Any]],
+        materieel_vereffend: bool,
+        peildatum: Optional[date] = None,
+    ) -> Optional[Dict[str, Any]]:
+        """Berekent de actuele klok-status voor een overdrachtspost in Boek 2."""
+        if not termijn:
+            return None
+        if peildatum is None:
+            peildatum = datetime.now(timezone.utc).astimezone().date()
+
+        verval_str = termijn.get("verval_datum", "")
+        uiterste_str = termijn.get("uiterste_datum", verval_str)
+        start_str = termijn.get("start_datum", "")
+
+        try:
+            verval_d = date.fromisoformat(verval_str)
+            dagen_tot_verval = (verval_d - peildatum).days
+        except ValueError:
+            dagen_tot_verval = None
+
+        try:
+            uiterste_d = date.fromisoformat(uiterste_str) if uiterste_str else None
+            dagen_tot_uiterste = (uiterste_d - peildatum).days if uiterste_d else None
+        except ValueError:
+            dagen_tot_uiterste = None
+
+        if materieel_vereffend:
+            klok_status = "AFGELETTERD"
+        elif dagen_tot_verval is not None and dagen_tot_verval < 0:
+            klok_status = "BUITEN_TERMIJN"
+        elif dagen_tot_verval is not None and dagen_tot_verval <= 14:
+            klok_status = "KRITIEK_BINNEN_14_DAGEN"
+        else:
+            klok_status = "LOOPT"
+
+        return {
+            "grondslag": termijn.get("grondslag", ""),
+            "start_datum": start_str,
+            "verval_datum": verval_str,
+            "uiterste_datum": uiterste_str,
+            "dagen_resterend": dagen_tot_verval,
+            "dagen_tot_uiterste": dagen_tot_uiterste,
+            "klok_status": klok_status,
+            "vervolgstap_bij_overschrijding": termijn.get("vervolgstap_bij_overschrijding", ""),
+        }
+
+    def toets_post(
+        self,
+        post: Dict[str, Any],
+        feiten_index: Dict[str, Dict[str, Any]],
+        peildatum: Optional[date] = None,
+    ) -> Dict[str, Any]:
+        """Toetst één journaalpost (Boek 2) tegen de feiten in het Memoriaal (Boek 1).
+
         Borging tegen schijnsluiting (Sol 6.1 verwerkt):
         - Post sluit uitsluitend als het specifiek aan déze post gekoppelde tegenfeit bestaat.
         - Het tegenfeit moet een verifieerbaar bewijsstuk op schijf hebben met een geldige SHA-256 hash.
@@ -131,6 +230,7 @@ class SluitingsToetser:
         post_id = post.get("post_id", "ONBEKEND")
         anker_id = post.get("anker_feit")
         tegen_id = post.get("tegen_feit")
+        tafel_besluit = post.get("tafel_besluit", "ONBEKEND")
 
         anker = feiten_index.get(anker_id)
         tegen = feiten_index.get(tegen_id)
@@ -142,11 +242,13 @@ class SluitingsToetser:
                 "naam": post.get("naam", ""),
                 "debet": post.get("debet_rekening", ""),
                 "credit": post.get("credit_rekening", ""),
+                "tafel_besluit": tafel_besluit,
                 "fase": FASE_0_UITSTAAND,
                 "vonnis": "NOG NIET GESTELD",
                 "reden": f"Ankerbewijs ontbreekt of bestand niet op schijf ({anker_id})",
                 "locus": ("C_onbekend", post_id, "Poort_onbekend"),
                 "ontbrekend": ["anker_bewijsstuk"],
+                "termijn_info": self.bereken_termijn_status(post.get("termijn"), False, peildatum),
                 "anker": anker,
                 "tegen": tegen,
             }
@@ -183,7 +285,7 @@ class SluitingsToetser:
         # 5. Sluitingsconditie: Strikte binding aan het specifieke tegenfeit van déze post
         sluit_cond = post.get("sluitings_conditie", {})
         vereist_type = sluit_cond.get("vereist_feit_type")
-        
+
         tegen_feit_ok = False
         tegen_gebreken = []
 
@@ -258,16 +360,24 @@ class SluitingsToetser:
             werklexicon_code = "MENIS_ONVEREFFEND_RESTANT"
             werklexicon_toelichting = "Overdracht staat zowel procedureel als materieel nog open."
 
+        termijn_info = self.bereken_termijn_status(post.get("termijn"), materieel_vereffend, peildatum)
+
         vaste_omschr = "; ".join(c.get("omschrijving", c.get("id", "")) for c in vaste_posten) or post.get("naam", "")
         overdracht_velden = {
             "bron_en_bewijs": f"{anker_id} ({(anker or {}).get('bewijsstuk', 'onbekend')})",
             "zender_naar_ontvanger": f"{post.get('debet_rekening', '')} -> {post.get('credit_rekening', '')}",
+            "tafel_besluit": tafel_besluit,
             "verplichting": vaste_omschr,
             "aanvaarding": "Ja (Fase 2/3)" if fase in (FASE_2_AANVAARDING, FASE_3_FEITELIJKE_REALISATIE) else f"Nee ({fase})",
             "uitvoering": "Voltooid" if materieel_vereffend else ("Betwist / Tegenstrijdig" if not rekenkundig_sluitend else "Niet gerealiseerd"),
             "rekenkundige_status": "Ja" if rekenkundig_sluitend else "Nee (Tegenstrijdige registraties)",
             "procedurele_status": "Ja" if procedureel_gesloten else "Nee",
             "materiele_status": "Ja" if materieel_vereffend else "Nee",
+            "termijn_status": (
+                f"{termijn_info['klok_status']} (vervalt {termijn_info['verval_datum']}, {termijn_info['dagen_resterend']} dgn)"
+                if termijn_info
+                else "Geen actieve klok"
+            ),
             "sluitingsbewijs": (tegen or {}).get("bewijsstuk") if materieel_vereffend else None,
         }
 
@@ -276,6 +386,7 @@ class SluitingsToetser:
             "naam": post.get("naam", ""),
             "debet": post.get("debet_rekening", ""),
             "credit": post.get("credit_rekening", ""),
+            "tafel_besluit": tafel_besluit,
             "fase": fase,
             "vonnis": vonnis,
             "locus": locus,
@@ -290,6 +401,7 @@ class SluitingsToetser:
             "keten_diagnose": keten_diagnose,
             "werklexicon_code": werklexicon_code,
             "werklexicon_toelichting": werklexicon_toelichting,
+            "termijn_info": termijn_info,
             "overdracht_velden": overdracht_velden,
             "anker": anker,
             "tegen": tegen,
@@ -343,15 +455,18 @@ class SluitingsToetser:
         actor: str,
         omschrijving: str,
         bewijsstuk: str,
+        modaliteit: str = "schriftelijk_bewijs",
+        extra_bewijsstukken: Optional[List[str]] = None,
         opslaan: bool = True,
     ) -> Dict[str, Any]:
-        """Boek 1 (Memoriaal — Laag 1): Registreert een nieuwe feitelijke waarneming met SHA-256.
+        """Boek 1 (Memoriaal — Laag 1): Registreert een nieuwe feitelijke multimodale waarneming met SHA-256.
         Weigert een bestaand Laag-1 feit te overschrijven als de inhoud afwijkt.
         """
-        journaal_pad = self.keten_dir / "journaal.json"
+        b1_prim, b1_leg = self._boek1_paden()
+        lees_pad = b1_prim if b1_prim.is_file() else b1_leg
         feiten_lijst: List[Dict[str, Any]] = []
-        if journaal_pad.is_file():
-            with open(journaal_pad, "r", encoding="utf-8") as f:
+        if lees_pad.is_file():
+            with open(lees_pad, "r", encoding="utf-8") as f:
                 feiten_lijst = json.load(f)
 
         bestaand = next((item for item in feiten_lijst if item.get("id") == feit_id), None)
@@ -359,12 +474,15 @@ class SluitingsToetser:
             "id": feit_id,
             "datum": datum,
             "type": feit_type,
+            "modaliteit": modaliteit,
             "actor": actor,
             "omschrijving": omschrijving,
             "bewijsstuk": bewijsstuk,
             "laag": "LAAG_1_WAARNEMING",
             "interpretatie_historie": list(bestaand.get("interpretatie_historie", [])) if bestaand else [],
         }
+        if extra_bewijsstukken:
+            nieuw_feit["extra_bewijsstukken"] = list(extra_bewijsstukken)
 
         if bestaand is not None:
             self.verifieer_niet_overschrijving(bestaand, nieuw_feit)
@@ -377,8 +495,9 @@ class SluitingsToetser:
         if opslaan:
             opslag_kopie = {k: v for k, v in nieuw_feit.items() if k not in ("sha256", "bestand_gevonden")}
             feiten_lijst.append(opslag_kopie)
-            with open(journaal_pad, "w", encoding="utf-8") as f:
-                json.dump(feiten_lijst, f, indent=2, ensure_ascii=False)
+            tekst = json.dumps(feiten_lijst, indent=2, ensure_ascii=False)
+            b1_prim.write_text(tekst, encoding="utf-8")
+            b1_leg.write_text(tekst, encoding="utf-8")
         return nieuw_feit
 
     def registreer_interpretatie_op_feit(
@@ -395,8 +514,9 @@ class SluitingsToetser:
         """Boek 1 (Laag 3 bovenop Laag 1): Hangt een latere loket-interpretatie onder een waarneming
         zonder de oorspronkelijke waarneming in Laag 1 aan te tasten.
         """
-        journaal_pad = self.keten_dir / "journaal.json"
-        with open(journaal_pad, "r", encoding="utf-8") as f:
+        b1_prim, b1_leg = self._boek1_paden()
+        lees_pad = b1_prim if b1_prim.is_file() else b1_leg
+        with open(lees_pad, "r", encoding="utf-8") as f:
             feiten_lijst = json.load(f)
 
         gevonden_idx = next((i for i, item in enumerate(feiten_lijst) if item.get("id") == feit_id), None)
@@ -417,17 +537,47 @@ class SluitingsToetser:
         feiten_lijst[gevonden_idx] = bijgewerkt
 
         if opslaan:
-            with open(journaal_pad, "w", encoding="utf-8") as f:
-                json.dump(feiten_lijst, f, indent=2, ensure_ascii=False)
+            tekst = json.dumps(feiten_lijst, indent=2, ensure_ascii=False)
+            b1_prim.write_text(tekst, encoding="utf-8")
+            b1_leg.write_text(tekst, encoding="utf-8")
         return bijgewerkt
 
-    def bouw_rekeningen_grootboek(self) -> Dict[str, Dict[str, Any]]:
+    def bouw_openstaande_klok(self, peildatum: Optional[date] = None) -> List[Dict[str, Any]]:
+        """Afgeleide Klok-view op basis van Boek 2 (Journaal):
+        Geeft alle posten met een actieve termijn gesorteerd op vervaldatum terug.
+        """
+        feiten_index, posten_lijst = self.laad_boeken()
+        klok_items: List[Dict[str, Any]] = []
+        for p in posten_lijst:
+            r = self.toets_post(p, feiten_index, peildatum=peildatum)
+            t_info = r.get("termijn_info")
+            if t_info and not r.get("materieel_vereffend", False):
+                klok_items.append({
+                    "post_id": r["post_id"],
+                    "naam": r["naam"],
+                    "debiteur_ketenpartij": r["credit"],
+                    "eiser_zender": r["debet"],
+                    "tafel_besluit": r["tafel_besluit"],
+                    "keten_diagnose": r["keten_diagnose"],
+                    "grondslag": t_info["grondslag"],
+                    "start_datum": t_info["start_datum"],
+                    "verval_datum": t_info["verval_datum"],
+                    "uiterste_datum": t_info["uiterste_datum"],
+                    "dagen_resterend": t_info["dagen_resterend"],
+                    "dagen_tot_uiterste": t_info["dagen_tot_uiterste"],
+                    "klok_status": t_info["klok_status"],
+                    "vervolgstap_bij_overschrijding": t_info["vervolgstap_bij_overschrijding"],
+                })
+        klok_items.sort(key=lambda x: (x.get("verval_datum") or "9999-12-31", x["post_id"]))
+        return klok_items
+
+    def bouw_rekeningen_grootboek(self, peildatum: Optional[date] = None) -> Dict[str, Dict[str, Any]]:
         """Boek 3 (Het Grootboek / Schuldboek van Simon Stevin):
         Reconstrueert de actuele positie per betrokken rekening/loket en koppelt elke positie
         terugwaarts aan de mutaties in het Journaal (Boek 2) en de bewijsstukken in het Memoriaal (Boek 1).
         """
         feiten_index, posten_lijst = self.laad_boeken()
-        resultaten = [self.toets_post(p, feiten_index) for p in posten_lijst]
+        resultaten = [self.toets_post(p, feiten_index, peildatum=peildatum) for p in posten_lijst]
         rekeningen: Dict[str, Dict[str, Any]] = {}
 
         def _init_rek(naam: str) -> Dict[str, Any]:
@@ -440,6 +590,7 @@ class SluitingsToetser:
                     "procedureel_gesloten": True,
                     "materieel_vereffend": True,
                     "open_verplichtingen_aantal": 0,
+                    "lopende_termijnen": [],
                     "herleidbare_bewijsstukken": [],
                 }
             return rekeningen[naam]
@@ -455,6 +606,7 @@ class SluitingsToetser:
                 "naam": r["naam"],
                 "rol": "zender (debet)",
                 "tegenpartij": ontvanger,
+                "tafel_besluit": r["tafel_besluit"],
                 "rekenkundig_sluitend": r["rekenkundig_sluitend"],
                 "procedureel_gesloten": r["procedureel_gesloten"],
                 "materieel_vereffend": r["materieel_vereffend"],
@@ -462,6 +614,7 @@ class SluitingsToetser:
                 "werklexicon_code": r["werklexicon_code"],
                 "anker_feit": (r.get("anker") or {}).get("id"),
                 "tegen_feit": (r.get("tegen") or {}).get("id"),
+                "termijn_info": r.get("termijn_info"),
             }
             rek_z["overgedragen_posten"].append(mutatie_samenvatting)
 
@@ -469,6 +622,14 @@ class SluitingsToetser:
             mutatie_ontvanger["rol"] = "ontvanger (credit / verplichting)"
             mutatie_ontvanger["tegenpartij"] = zender
             rek_o["te_vervullen_posten"].append(mutatie_ontvanger)
+
+            if r.get("termijn_info") and not r["materieel_vereffend"]:
+                rek_o["lopende_termijnen"].append({
+                    "post_id": r["post_id"],
+                    "verval_datum": r["termijn_info"]["verval_datum"],
+                    "dagen_resterend": r["termijn_info"]["dagen_resterend"],
+                    "klok_status": r["termijn_info"]["klok_status"],
+                })
 
             for rek in (rek_z, rek_o):
                 if not r["rekenkundig_sluitend"]:
@@ -495,6 +656,25 @@ class SluitingsToetser:
             if not term or term in naam.lower()
         ]
 
+    def formatteer_klok_overzicht(self) -> str:
+        """Formatteert de automatisch afgeleide Klok uit Boek 2 & Boek 3."""
+        klok = self.bouw_openstaande_klok()
+        lines = []
+        lines.append("=" * 120)
+        lines.append(f"KETENGROOTBOEK — AFGELEIDE KLOK & OPENSTAANDE TERMIJNEN ({datetime.now(timezone.utc).astimezone().strftime('%Y-%m-%d')})")
+        lines.append("=" * 120)
+        lines.append(f"{'Post ID':<30} | {'Ketenpartij (Credit)':<34} | {'Vervaldatum':<12} | {'Dagen':<8} | {'Status':<24}")
+        lines.append("-" * 120)
+        for item in klok:
+            dgn = item["dagen_resterend"]
+            dgn_str = f"{dgn:+d}d" if dgn is not None else "n.v.t."
+            lines.append(
+                f"{item['post_id']:<30} | {item['debiteur_ketenpartij'][:34]:<34} | "
+                f"{item['verval_datum']:<12} | {dgn_str:<8} | {item['klok_status']:<24}"
+            )
+        lines.append("=" * 120)
+        return "\n".join(lines)
+
     def formatteer_post_detail(self, resultaat: Dict[str, Any]) -> str:
         """Maakt een gedetailleerd overzicht van één post."""
         lines = []
@@ -504,17 +684,21 @@ class SluitingsToetser:
         lines.append(f"Omschrijving:    {resultaat['naam']}")
         lines.append(f"Debet (Zender):  {resultaat['debet']}")
         lines.append(f"Credit (Doel):   {resultaat['credit']}")
+        lines.append(f"Tafel-besluit:   {resultaat.get('tafel_besluit', 'ONBEKEND')}")
+        if resultaat.get("termijn_info"):
+            ti = resultaat["termijn_info"]
+            lines.append(f"Termijn / Klok:  {ti['klok_status']} (vervalt {ti['verval_datum']}, uiterlijk {ti['uiterste_datum']}, {ti['dagen_resterend']} dgn)")
         lines.append("")
 
         ank = resultaat.get("anker")
         if ank:
             h_short = (ank.get("sha256") or "GEEN_HASH")[:16] + "..."
-            lines.append(f"Ankerfeit:       {ank.get('id')} ({ank.get('datum')}) hash={h_short}")
+            lines.append(f"Ankerfeit:       {ank.get('id')} ({ank.get('datum')}) [{ank.get('modaliteit', 'tekst')}] hash={h_short}")
             lines.append(f"                 \"{ank.get('omschrijving')}\"")
         teg = resultaat.get("tegen")
         if teg:
             h_short = (teg.get("sha256") or "GEEN_HASH")[:16] + "..."
-            lines.append(f"Tegenfeit:       {teg.get('id')} ({teg.get('datum')}) hash={h_short}")
+            lines.append(f"Tegenfeit:       {teg.get('id')} ({teg.get('datum')}) [{teg.get('modaliteit', 'tekst')}] hash={h_short}")
             lines.append(f"                 \"{teg.get('omschrijving')}\"")
 
         lines.append("")
@@ -529,42 +713,47 @@ class SluitingsToetser:
         return "\n".join(lines)
 
     def draai_proefbalans(self) -> str:
-        """Draait de volledige proefbalans over alle grootboekposten en schrijft saldo.json."""
+        """Draait de volledige proefbalans over alle journaalposten en schrijft ketengrootboek.json én saldo.json."""
+        self.synchroniseer_spiegelbestanden()
         feiten_index, posten_lijst = self.laad_boeken()
         resultaten = [self.toets_post(p, feiten_index) for p in posten_lijst]
 
         lines = []
-        lines.append("=" * 115)
-        lines.append(f"PROEFBALANS VAN HET KETENGROOTBOEK — {datetime.now(timezone.utc).astimezone().strftime('%Y-%m-%d %H:%M')}")
-        lines.append("=" * 115)
-        lines.append(f"{'Post ID':<23} | {'Debet (Zender)':<24} | {'Credit (Ontvanger)':<24} | {'Fase':<8} | {'Stand':<16}")
-        lines.append("-" * 115)
+        lines.append("=" * 120)
+        lines.append(f"PROEFBALANS VAN HET KETENGROOTBOEK (3 BOEKEN SIMON STEVIN) — {datetime.now(timezone.utc).astimezone().strftime('%Y-%m-%d %H:%M')}")
+        lines.append("=" * 120)
+        lines.append(f"{'Post ID':<30} | {'Debet (Zender)':<24} | {'Credit (Ontvanger)':<26} | {'Fase':<8} | {'Stand':<16}")
+        lines.append("-" * 120)
 
         sluit_niet_aantal = 0
         sluit_wel_aantal = 0
         open_posten = []
 
         for r in resultaten:
-            fase_kort = r.get("fase", "").split(":")[0].strip()[:8]  # bijv. "FASE 1"
-            lines.append(f"{r['post_id']:<23} | {r['debet'][:24]:<24} | {r['credit'][:24]:<24} | {fase_kort:<8} | {r['vonnis']:<16}")
+            fase_kort = r.get("fase", "").split(":")[0].strip()[:8]
+            lines.append(f"{r['post_id']:<30} | {r['debet'][:24]:<24} | {r['credit'][:26]:<26} | {fase_kort:<8} | {r['vonnis']:<16}")
             if r["vonnis"] == "POST SLUIT NIET":
                 sluit_niet_aantal += 1
                 open_posten.append(r["post_id"])
             elif r["vonnis"] == "POST SLUIT":
                 sluit_wel_aantal += 1
 
-        lines.append("-" * 115)
+        lines.append("-" * 120)
         regime = "HF (Frustratie)" if sluit_niet_aantal > 0 else "HK (Harmonie)"
         lines.append(f"KETENSALDO: {sluit_niet_aantal} post(en) sluiten niet | {sluit_wel_aantal} post(en) sluiten | Regime: {regime}")
-        lines.append("=" * 115)
+        lines.append("=" * 120)
 
-        # Werk saldo.json bij (inclusief Boek 3: Rekeningen-Grootboek en 3 Sluitingskenmerken)
+        # Werk Boek 3 bij: ketengrootboek.json én legacy spiegel saldo.json
         rekeningen_gb = self.bouw_rekeningen_grootboek()
         overzicht = self.ketenstatus_overzicht()
+        openstaande_klok = self.bouw_openstaande_klok()
+
+        eerstvolgende_klok = openstaande_klok[0] if openstaande_klok else None
         saldo_data = {
             "bijgewerkt_op": datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds"),
-            "schaal": "meso-bestuur / Wmo",
-            "patch": "chart_wmo",
+            "stelsel": "Simon Stevin Drie-Boekenstelsel (Boek 1: memoriaal.json -> Boek 2: boek2_journaal.json -> Boek 3: ketengrootboek.json)",
+            "schaal": "meso-bestuur / Zorg / Financiën / AVG",
+            "patch": "chart_integraal",
             "regime": regime,
             "ketenstatus": {
                 "rekenkundig_sluitend": overzicht["rekenkundig_sluitend"],
@@ -574,15 +763,24 @@ class SluitingsToetser:
                 "tegenstrijdigheden": overzicht["tegenstrijdigheden"],
             },
             "open_posten": open_posten,
+            "openstaande_termijnen": openstaande_klok,
             "rekeningen_grootboek": rekeningen_gb,
             "klokken": {
-                "omega_star": "stil (geen getypte intake)",
+                "omega_star": f"{len(openstaande_klok)} actieve ketentermijnen in Boek 3",
                 "omega_c": "actief (onpauzeerbaar lichaam / stoma / NAH)"
             },
-            "eerstvolgende_handeling": "Schriftelijk wijzen op niet-sluitende post POST-WONEN-WMO-001 (noodsignaal 15 juli / ontkenning 17 juli); geen klinische herhaling aan het loket."
+            "eerstvolgende_handeling": (
+                f"{eerstvolgende_klok['post_id']} ({eerstvolgende_klok['debiteur_ketenpartij']}): "
+                f"vervaldatum {eerstvolgende_klok['verval_datum']} ({eerstvolgende_klok['klok_status']})"
+                if eerstvolgende_klok
+                else "Geen openstaande posten."
+            ),
         }
-        with open(self.keten_dir / "saldo.json", "w", encoding="utf-8") as sf:
-            json.dump(saldo_data, sf, indent=2, ensure_ascii=False)
+
+        b3_prim, b3_leg = self._boek3_paden()
+        tekst = json.dumps(saldo_data, indent=2, ensure_ascii=False)
+        b3_prim.write_text(tekst, encoding="utf-8")
+        b3_leg.write_text(tekst, encoding="utf-8")
 
         return "\n".join(lines)
 
@@ -608,10 +806,11 @@ class SluitingsToetser:
         }
 
     def formatteer_ketenintegriteit_markdown(self) -> str:
-        """Genereert het leesbare 3-Boeken Ketenintegriteitsrapport (Simon Stevin + 3 Sluitingskenmerken + Werklexicon)."""
+        """Genereert het leesbare 3-Boeken Ketenintegriteitsrapport (Simon Stevin + 3 Sluitingskenmerken + Klok)."""
         feiten_index, _ = self.laad_boeken()
         overzicht = self.ketenstatus_overzicht()
         rekeningen_gb = self.bouw_rekeningen_grootboek()
+        klok = self.bouw_openstaande_klok()
 
         rek_str = "Ja" if overzicht["rekenkundig_sluitend"] else f"Nee ({len(overzicht['tegenstrijdigheden'])} tegenstrijdige loket-registraties)"
         proc_str = f"Ja ({overzicht['procedureel_gesloten_aantal']}/{overzicht['totaal_posten']} procedureel afgerond)" if overzicht["procedureel_gesloten_aantal"] else "Nee"
@@ -633,10 +832,26 @@ class SluitingsToetser:
             md.append("> **Actie:** Openstaande overdracht behouden en bewijs van feitelijke uitvoering of rectificatie verlangen.")
             md.append("")
 
+        # AFGELEIDE KLOK-VIEW UIT BOEK 3
+        md.extend([
+            "---",
+            "## De Klok — Afgeleide Termijnen-View uit Boek 2 & Boek 3",
+            "",
+            "| Post ID | Debiteur / Ketenpartij | Vervaldatum | Uiterste datum | Dagen | Klok-status | Tafel-besluit |",
+            "| :--- | :--- | :---: | :---: | :---: | :--- | :--- |",
+        ])
+        for k in klok:
+            dgn = k["dagen_resterend"]
+            dgn_str = f"`{dgn:+d}d`" if dgn is not None else "n.v.t."
+            md.append(
+                f"| `{k['post_id']}` | {k['debiteur_ketenpartij']} | {k['verval_datum']} | {k['uiterste_datum']} | {dgn_str} | **{k['klok_status']}** | `{k['tafel_besluit']}` |"
+            )
+        md.append("")
+
         # BOEK 3: HET GROOTBOEK / SCHULDBOEK PER REKENING (Met Terugwaartse Herleidbaarheid)
         md.extend([
             "---",
-            "## Boek 3 — Het Grootboek / Schuldboek (Toestand per Loket & Terugwaartse Herleidbaarheid)",
+            "## Boek 3 — Het Ketengrootboek / Schuldboek (`ketengrootboek.json`)",
             "",
             "| Rekening / Loket | Overgedragen (Debet) | Te vervullen (Credit) | Rekenkundig | Procedureel | Materieel | Terugwaarts Bewijsspoor (Memoriaal) |",
             "| :--- | :---: | :---: | :---: | :---: | :---: | :--- |",
@@ -651,29 +866,31 @@ class SluitingsToetser:
             )
         md.append("")
 
-        # BOEK 2: HET JOURNAAL VAN OVERDRACHTEN (9 Controlevelden per Post)
+        # BOEK 2: HET JOURNAAL VAN OVERDRACHTEN
         md.extend([
             "---",
-            "## Boek 2 — Het Journaal (Relaties & 9 Controlevelden per Overdracht)",
+            "## Boek 2 — Het Journaal (`boek2_journaal.json`)",
             "",
         ])
         for r in overzicht["resultaten"]:
             v = r["overdracht_velden"]
             md.extend([
                 f"### {r['post_id']} — {r['naam']}",
-                f"- **Diagnose:** `{r['keten_diagnose']}` · **Analysecode:** `{r['werklexicon_code']}`",
+                f"- **Diagnose:** `{r['keten_diagnose']}` · **Analysecode:** `{r['werklexicon_code']}` · **Tafel-besluit:** `{r['tafel_besluit']}`",
                 f"- **Toelichting:** {r['werklexicon_toelichting']}",
                 "",
                 "| Veld | Waarde |",
                 "| :--- | :--- |",
                 f"| **Bron en bewijs (Laag 1 Memoriaal)** | `{v['bron_en_bewijs']}` |",
                 f"| **Zender → ontvanger (Laag 2 Journaal)** | {v['zender_naar_ontvanger']} |",
+                f"| **Tafel-kwalificatie / Autorisatie** | `{v['tafel_besluit']}` |",
                 f"| **Verplichting** | {v['verplichting']} |",
                 f"| **Aanvaarding** | {v['aanvaarding']} |",
                 f"| **Uitvoering** | {v['uitvoering']} |",
                 f"| **Rekenkundige status** | **{v['rekenkundige_status']}** |",
                 f"| **Procedurele status** | **{v['procedurele_status']}** |",
                 f"| **Materiële status** | **{v['materiele_status']}** |",
+                f"| **Termijn / Klok** | {v['termijn_status']} |",
                 f"| **Sluitingsbewijs** | `{v['sluitingsbewijs'] or 'Ontbreekt — post blijft open'}` |",
                 "",
             ])
@@ -681,17 +898,20 @@ class SluitingsToetser:
         # BOEK 1: HET MEMORIAAL (Laag 1 Waarnemingen vs. Laag 3 Betwiste Interpretaties)
         md.extend([
             "---",
-            "## Boek 1 — Het Memoriaal (Onveranderlijke Laag-1 Waarnemingen vs. Laag-3 Interpretaties)",
+            "## Boek 1 — Het Memoriaal (`memoriaal.json`: Multimodale Laag-1 Waarnemingen vs. Laag-3 Interpretaties)",
             "",
             "> **Systeeminvariant (Niet-Overschrijvingsregel):** *Een latere interpretatie of classificatie (Laag 3) mag een oorspronkelijke waarneming in het Memoriaal (Laag 1) nooit wijzigen, verwijderen of stilzwijgend vervangen.*",
             "",
         ])
         for fid, f_obj in feiten_index.items():
             h_short = (f_obj.get("sha256") or "GEEN_HASH")[:16]
+            mod = f_obj.get("modaliteit", "tekst")
+            extra_cnt = len(f_obj.get("extra_bewijsstukken", []))
+            bundel_lbl = f" (+{extra_cnt} gekoppelde bronbestanden, bundel_ok={f_obj.get('multimodale_bundel_compleet')})" if extra_cnt else ""
             md.extend([
-                f"### `{fid}` ({f_obj.get('datum', '')}) — {f_obj.get('actor', '')}",
+                f"### `{fid}` ({f_obj.get('datum', '')}) — {f_obj.get('actor', '')} [`{mod}`]",
                 f"- **Laag 1 Waarneming (Immutable):** {f_obj.get('omschrijving', '')}",
-                f"- **Bewijsstuk & Integriteit:** `{f_obj.get('bewijsstuk', '')}` · SHA-256: `{h_short}...`",
+                f"- **Bewijsstuk & Integriteit:** `{f_obj.get('bewijsstuk', '')}` · SHA-256: `{h_short}...`{bundel_lbl}",
             ])
             interps = f_obj.get("interpretatie_historie", [])
             if interps:
@@ -716,10 +936,18 @@ def main():
     parser.add_argument("target", nargs="?", default="ALL", help="Post ID (bijv. POST-WONEN-WMO-001) of ALL voor Proefbalans")
     parser.add_argument("--json", action="store_true", help="Uitvoer als ruw JSON")
     parser.add_argument("--integriteit", action="store_true", help="Print het volledige 3-Boeken Ketenintegriteitsrapport (Markdown)")
+    parser.add_argument("--klok", action="store_true", help="Print de automatisch afgeleide Klok (openstaande termijnen)")
     parser.add_argument("--rekening", type=str, default="", help="Reconstrueer een specifieke rekening vanuit het Grootboek terug naar Memoriaal")
     args = parser.parse_args()
 
     toetser = SluitingsToetser()
+
+    if args.klok:
+        if args.json:
+            print(json.dumps(toetser.bouw_openstaande_klok(), indent=2, ensure_ascii=False))
+        else:
+            print(toetser.formatteer_klok_overzicht())
+        return
 
     if args.integriteit:
         print(toetser.formatteer_ketenintegriteit_markdown())
@@ -734,10 +962,9 @@ def main():
         print(toetser.draai_proefbalans())
     else:
         feiten_index, posten_lijst = toetser.laad_boeken()
-        # Zoek match op post_id of iface id
         match = next((p for p in posten_lijst if p["post_id"] == args.target or args.target in p["post_id"]), None)
         if not match:
-            print(f"FOUT: Post '{args.target}' niet gevonden in grootboek.json", file=sys.stderr)
+            print(f"FOUT: Post '{args.target}' niet gevonden in boek2_journaal.json", file=sys.stderr)
             sys.exit(1)
         res = toetser.toets_post(match, feiten_index)
         if args.json:

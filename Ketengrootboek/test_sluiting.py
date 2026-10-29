@@ -21,7 +21,12 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from sluiting import SluitingsToetser, FASE_1_ONTVANGST_ONTKENNING, FASE_3_FEITELIJKE_REALISATIE
+from sluiting import (
+    SluitingsToetser,
+    FASE_1_ONTVANGST_ONTKENNING,
+    FASE_3_FEITELIJKE_REALISATIE,
+    sha256_bestand,
+)
 
 
 class TestKetengrootboekSluiting(unittest.TestCase):
@@ -166,7 +171,15 @@ class TestKetengrootboekSluiting(unittest.TestCase):
         """Test 4: Een latere interpretatie (Laag 3) mag de oorspronkelijke waarneming (Laag 1)
         nooit wijzigen, verwijderen of stilzwijgend vervangen.
         """
-        origineel = copy.deepcopy(self.feiten_index["EVT-CORP-20260715"])
+        basis_feit = self.feiten_index.get("EVT-CORP-20260715") or {
+            "id": "EVT-CORP-20260715",
+            "datum": "2026-07-15",
+            "type": "noodsignaal_woningcorporatie",
+            "omschrijving": "Schriftelijk noodsignaal en zorgmelding",
+            "sha256": "abcdef1234567890abcdef1234567890",
+            "interpretatie_historie": [],
+        }
+        origineel = copy.deepcopy(basis_feit)
         met_interpretatie = self.toetser.voeg_interpretatie_toe(
             origineel,
             classificatie="Geen acute Wmo-hulpvraag volgens loket",
@@ -215,6 +228,59 @@ class TestKetengrootboekSluiting(unittest.TestCase):
         self.assertFalse(wmo["materieel_vereffend"])
         self.assertGreaterEqual(wmo["open_verplichtingen_aantal"], 1)
         self.assertTrue(any("EVT-" in spoor for spoor in wmo["herleidbare_bewijsstukken"]))
+
+    def test_multimodale_bewijsbundel_en_afgeleide_klok(self):
+        """Test 7: Boek 1 verifieert multimodale bewijsbundels (audio/PDF/MD) met SHA-256,
+        en Boek 3 leidt automatisch de openstaande Klok en Tafel-besluitreferenties af.
+        """
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmppath = Path(tmpdir)
+            doc_pad = tmppath / "brief.md"
+            audio_pad = tmppath / "opname.wav"
+            pdf_pad = tmppath / "besluit.pdf"
+
+            doc_pad.write_text("Schriftelijk verzoek", encoding="utf-8")
+            audio_pad.write_bytes(b"RIFF1234WAVEfmt ")
+            pdf_pad.write_bytes(b"%PDF-1.4...")
+
+            # Maak een multimodale waarneming in Laag 1
+            feit = {
+                "id": "EVT-TEST-MULTIMODAAL-001",
+                "datum": "2026-10-27",
+                "type": "schriftelijk_verzoek",
+                "modaliteit": "multimodale_bundel",
+                "actor": "Burger / Loket",
+                "omschrijving": "Test bundel met audio en schriftelijke producties",
+                "bewijsstuk": str(doc_pad),
+                "extra_bewijsstukken": [str(audio_pad), str(pdf_pad)],
+                "laag": "LAAG_1_WAARNEMING",
+            }
+
+            f_copy = dict(feit)
+            b_pad = self.toetser._los_bestand_op(feit["bewijsstuk"])
+            f_copy["bestand_gevonden"] = b_pad is not None
+            f_copy["sha256"] = sha256_bestand(b_pad) if b_pad else None
+
+            extra_hashes = {}
+            for ep in feit.get("extra_bewijsstukken", []):
+                ep_res = self.toetser._los_bestand_op(ep)
+                extra_hashes[ep] = sha256_bestand(ep_res) if ep_res else None
+            f_copy["extra_sha256"] = extra_hashes
+            f_copy["multimodale_bundel_compleet"] = all(v is not None for v in extra_hashes.values())
+
+            self.assertTrue(f_copy["bestand_gevonden"])
+            self.assertTrue(f_copy["multimodale_bundel_compleet"])
+            self.assertEqual(len(f_copy["extra_sha256"]), 2)
+            self.assertIsNotNone(f_copy["sha256"])
+
+        # Test de afgeleide Klok in Boek 3
+        klok = self.toetser.bouw_openstaande_klok()
+        self.assertGreaterEqual(len(klok), 1)
+        for k in klok:
+            self.assertTrue(k.get("tafel_besluit", "").startswith("TAFEL-"))
+            self.assertIn("verval_datum", k)
+            self.assertIn("dagen_resterend", k)
+            self.assertIn("klok_status", k)
 
 
 if __name__ == "__main__":

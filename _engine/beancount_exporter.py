@@ -324,8 +324,13 @@ def export_ketengrootboek_to_beancount(
     if not output_path:
         output_path = os.path.join(keten_dir, "ketengrootboek_audit.beancount")
 
-    grootboek_path = os.path.join(keten_dir, "grootboek.json")
-    journaal_path = os.path.join(keten_dir, "journaal.json")
+    grootboek_path = os.path.join(keten_dir, "boek2_journaal.json")
+    if not os.path.exists(grootboek_path):
+        grootboek_path = os.path.join(keten_dir, "grootboek.json")
+
+    journaal_path = os.path.join(keten_dir, "memoriaal.json")
+    if not os.path.exists(journaal_path):
+        journaal_path = os.path.join(keten_dir, "journaal.json")
 
     posts = []
     if os.path.exists(grootboek_path):
