@@ -1,5 +1,24 @@
 # Wijzigingen
 
+## 2026-10-29
+
+Protocol FH-01, Epistemische Laagscheiding, Multimodale Ketenintegriteit & De Klok:
+
+- **Protocol FH-01 (`NOTITIE_COMMUNICATIEPROTOCOL_SBARIII.md`):**
+  - **Vier Epistemische Lagen:** Formele scheiding tussen Bewijs (`memoriaal.json` + SHA-256 brondocumenten), Interpretatie/Hypotheses (`boek2_journaal.json`), Doel- en constraintlaag (`ketengrootboek.json` & De Klok) en Transformatie (`TAFEL.md` / Fluwelen Handschoen).
+  - **Invoer-Filter (2 Stappen):** Stap 1 toont het analyserende model uitsluitend de letterlijke tekst voor neutrale feitenregistratie en taalkundige lezingen (zonder doelstellingen, escalatiekaders of strategie). Pas in Stap 2 worden Ketengrootboek-doelen en Tafel-wegingen aangekoppeld.
+  - **Drie IJkcontroles & Twee Negatieve Invarianten:** Inhoudscontrole (100% behoud van feiten en hulpvraag), Taalhandelingcontrole en Ruimtecontrole. Strikt verbod op Agency Inversion (geen verborgen fuiken) en verbod op adaptief overdrijven (sussen noch demoniseren).
+- **Ketengrootboek v2.0 & De Klok (`Ketengrootboek/sluiting.py`, `Ketengrootboek/AGENTS.md`, `test_sluiting.py`):**
+  - **Simon Stevin 3-Boekenstelsel:** Volledige ondersteuning voor Boek 1 (Het Memoriaal `memoriaal.json`), Boek 2 (Het Journaal `boek2_journaal.json`) en Boek 3 (Het Ketengrootboek `ketengrootboek.json`).
+  - **Multimodale Verificatie:** Ondersteuning voor gekoppelde bewijsbundels (`extra_bewijsstukken`: audio/WAV/MP3, PDF, Markdown, XML/CSV) met SHA-256 integriteitscontrole.
+  - **De Klok (`sluiting.py --klok`):** Berekent en rapporteert openstaande wettelijke termijnen, vervaldata en actuele dagen resterend direct vanuit Boek 2 en 3.
+  - **Ketenintegriteitsrapport (`sluiting.py --integriteit`):** Genereert een compleet 3-boeken integraal auditverslag in Markdown.
+- **Boekhoud-Sorteerder & Tafel-Oogster (`Ketengrootboek/tafel_sorteerder.py`):**
+  - Deterministische bronparser voor het sorteren en SHA-256 verifiëren van bewijsstukken vanuit inkomende post, audio en e-mail naar de drie boeken.
+- **Privacy & Git-Hygiëne (`.gitignore`, `Ketengrootboek/grootboek.json`):**
+  - Persoonlijke casusboeken (`memoriaal.json`, `boek2_journaal.json`, `ketengrootboek.json`, `tafel_besluiten.json`) en verzonden correspondentie (`Outgoing_Letters/*`) hermetisch genegeerd.
+  - Het openbare `grootboek.json` blijft strikt Voorbeeldstad en bevat het actuele v2.0-schema inclusief `tafel_besluit` en `termijn`.
+
 ## 2026-10-26
 
 Stroomlijning van Civic Helper 0.3 — Tafel, Simon Stevin 3-Boekenstelsel en Beancount/CAMT-integratie:

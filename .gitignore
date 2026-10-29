@@ -23,17 +23,22 @@ Dossier/*.md
 WERKMODEL_CASUS_*
 send_*.py
 
-# Ketengrootboek persoonlijke saldi
+# Ketengrootboek persoonlijke saldi en levende zaak (Strikt Lokaal)
 Ketengrootboek/journaal.json
+Ketengrootboek/memoriaal.json
+Ketengrootboek/boek2_journaal.json
+Ketengrootboek/ketengrootboek.json
 Ketengrootboek/saldo.json
+Ketengrootboek/tafel_besluiten.json
 Ketengrootboek/*.beancount
-
 
 # Dynamische inkomende en uitgaande post (alleen templates en .gitkeep blijven getrackt)
 Incoming_Letters/*
 !Incoming_Letters/.gitkeep
 Outgoing_Drafts/*
 !Outgoing_Drafts/.gitkeep
+Outgoing_Letters/*
+!Outgoing_Letters/.gitkeep
 
 # Zaak van de persoon. Niet het programma.
 werk/

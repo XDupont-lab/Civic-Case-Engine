@@ -116,3 +116,43 @@ In het Ketengrootboek geldt:
 1. Elk uitgaand contact wordt getoetst op de aanwezigheid van S, B, A en R.
 2. Een transactie blijft openstaan als **residu** zolang de **Information / Read-Back** niet schriftelijk door de ontvangende partij is bevestigd.
 3. Bij discussie met de tegenpartij over de gehanteerde stijl vormt deze notitie het formele verweerschrift.
+
+
+---
+
+## 7. Protocol FH-01: Epistemische Laagscheiding & Fluwelen Handschoen Transformatie
+
+Om te voorkomen dat agents meewaaien met de sociale dynamiek van de chat, intenties toedichten of strategische gedragsinstructies mengen met dossierfeiten, borgt de Civic Case Engine een strikte epistemische scheiding over vier lagen:
+
+### 7.1 De Vier Epistemische Lagen
+
+| Laag | Systeemonderdeel | Functie | Onschendbare Invariant |
+|---|---|---|---|
+| **A. Bewijslaag** | **Memoriaal** (`memoriaal.json` + SHA-256 brondocumenten) | Letterlijke waarneming: citaten, tijdstempels, afzender, feitelijke tekst. | Bevat NOOIT interpretaties, motieven of gedragsinstructies. Er wordt nooit in gegumd; correcties geschieden uitsluitend via opvolgende boekingen. |
+| **B. Interpretatielaag** | **Journaal** (`boek2_journaal.json` / `interpretatie_historie`) | Betekenistoekenning en hypotheses: mogelijke lezingen van het signaal. | Blijft te allen tijde expliciet gelabeld als aanname of werkhypothese; claimt nimmer deterministische oorzakelijkheid uit een enkelvoudig signaal. |
+| **C. Doel- en constraintlaag** | **Ketengrootboek & De Klok** (`ketengrootboek.json`) | Harde randvoorwaarden, rechten, openstaande vorderingen en wettelijke termijnen. | De doelstelling van de burger (bv. objectieve functiediagnostiek NAH of protocolverbetering) is leidend en mag NOOIT stilzwijgend worden verlaagd om frictie te vermijden. |
+| **D. Transformatielaag** | **Fluwelen Handschoen & De Tafel** (`TAFEL.md` / concepten) | Communicatieve vormgeving naar de buitenwereld. | Vertaalt de eisen uit C en feiten uit A naar een waardige, ontwapenende taalhandeling die de professionele ruimte van de ontvanger intact laat. |
+
+### 7.2 Strikte Verwerkingsvolgorde bij Binnenkomende Berichten (Invoer-Filter)
+
+Bij de intake van een inkomend bericht (zoals een reactie van een arts of loket) ziet het analyserende model **in eerste instantie uitsluitend de Memoriaal-laag**:
+1. **Stap 1 (Zuiver Memoriaal):** Het model krijgt alleen de letterlijke tekst te zien — zonder doelen uit het Ketengrootboek, zonder toonregels, zonder escalatiekaders en zonder strategie.
+   - Het model mag in deze stap slechts twee dingen doen:
+     a. Letterlijk registreren wat er staat.
+     b. Opschrijven welke lezingen en hypothesen taalkundig mogelijk zijn.
+   - Hiermee wordt voorkomen dat een ingebouwde de-escalatiereflex of conflictverwachting zich hecht aan het leesproces.
+2. **Stap 2 (Koppeling met Ketengrootboek & De Tafel):** Pas nadat Stap 1 is vastgelegd, worden de doelen uit het Ketengrootboek en de weging van De Tafel toegevoegd om de vervolgstap en eventuele transformatie te bepalen.
+
+### 7.3 De Drie IJkcontroles van de Fluwelen Handschoen
+
+Elke uitgaande transformatie wordt getoetst op drie onafhankelijke criteria:
+1. **Inhoudscontrole:** Zijn feiten, medische voorgeschiedenis, hulpvraag en concrete doelen uit het Ketengrootboek 100% behouden?
+2. **Taalhandelingcontrole:** Welke zinnen informeren, verzoeken, begrenzen, instrueren of presenteren een uitkomst als voldongen feit? Zinnen die de beslissingsruimte van de ontvanger dicteren worden herleid naar het neerleggen van de hulpvraag.
+3. **Ruimtecontrole:** Maakt de brief duidelijk wat de burger nodig heeft, zónder de professionele bevoegdheid of de beslissing van de ontvanger voor te schrijven?
+
+### 7.4 Twee Harde Negatieve Invarianten
+
+1. **Verbod op manipulatieve 'Agency Inversion':**  
+   De Fluwelen Handschoen is geen techniek om de ander ongemerkt in een vooraf vastgelegde fuik te manoeuvreren onder de schijn dat het zijn eigen idee was. Waar een grens of wettelijke eis hard is, blijft deze nuchter, hoffelijk en expliciet op tafel liggen.
+2. **Verbod op adaptief overdrijven (Sussen noch Demoniseren):**  
+   Een agent mag niet meebewegen met de sociale golf van het gesprek. Een nuchtere professionele afbakening van een arts mag noch worden gesust ("kruip in je schulp en geef je doelen op"), noch worden gedemoniseerd tot een vijandig instituut ("klerkenreflex, gildebaas, EPD-rampen"). Het signaal wordt geregistreerd in zijn exacte, onopgesmukte omvang.
