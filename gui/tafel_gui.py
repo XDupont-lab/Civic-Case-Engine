@@ -2519,6 +2519,13 @@ def main():
     app.setStyle("Fusion")
     win = TafelWindow()
     win.show()
+
+    # 2-Stages Instap & 1-Klik triggers via command-line flags
+    if "--verbind-omgeving" in sys.argv or "--connect-environment" in sys.argv:
+        QTimer.singleShot(600, win.action_connect_environment)
+    elif "--bouw-dossiers" in sys.argv or "--build-dossiers" in sys.argv:
+        QTimer.singleShot(600, win.action_build_dossiers)
+
     sys.exit(app.exec())
 
 

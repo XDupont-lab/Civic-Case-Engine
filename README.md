@@ -14,13 +14,13 @@ Wat hieronder staat is de architectuurnotitie. De definitie hierboven is de deur
 
 ## Begin
 
-1. Clone de repository en ga de map in.
-   ```bash
-   git clone https://github.com/XDupont-lab/Civic-Case-Engine.git
-   cd Civic-Case-Engine
-   ```
-2. Op Windows opent `CivicHelper.cmd` het venster. Op Linux opent `hulp/start_venster.sh` hetzelfde venster.
-3. Een schone computer begint bij `ontkiem.py`. Eén gewoon mailadres is genoeg om te starten. Een sleutel blijft in de omgeving. Het venster vraagt er niet om.
+1. **De 2-Stages Instap (Windows):**
+   Op een schone of nieuwe computer start je eenvoudig met `INSTAP.cmd` (of `INSTAP_WINDOWS.cmd`).
+   - **Stage 1 (Machinekamer):** Vraagt om één gewoon Gmail-adres. Dit geeft je gratis toegang tot zowel Google Antigravity (`agy` / Gemini Flash) als NVIDIA NIM (1.000 gratis model-credits op `build.nvidia.com` voor de Multi-LLM audit). Het script controleert of installeert Python 3, Git, agy, de GitHub-suite en benodigde bibliotheken (`requirements.txt`).
+   - **Stage 2 (Aan Tafel):** Het Tafelvenster (`CivicHelper.cmd`) opent automatisch met de standaard-prompt `🔌 Verbind Omgeving`. Je lokale klerk (`@agy`) controleert de mappen, het persoonsmasker (`gui/pii_mask.py`) en actieve modellen, en vraagt rustig één ding tegelijk om je dossiers op te bouwen (`📂 Bouw Dossiers`).
+2. **Handmatig starten:**
+   Op Windows opent `CivicHelper.cmd` direct het venster. Op Linux opent `hulp/start_venster.sh` hetzelfde venster.
+3. Een sleutel blijft altijd in de omgeving (bijv. `NVIDIA_API_KEY` in Windows User Environment). Er komen nooit tokens in bestanden of git.
 4. `START.cmd` en `start_linux.sh` zijn het menu voor de bouwer. Dat menu is niet de deur.
 
 Of een overdracht sluit, toetst `Ketengrootboek/sluiting.py` aan de hand van de drie boeken van Simon Stevin (Memoriaal, Journaal, Grootboek) en drie afzonderlijke sluitingskenmerken (*rekenkundig sluitend*, *procedureel gesloten*, *materieel vereffend*). De operationele gids voor agenten staat in [`Ketengrootboek/AGENTS.md`](Ketengrootboek/AGENTS.md). Ontbreekt de materiële tegenboeking, dan blijft de post open. Het openbare voorbeeld heet Voorbeeldstad. Een pad naar een eigen dossier hoort niet in `interfaces.json`.

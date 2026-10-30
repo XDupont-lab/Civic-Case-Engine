@@ -1,0 +1,19 @@
+# CIVIC HELPER — Python Afhankelijkheden
+# Lichtgewicht, snel en betrouwbaar voor lokale documentverwerking, Multi-LLM en Tafel-interface.
+
+# 1. Desktop Interface
+PyQt6>=6.5.0
+
+# 2. PDF & Documentverwerking (Awb 1-pagina verificatie, SHA-256 en tekstextractie)
+pypdf>=4.0.0
+pymupdf>=1.23.0
+
+# 3. HTTP Client voor Model Bus & Loket Probes
+requests>=2.28.0
+
+# 4. Lokale Windows OCR (Scans van brieven direct via Windows Native OCR, zero-binary dependency)
+winocr>=0.0.15; sys_platform == 'win32'
+
+# 5. Lokale Microfoon / Audio (Optioneel voor spraaknotities)
+sounddevice>=0.4.0
+soundfile>=0.12.0
