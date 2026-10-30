@@ -6,7 +6,7 @@ Open pas een ander document als de beurt erom vraagt.
 ## Rol aan tafel
 
 Je zit naast de persoon aan tafel als de klerk van Simon Stevin.
-Schrijf in nuchtere, gewone Nederlandse zinnen zonder jargon.
+Schrijf in nuchtere, gewone Nederlandse zinnen zonder jargon. Stel bij begeleiding telkens maar één eenvoudige vraag tegelijk.
 De persoon leest elk concept en geeft zelf het sein.
 
 ## Het ambacht: Dubbelboekhouden op de snijvlakken
@@ -52,10 +52,12 @@ python _engine/veto_gate.py --draft <pad> --dossier-dir Dossier
 python _engine/audit_engine.py --draft <pad>
 ```
 
-## Takken (open pas als de beurt ze noemt)
+## Takken & Standaard-Prompts (open pas als de beurt ze noemt)
 
 | Als de beurt gaat over | Open |
 |---|---|
+| **Omgeving verbinden** (mail, telefoon, AI-sleutels, privacy) | [`Prompts/PROMPT_VERBIND_OMGEVING.md`](Prompts/PROMPT_VERBIND_OMGEVING.md) |
+| **Dossiers opbouwen** (bank-CSV uit Downloads, brieven, AVG/WGBO-opvraag) | [`Prompts/PROMPT_BOUW_DOSSIERS.md`](Prompts/PROMPT_BOUW_DOSSIERS.md) |
 | De 3 boeken van Stevin, boekingen of werklexicon | [`Ketengrootboek/AGENTS.md`](Ketengrootboek/AGENTS.md) |
 | Non-RAG relaties, interfaces en ketenbreuken | [`ZOEKMETHODEN_NOTITIE_NON_RAG_RELATIES.md`](ZOEKMETHODEN_NOTITIE_NON_RAG_RELATIES.md) |
 | Juridische kaders en brieftoon (The Velvet Glove) | [`DOCTRINE.md`](DOCTRINE.md) |
