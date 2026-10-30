@@ -41,9 +41,34 @@ import sys
 from typing import Any, Dict, List, Optional
 
 
+# Nederlandse canonieke vertaling en taxonomie
+NEDERLANDSE_TERMEN: Dict[str, str] = {
+    # 5 Structurele condities
+    "TRANSFER_OF_BURDEN": "Lastenverplaatsing",
+    "PROCEDURAL_DEFLECTION": "Loketomleiding",
+    "REPEATED_CONTACT_WITHOUT_RESOLUTION": "Dossier-amnesie",
+    "INSTITUTIONAL_DELAY": "Termijnoverschrijding",
+    "ESCALATION_WITHOUT_RESPONSE": "Urgentiekloof",
+    # 4 Diagnostische signalen
+    "Evidence Strength": "Bewijskracht",
+    "Deadline Pressure": "Termijndruk",
+    "Escalation Readiness": "Escalatierijpheid",
+    "Case Momentum": "Dossierdynamiek",
+    # Trajectoria
+    "Stable": "Stabiel",
+    "Deteriorating": "Verslechterend",
+    "Improving": "Verbeterend",
+    # Ketenbegrippen
+    "Chain of Custody": "Bewijsketen (onveranderlijk)",
+    "Public Record": "Vastgelegd dossierstuk",
+    "Verification Hash": "Verificatie-hash (SHA-256)",
+}
+
+
 @dataclass
 class ConditionDefinition:
     code: str
+    code_en: str
     name_nl: str
     description: str
     indicators: List[str]
@@ -53,9 +78,10 @@ class ConditionDefinition:
 
 
 CONDITIES_TAXONOMIE: Dict[str, ConditionDefinition] = {
-    "TRANSFER_OF_BURDEN": ConditionDefinition(
-        code="TRANSFER_OF_BURDEN",
-        name_nl="Omkering van inspanning (Lastenverplaatsing)",
+    "LASTENVERPLAATSING": ConditionDefinition(
+        code="LASTENVERPLAATSING",
+        code_en="TRANSFER_OF_BURDEN",
+        name_nl="Lastenverplaatsing (Omkering van inspanning)",
         description=(
             "De instantie vraagt de burger om stukken, bewijzen of bevestigingen aan te leveren "
             "waarover de instantie zelf al beschikt of die wettelijk in haar eigen beheer horen."
@@ -84,9 +110,10 @@ CONDITIES_TAXONOMIE: Dict[str, ConditionDefinition] = {
             "aan, zodat u direct over alle informatie beschikt om het dossier te behandelen."
         ),
     ),
-    "PROCEDURAL_DEFLECTION": ConditionDefinition(
-        code="PROCEDURAL_DEFLECTION",
-        name_nl="Procedurele afleiding (Loketomleiding)",
+    "LOKETOMLEIDING": ConditionDefinition(
+        code="LOKETOMLEIDING",
+        code_en="PROCEDURAL_DEFLECTION",
+        name_nl="Loketomleiding (Procedurele afleiding)",
         description=(
             "De instantie werpt een procedurele, digitale of formele drempel op, of verwijst "
             "zonder warme overdracht door naar een ander loket, waardoor de inhoudelijke vraag blijft liggen."
@@ -115,9 +142,10 @@ CONDITIES_TAXONOMIE: Dict[str, ConditionDefinition] = {
             "juiste behandelaar ({doel_loket}), zodat de continuïteit en de lopende termijn gewaarborgd blijven."
         ),
     ),
-    "REPEATED_CONTACT_WITHOUT_RESOLUTION": ConditionDefinition(
-        code="REPEATED_CONTACT_WITHOUT_RESOLUTION",
-        name_nl="Herhaald contact zonder cumulatie (Amnesie-lus)",
+    "DOSSIER_AMNESIE": ConditionDefinition(
+        code="DOSSIER_AMNESIE",
+        code_en="REPEATED_CONTACT_WITHOUT_RESOLUTION",
+        name_nl="Dossier-amnesie (Herhaald contact zonder cumulatie)",
         description=(
             "Burger heeft reeds meerdere malen contact gehad, maar de reactie toont geen "
             "opbouw op eerdere toezeggingen of reeds vastgestelde feiten."
@@ -146,9 +174,10 @@ CONDITIES_TAXONOMIE: Dict[str, ConditionDefinition] = {
             "en kunnen we gezamenlijk toewerken naar de afhandeling."
         ),
     ),
-    "INSTITUTIONAL_DELAY": ConditionDefinition(
-        code="INSTITUTIONAL_DELAY",
-        name_nl="Structurele vertraging (Termijnoverschrijding)",
+    "TERMIJNOVERSCHRIJDING": ConditionDefinition(
+        code="TERMIJNOVERSCHRIJDING",
+        code_en="INSTITUTIONAL_DELAY",
+        name_nl="Termijnoverschrijding (Structurele vertraging)",
         description=(
             "Het overschrijden van de wettelijke of aangekondigde beslistermijn zonder tijdige, "
             "gemotiveerde verdaging of besluit."
@@ -177,9 +206,10 @@ CONDITIES_TAXONOMIE: Dict[str, ConditionDefinition] = {
             "te voorkomen, verneem ik graag uiterlijk {datum_voorstel} uw inhoudelijke besluit."
         ),
     ),
-    "ESCALATION_WITHOUT_RESPONSE": ConditionDefinition(
-        code="ESCALATION_WITHOUT_RESPONSE",
-        name_nl="Urgentietoename zonder tempo-aanpassing (Prikkelkloof)",
+    "URGENTIEKLOOF": ConditionDefinition(
+        code="URGENTIEKLOOF",
+        code_en="ESCALATION_WITHOUT_RESPONSE",
+        name_nl="Urgentiekloof (Zorgtoename zonder tempo-aanpassing)",
         description=(
             "De gezondheidstoestand, acute zorgvraag of bestaansonzekerheid van de burger verslechtert, "
             "maar de ambtelijke behandelstroom blijft hangen in reguliere lage-urgentie modus."
@@ -209,10 +239,20 @@ CONDITIES_TAXONOMIE: Dict[str, ConditionDefinition] = {
     ),
 }
 
+# Alias mapping voor Engelse CDE v13 codes naar Nederlandse codes
+ALIASSEN_ENGELS_NAAR_NL: Dict[str, str] = {
+    "TRANSFER_OF_BURDEN": "LASTENVERPLAATSING",
+    "PROCEDURAL_DEFLECTION": "LOKETOMLEIDING",
+    "REPEATED_CONTACT_WITHOUT_RESOLUTION": "DOSSIER_AMNESIE",
+    "INSTITUTIONAL_DELAY": "TERMIJNOVERSCHRIJDING",
+    "ESCALATION_WITHOUT_RESPONSE": "URGENTIEKLOOF",
+}
+
 
 @dataclass
 class ConditionMatch:
     code: str
+    code_en: str
     name_nl: str
     confidence: float
     indicators_found: List[str]
@@ -224,6 +264,7 @@ class ConditionMatch:
     def to_dict(self) -> Dict[str, Any]:
         return {
             "code": self.code,
+            "code_en": self.code_en,
             "name_nl": self.name_nl,
             "confidence": self.confidence,
             "indicators_found": self.indicators_found,
@@ -261,16 +302,16 @@ class InstitutionalConditionsAnalyzer:
                     gevonden_patronen.append(m.group(0))
 
             # Context-gedreven indicatoren (bijv. eerdere contactmomenten of termijndruk)
-            if code == "REPEATED_CONTACT_WITHOUT_RESOLUTION":
+            if code in ("DOSSIER_AMNESIE", "REPEATED_CONTACT_WITHOUT_RESOLUTION"):
                 contact_count = ctx.get("eerdere_contacten_count", 0)
                 if contact_count >= 3:
                     gevonden_patronen.append(f"Ketenhistorie: {contact_count} eerdere contacten zonder sluiting")
-            elif code == "INSTITUTIONAL_DELAY":
+            elif code in ("TERMIJNOVERSCHRIJDING", "INSTITUTIONAL_DELAY"):
                 dagen_open = ctx.get("dagen_openstaand", 0)
                 wettelijke_termijn_dagen = ctx.get("wettelijke_termijn_dagen", 0)
                 if wettelijke_termijn_dagen > 0 and dagen_open > wettelijke_termijn_dagen:
                     gevonden_patronen.append(f"Klok: {dagen_open} dagen verstreken (termijn was {wettelijke_termijn_dagen})")
-            elif code == "ESCALATION_WITHOUT_RESPONSE":
+            elif code in ("URGENTIEKLOOF", "ESCALATION_WITHOUT_RESPONSE"):
                 if ctx.get("medische_urgentie_verhoogd", False) and ctx.get("spoed_afgewezen", False):
                     gevonden_patronen.append("Ketenfeit: Verhoogde urgentie geregistreerd maar standaardpad gehandhaafd")
 
@@ -294,6 +335,7 @@ class InstitutionalConditionsAnalyzer:
 
                 matches.append(ConditionMatch(
                     code=code,
+                    code_en=defn.code_en,
                     name_nl=defn.name_nl,
                     confidence=round(conf, 2),
                     indicators_found=gevonden_patronen,
