@@ -76,12 +76,13 @@ BEZWAARCLAUSULE_PATRONEN = [
 
 # Feitelijke handelingen / Informatieve mededelingen (geen rechtsgevolg)
 FEITELIJK_INFORMATIEF_PATRONEN = [
-    (r"\bter informatie\b|\bter kennisname\b|\bter attentie van\b", "Informatief"),
+    (r"\bter informatie\b|\bter kennisname\b|\bter kennisgeving\b|\bter attentie van\b", "Informatief"),
     (r"\buitnodiging voor een (?:keukentafel)?gesprek\b|\bgesprek gepland\b", "Gespreksuitnodiging"),
-    (r"\bontvangstbevestiging van uw (?:aanvraag|brief|verzoek)\b", "Ontvangstbevestiging"),
+    (r"\bontvangstbevestiging\b", "Ontvangstbevestiging"),
     (r"\bvragen wij u om nadere informatie\b|\bvullen van de ontbrekende\b", "Informatie-uitvraag"),
     (r"\bherinnering aan uw afspraak\b", "Afspraakherinnering"),
     (r"\bbrochure\b|\bnieuwsbrief\b|\bzie bijgevoegde folder\b", "Voorlichting"),
+    (r"\bgeen verdere behandeling\b", "Afdoening ter kennisname"),
 ]
 
 # Voorbereidingsbeslissingen (art. 6:3 Awb)
@@ -89,6 +90,7 @@ VOORBEREIDING_PATRONEN = [
     (r"\bverslag van het (?:keukentafel)?gesprek\b|\bonderzoeksverslag\b", "Onderzoeksverslag"),
     (r"\bconcept(?:-|\s+)rapport\b|\bconcept(?:-|\s+)advies\b", "Conceptadvies"),
     (r"\btermijnverlenging\b|\bverdaging van de beslissing\b|\bart(?:ikel|\.)?\s*4:14\b", "Verdagingsbericht"),
+    (r"\bbeslissen binnen \d+ weken op uw bezwaarschrift\b|\bbeslistermijn\b", "Beslistermijn art. 7:10 Awb"),
 ]
 
 
