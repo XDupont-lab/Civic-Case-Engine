@@ -167,6 +167,37 @@ def toets_brief(tekst):
     return brief, poort
 
 
+def test_briefketen_offline():
+    """Voert een volledige droogtest van de briefketen uit zonder netwerkverkeer."""
+    proef_concept = (
+        "Geachte heer, mevrouw,\n\n"
+        "Mijn ziekenhuisopname en diagnose maken dit lastig. "
+        "Graag ontvang ik een afschrift van het besluit.\n\n"
+        "Met vriendelijke groet\n"
+    )
+    gestript, poort_voor = _strip_klinisch(proef_concept)
+    engine = ENGINE / "_engine"
+    if str(engine) not in sys.path:
+        sys.path.insert(0, str(engine))
+    from two_gate_dispatcher import TwoGateDispatcher
+
+    poort_na = TwoGateDispatcher(root_dir=ENGINE).dispatch(
+        gestript,
+        actor_state={"G": 0.0, "D": 0.45, "I": 0.0, "lambda_min": 0.99},
+        slot_metadata={"name": "lokaal loket", "ingest_capacity": ["productcodes", "termijnen", "privacy"]},
+    )
+    klinisch_gevangen = any(
+        r.get("rule") == "VETO_1_PAYLOAD_SLOT_INGEST" and not r.get("passed", True)
+        for r in poort_voor.get("results", [])
+    )
+    passed = bool(klinisch_gevangen and poort_na.get("allowed", False) and "ziekenhuisopname" not in gestript.lower())
+    return {
+        "passed": passed,
+        "reason": poort_na.get("reason", ""),
+        "klinisch_gevangen_en_gestript": klinisch_gevangen,
+    }
+
+
 def sein(brief, aan, onderwerp):
     """Het sein opent het mailprogramma. Er gaat hier niets zelf de deur uit."""
     eml = werkmap() / "brief.eml"
