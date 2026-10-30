@@ -155,6 +155,24 @@ class TestCyberneticInvariants(unittest.TestCase):
         self.assertEqual(verdict.locus[1], "IF-WONEN-WMO-001")
         self.assertIn("Art. 2.1.1 en 2.3.2 Wmo 2015", verdict.locus[2])
 
+    def test_t8_veto6_fh01_blocks_demonization_and_dropped_goals(self):
+        """T8: Veto 6 (Protocol FH-01) blokkeert demoniserend jargon, professioneel dictaat of weggelaten ketendoel."""
+        foute_brief = """
+        Geachte arts,
+        Door uw klerkenreflex en EPD-rampen staat mijn dossier stil.
+        U moet als behandelaar vaststellen dat er sprake is van NAH.
+        Ik ontvang uw reactie uitsluitend schriftelijk per e-mail.
+        """
+        slot = {
+            "name": "Huisarts / Specialist",
+            "ingest_capacity": ["klinisch", "keten", "termijnen"],
+            "required_goals": ["objectieve functiediagnostiek"],
+        }
+        report = self.gate.check_draft(foute_brief, slot_metadata=slot)
+        self.assertFalse(report["all_passed"])
+        rules_hit = [r["rule"] for r in report["results"]]
+        self.assertIn("VETO_6_FH01_TRANSFORMATIE_EN_TOON", rules_hit)
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
 

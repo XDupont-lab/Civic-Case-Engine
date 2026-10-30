@@ -24,13 +24,14 @@ from pathlib import Path
 
 GUI_DIR = Path(__file__).resolve().parent
 REPO_ROOT = GUI_DIR.parent
-WORKSPACE = Path(os.environ.get("CIVIC_WORKSPACE", r"E:\LLM_Workspace" if Path(r"E:\LLM_Workspace").exists() else REPO_ROOT))
+_CANDIDATE_WS = REPO_ROOT.parent if (REPO_ROOT.parent / "agy_werk").exists() else REPO_ROOT
+WORKSPACE = Path(os.environ.get("CIVIC_WORKSPACE", str(_CANDIDATE_WS)))
 AGY_WERK = WORKSPACE / "agy_werk" if (WORKSPACE / "agy_werk").exists() else (REPO_ROOT / "werk")
 TAFEL_MD = AGY_WERK / "TAFEL.md" if (AGY_WERK / "TAFEL.md").exists() else (REPO_ROOT / "TAFEL.md")
 STATE_FILE = AGY_WERK / "scratch" / "tafel_chat_state.json"
 PID_FILE = AGY_WERK / "scratch" / "tafel_chat.pid"
 
-default_grok = Path(r"C:\Users\Gebruiker\.grok\bin\grok.exe")
+default_grok = Path.home() / ".grok" / "bin" / "grok.exe"
 GROK_EXE = Path(os.environ.get("GROK_EXE", str(default_grok) if default_grok.exists() else "grok"))
 
 if str(GUI_DIR) not in sys.path:

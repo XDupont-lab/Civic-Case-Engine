@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
 """
-CIVIC HELPER — VETO GATE (CYBERNETIC HARNESS v1.0)
+CIVIC HELPER — VETO GATE (CYBERNETIC HARNESS v1.1 + PROTOCOL FH-01)
 Pure Python Standard Library (Zero External Dependencies).
 
-Implementeert de deterministische Veto-Keten (Stappen B, C, D) van de Cybernetische Architectuur:
+Implementeert de deterministische Veto-Keten (Stappen B, C, D) van de Cybernetische Architectuur
+én Protocol FH-01 (Epistemische Laagscheiding & Fluwelen Handschoen):
 1. Veto 1 (Payload/Slot Ingest): klinisch in payload maar niet in slot.ingest -> REJECT
 2. Veto 2 (Politiek Discours): politiek_cc == true maar geen lokaal discours -> REJECT
 3. Veto 3 (Driftbewaking): telefonische afhandeling openlaten -> REJECT / WARN
 4. Veto 4 (Oordeel & Loopbaan): loopbaan, CV of bureau in uitgaande brieftekst -> REJECT
-5. Veto 5 (Dubbele Klok): tweede t=0 of nieuw narratief terwijl klok loopt -> REJECT
+5. Veto 5 (Dubbele Klok): tweede t=0 of nieuw narratief terwijl klok loopt (termijnen.json of Ketengrootboek) -> REJECT
+6. Veto 6 (Protocol FH-01): demoniseren/sussen, professioneel dictaat of manipulatieve agency inversion -> REJECT
 """
 
 import os
@@ -16,6 +18,12 @@ import sys
 import re
 import json
 from pathlib import Path
+
+_ENGINE_DIR = Path(__file__).resolve().parent
+if str(_ENGINE_DIR) not in sys.path:
+    sys.path.insert(0, str(_ENGINE_DIR))
+
+from sbar_protocol import SBARProtocol
 
 # Lijst van bekende klinische termen die NIET in een administratieve/productcode-sonde horen
 CLINICAL_KEYWORDS = [
@@ -52,6 +60,7 @@ POLITICAL_CC_KEYWORDS = [
     r"\bwethouder\b", r"\bgemeenteraad\b"
 ]
 
+
 class VetoResult:
     def __init__(self, passed=True, rule="", message="", severity="REJECT", suggestion=""):
         self.passed = passed
@@ -69,14 +78,52 @@ class VetoResult:
             "suggestion": self.suggestion
         }
 
+
 class VetoGate:
     def __init__(self, root_dir=None):
         self.root_dir = Path(root_dir) if root_dir else Path(__file__).resolve().parent.parent
 
+    def _find_active_clocks(self, target_authority: str) -> list[str]:
+        """Zoekt lopende termijnen voor target_authority in zowel Dossier/termijnen.json als het Ketengrootboek."""
+        if not target_authority:
+            return []
+        auth_low = target_authority.lower()
+        auth_tokens = [t for t in re.split(r"[\s(),/&_-]+", auth_low) if len(t) >= 3]
+        active_ids: list[str] = []
+
+        # Bron 1: Dossier/termijnen.json
+        termijnen_file = self.root_dir / "Dossier" / "termijnen.json"
+        if termijnen_file.exists():
+            try:
+                clocks = json.loads(termijnen_file.read_text(encoding="utf-8"))
+                for c in clocks:
+                    c_auth = str(c.get("authority", "")).lower()
+                    if c.get("status") == "LOPEND" and (auth_low in c_auth or c_auth in auth_low):
+                        active_ids.append(str(c.get("id", "termijnen.json")))
+            except Exception:
+                pass
+
+        # Bron 2: Ketengrootboek (Boek 3 ketengrootboek.json / Boek 2 grootboek.json)
+        keten_dir = self.root_dir / "Ketengrootboek"
+        keten_boek3 = keten_dir / "ketengrootboek.json"
+        if keten_boek3.exists():
+            try:
+                kdata = json.loads(keten_boek3.read_text(encoding="utf-8"))
+                for t in kdata.get("openstaande_termijnen", []):
+                    loket_str = f"{t.get('loket_id', '')} {t.get('loket_naam', '')}".lower()
+                    if auth_low in loket_str or any(tok in loket_str for tok in auth_tokens):
+                        pid = str(t.get("post_id", "KETEN_KLOK"))
+                        if pid not in active_ids:
+                            active_ids.append(pid)
+            except Exception:
+                pass
+
+        return active_ids
+
     def check_draft(self, text, slot_metadata=None, has_local_discours=False):
         """
-        Toetst een concepttekst aan alle 5 cybernetische veto-regels.
-        slot_metadata: dict met o.a. 'name', 'type', 'ingest_capacity' (list van strings)
+        Toetst een concepttekst aan alle 6 cybernetische en FH-01 veto-regels.
+        slot_metadata: dict met o.a. 'name', 'type', 'ingest_capacity' (list van strings), 'required_goals'
         has_local_discours: bool, of er een actief L2-discours document aanwezig is
         """
         results = []
@@ -84,7 +131,6 @@ class VetoGate:
         ingest = slot_metadata.get("ingest_capacity", ["productcodes", "termijnen", "privacy"])
 
         # VETO 1: Payload / Slot Ingest
-        # Als slot géén 'klinisch' kan innemen, mag de payload geen klinische details bevatten
         if "klinisch" not in ingest:
             found_clinical = []
             for pat in CLINICAL_KEYWORDS:
@@ -102,13 +148,13 @@ class VetoGate:
         # VETO 2: Kanaalbesmetting (Politieke of Media CC op administratieve/uitvoerende sonde)
         is_cross_contaminated_cc = False
         is_executive_sonde = not slot_metadata.get("is_political_brief", False) and not slot_metadata.get("is_media_brief", False)
-        
+
         if is_executive_sonde:
             for pat in POLITICAL_CC_KEYWORDS:
                 if re.search(r"(?:cc|kopie aan):.*?" + pat, text, re.IGNORECASE):
                     is_cross_contaminated_cc = True
                     break
-        
+
         if is_cross_contaminated_cc:
             results.append(VetoResult(
                 passed=False,
@@ -123,9 +169,9 @@ class VetoGate:
         for pat in DRIFT_KEYWORDS:
             if re.search(pat, text, re.IGNORECASE):
                 found_drift.append(pat)
-        
+
         has_written_clause = any(clause in text.lower() for clause in VELVET_GLOVE_WRITTEN_CLAUSE)
-        
+
         if found_drift:
             results.append(VetoResult(
                 passed=False,
@@ -157,50 +203,56 @@ class VetoGate:
                 suggestion="Verwijder alle verwijzingen naar CV, bureau of bekwaamheid van de functionaris. Dit hoort strikt in het interne landschap (L1)."
             ))
 
-        # VETO 5: Dubbele Klok / Tweede 'Nu'
-        # Wordt gecontroleerd via termijnen.json
-        termijnen_file = self.root_dir / "Dossier" / "termijnen.json"
-        if termijnen_file.exists():
-            try:
-                with open(termijnen_file, "r", encoding="utf-8") as f:
-                    clocks = json.load(f)
-                
-                target_authority = slot_metadata.get("authority", "")
-                if target_authority:
-                    active_for_auth = [c for c in clocks if target_authority.lower() in c.get("authority", "").lower() and c.get("status") == "LOPEND"]
-                    if len(active_for_auth) > 0 and slot_metadata.get("is_crisis_commit", False):
-                        results.append(VetoResult(
-                            passed=False,
-                            rule="VETO_5_TWEEDE_NU_DUBBELE_KLOK",
-                            message=f"Er loopt reeds een actieve wettelijke klok voor '{target_authority}' ({active_for_auth[0].get('id')}). Een nieuw narratief verstoort de lopende termijn.",
-                            severity="REJECT",
-                            suggestion="Respecteer de lopende klok (ω*). Verstuur geen nieuw crisisnarratief naar hetzelfde slot zolang de termijn tikt."
-                        ))
-            except Exception:
-                pass
+        # VETO 5: Dubbele Klok / Tweede 'Nu' (termijnen.json én Ketengrootboek)
+        target_authority = slot_metadata.get("authority", "")
+        if target_authority and slot_metadata.get("is_crisis_commit", False):
+            active_for_auth = self._find_active_clocks(target_authority)
+            if active_for_auth:
+                results.append(VetoResult(
+                    passed=False,
+                    rule="VETO_5_TWEEDE_NU_DUBBELE_KLOK",
+                    message=f"Er loopt reeds een actieve wettelijke klok voor '{target_authority}' ({active_for_auth[0]}). Een nieuw narratief verstoort de lopende termijn.",
+                    severity="REJECT",
+                    suggestion="Respecteer de lopende klok (ω*). Verstuur geen nieuw crisisnarratief naar hetzelfde slot zolang de termijn tikt."
+                ))
+
+        # VETO 6: Protocol FH-01 (3 IJkcontroles + 2 Negatieve Invarianten)
+        fh01 = SBARProtocol.validate_fh01_transform(
+            text,
+            required_goals=slot_metadata.get("required_goals"),
+        )
+        if not fh01.passed:
+            results.append(VetoResult(
+                passed=False,
+                rule="VETO_6_FH01_TRANSFORMATIE_EN_TOON",
+                message=" | ".join(fh01.warnings),
+                severity="REJECT",
+                suggestion="Pas Protocol FH-01 toe: behoud alle ketendoelen (geen sussen), vermijd vijandtaal (geen demoniseren), en laat de professionele beoordelingsruimte van de ontvanger intact."
+            ))
 
         all_passed = all(r.passed or r.severity == "WARN" for r in results)
         return {
             "all_passed": all_passed,
             "has_rejections": any(r.severity == "REJECT" for r in results),
-            "results": [r.to_dict() for r in results]
+            "results": [r.to_dict() for r in results],
+            "fh01": fh01.to_dict(),
         }
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Gebruik: python veto_gate.py <concept_bestand.md>")
         sys.exit(1)
-    
+
     p = Path(sys.argv[1])
     if not p.exists():
         print(f"Fout: Bestand niet gevonden: {p}")
         sys.exit(1)
-        
+
     with open(p, "r", encoding="utf-8") as f:
         content = f.read()
-        
+
     gate = VetoGate()
-    # Test op basis van standaard slot metadata
     report = gate.check_draft(content)
     print(f"\n=== VETO GATE AUDIT RESULTAAT VOOR: {p.name} ===")
     print(f"Status: {'[VRIJGEGEVEN]' if report['all_passed'] else '[GEBLOKKEERD DOOR VETO]'}")
@@ -210,4 +262,4 @@ if __name__ == "__main__":
         print(f"  Melding: {r['message']}")
         print(f"  Suggestie: {r['suggestion']}")
     if not report["results"]:
-        print("\nGeen veto-inbreuken geconstateerd. Stuk voldoet aan de cybernetische standaarden.")
+        print("\nGeen veto-inbreuken geconstateerd. Stuk voldoet aan de cybernetische en FH-01 standaarden.")

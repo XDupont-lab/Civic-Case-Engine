@@ -29,7 +29,8 @@ if sys.platform == "win32":
 
 GUI_DIR = Path(__file__).resolve().parent
 REPO_ROOT = GUI_DIR.parent
-WORKSPACE = Path(os.environ.get("CIVIC_WORKSPACE", r"E:\LLM_Workspace" if Path(r"E:\LLM_Workspace").exists() else REPO_ROOT))
+_CANDIDATE_WS = REPO_ROOT.parent if (REPO_ROOT.parent / "agy_werk").exists() else REPO_ROOT
+WORKSPACE = Path(os.environ.get("CIVIC_WORKSPACE", str(_CANDIDATE_WS)))
 AGY_WERK = WORKSPACE / "agy_werk" if (WORKSPACE / "agy_werk").exists() else (REPO_ROOT / "werk")
 TAFEL_MD = AGY_WERK / "TAFEL.md" if (AGY_WERK / "TAFEL.md").exists() else (REPO_ROOT / "TAFEL.md")
 ARCHIVE_DIR = TAFEL_MD.parent / "archief" / "tafel"

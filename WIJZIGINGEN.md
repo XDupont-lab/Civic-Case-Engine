@@ -15,6 +15,13 @@ Open-Source Adoptie voor de Civic Case Engine (Batches 1, 3 en 4):
 - **Multi-LLM Dialectiek & Blinde Feiten-Extractie (Batch 1, `Shared_Tools/multi_llm_audit.py`):**
   - **Fase 1 Blinde Extractie:** Onafhankelijke voor-extractie van harde feitelijke waarnemingen via DeepSeek en Gemini Flash vóórdat het inhoudelijke debat start. Berekent concordantiescore en genereert consensustabellen en discrepantievlaggen.
   - **Deterministische Citaten- & Jurisprudentietoets:** Valideert geciteerde wetsartikelen (Awb, Wmo, AVG, UAVG, BW, Zvw, Woo) en ECLI-uitspraken automatisch tegen het standaardregister (`BEKEND` vs. `ONBEKEND / TE VERIFIËREN`).
+- **Protocol FH-01 Code-Verankering, ModelBus-Integratie & Omgevingsoptimalisatie (`_engine/sbar_protocol.py`, `_engine/veto_gate.py`, `_engine/audit_engine.py`, `hulp/lus.py`, `gui/*`):**
+  - **Protocol FH-01 in `_engine/sbar_protocol.py` & `_engine/veto_gate.py` (Veto 6):** Implementeert deterministische toetsing op de Drie IJkcontroles (*1. Inhoudscontrole*, *2. Taalhandelingcontrole*, *3. Ruimtecontrole*), de Twee Negatieve Invarianten (*geen Agency Inversion*, *sussen noch demoniseren*) en het 2-staps Invoer-Filter (`build_fh01_intake_prompts` / `audit_engine.py --incoming`).
+  - **Dubbele-Klok Synchronisatie (Veto 5):** `VetoGate._find_active_clocks()` controleert nu zowel `Dossier/termijnen.json` als de openstaande termijnen in Boek 3 (`Ketengrootboek/ketengrootboek.json`).
+  - **`_engine/audit_engine.py` op `model_bus.py` & `pii_mask.py`:** Volledige aansluiting van de dialectische brief-auditor op `gui/model_bus.py` en `gui/pii_mask.py` (automatische lokale PII-maskering en ondersteuning voor alle modelhuizen incl. gratis NVIDIA NIM en Gemini).
+  - **Herstel `ontkiem.py --check` & `bootstrap.py --check`:** `test_briefketen_offline()` geïmplementeerd in `hulp/lus.py` zodat alle vier startvoorwaarden lokaal en netwerkvrij groen draaien.
+  - **Tafelvenster & Synchronisatie (`gui/` <-> `Shared_Tools/`):** De 6 `gui/`-modules zijn 100% gelijkgetrokken met `Shared_Tools/`, ontdaan van hardcoded schijf-/gebruikerspaden, en in `tafel_gui.py` + `START.cmd` uitgebreid met de Awb Besluit-Scanner (controle 9), de Keten-Klok (controle 10) en de FH-01 poorttoets.
+  - **Privacy & Hygiëne:** Drie historische `send_*.py` scripts in de root ontdaan van hardcoded wachtwoord-fallbacks en verplaatst naar `Shared_Tools/archief_sporen/`; zaakspecifieke namen uit `_engine/gtid_engine.py` en `_engine/guard_gate.py` verplaatst naar het lokale `werk/loketten.json`.
 
 
 ## 2026-10-29
