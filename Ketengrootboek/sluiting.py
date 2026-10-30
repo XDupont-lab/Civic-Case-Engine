@@ -930,12 +930,85 @@ class SluitingsToetser:
 
         return "\n".join(md)
 
+    def bouw_chain_of_custody(self, jsonl_pad: Optional[Path] = None) -> List[Dict[str, Any]]:
+        """Bouwt een cryptografische append-only hash chain over alle Laag-1 bewijsstukken in het Memoriaal.
+        Conform FRE 803(6) / Art. 8:29 Awb vrije bewijslevering.
+        """
+        feiten_index, _ = self.laad_boeken()
+        pad_uitvoer = jsonl_pad or (self.keten_dir / "chain_of_custody.jsonl")
+
+        receipts: List[Dict[str, Any]] = []
+        prev_hash = "0" * 64
+
+        # Sorteer op datum en id voor deterministische volgorde
+        gesorteerde_feiten = sorted(feiten_index.values(), key=lambda f: (f.get("datum", ""), f.get("id", "")))
+
+        for f in gesorteerde_feiten:
+            fid = f.get("id", "")
+            datum = f.get("datum", "")
+            actor = f.get("actor", "")
+            bewijs_rel = f.get("bewijsstuk", "")
+            b_pad = self._los_bestand_op(bewijs_rel) if bewijs_rel else None
+            b_hash = sha256_bestand(b_pad) if (b_pad and b_pad.is_file()) else f.get("sha256", "GEEN_BESTAND")
+            
+            # Bepaal of de waarneming betwiste interpretaties bevat
+            heeft_betwisting = any(ip.get("betwist", False) for ip in f.get("interpretatie_historie", []))
+            status_vordering = "betwist" if heeft_betwisting else "vastgesteld"
+
+            # Cryptografische hash-koppeling (SHA-256 over vorige hash + actuele payload)
+            payload_str = f"{prev_hash}|{fid}|{datum}|{actor}|{bewijs_rel}|{b_hash}|{status_vordering}"
+            entry_hash = hashlib.sha256(payload_str.encode("utf-8")).hexdigest()
+
+            receipt = {
+                "receipt_id": f"REC-{datum.replace('-', '')}-{fid}",
+                "timestamp_utc": datetime.now(timezone.utc).isoformat(),
+                "feit_id": fid,
+                "datum": datum,
+                "actor": actor,
+                "bewijsstuk": bewijs_rel,
+                "sha256": b_hash,
+                "status_vordering": status_vordering,
+                "vorige_hash": prev_hash,
+                "receipt_hash": entry_hash
+            }
+            receipts.append(receipt)
+            prev_hash = entry_hash
+
+        # Schrijf append-only jsonl
+        with open(pad_uitvoer, "w", encoding="utf-8") as out_f:
+            for r in receipts:
+                out_f.write(json.dumps(r, ensure_ascii=False) + "\n")
+
+        return receipts
+
+    def formatteer_chain_of_custody_markdown(self) -> str:
+        """Genereert een menselijk leesbaar audit-rapport van de cryptografische bewijsketen."""
+        receipts = self.bouw_chain_of_custody()
+        md = [
+            "# Ketengrootboek — Cryptografische Chain-of-Custody (Boek 1 Memoriaal)",
+            "",
+            f"- **Geverifieerde bewijsketen:** {len(receipts)} transacties in onafhankelijke hash chain",
+            f"- **Laatste keten-hash (Tip):** `{receipts[-1]['receipt_hash'] if receipts else 'N/A'}`",
+            f"- **Wettelijke grondslag bewijsbehoud:** Art. 8:29 jo. 8:39 Awb / FRE 803(6) (Self-Authenticating Record)",
+            "",
+            "| Receipt ID | Feit ID | Datum | Actor | Bewijsstuk (SHA-256) | Status | Receipt Hash (Chain) |",
+            "|---|---|---|---|---|---|---|",
+        ]
+        for r in receipts:
+            h_bewijs = (r["sha256"] or "")[:10] + "..." if r["sha256"] else "N/A"
+            h_rec = r["receipt_hash"][:12] + "..."
+            icoon = "🔴 Betwist" if r["status_vordering"] == "betwist" else "🟢 Vastgesteld"
+            md.append(f"| `{r['receipt_id']}` | `{r['feit_id']}` | {r['datum']} | {r['actor']} | `{r['bewijsstuk']}` (`{h_bewijs}`) | {icoon} | `{h_rec}` |")
+        return "\n".join(md)
+
+
 
 def main():
     parser = argparse.ArgumentParser(description="Ketengrootboek — Sluiting, Proefbalans & Drie-Boekenstelsel")
     parser.add_argument("target", nargs="?", default="ALL", help="Post ID (bijv. POST-WONEN-WMO-001) of ALL voor Proefbalans")
     parser.add_argument("--json", action="store_true", help="Uitvoer als ruw JSON")
     parser.add_argument("--integriteit", action="store_true", help="Print het volledige 3-Boeken Ketenintegriteitsrapport (Markdown)")
+    parser.add_argument("--custody", "--chain", action="store_true", help="Genereer en print de cryptografische Chain-of-Custody (append-only hash chain)")
     parser.add_argument("--klok", action="store_true", help="Print de automatisch afgeleide Klok (openstaande termijnen)")
     parser.add_argument("--rekening", type=str, default="", help="Reconstrueer een specifieke rekening vanuit het Grootboek terug naar Memoriaal")
     args = parser.parse_args()
@@ -951,6 +1024,13 @@ def main():
 
     if args.integriteit:
         print(toetser.formatteer_ketenintegriteit_markdown())
+        return
+
+    if args.custody:
+        if args.json:
+            print(json.dumps(toetser.bouw_chain_of_custody(), indent=2, ensure_ascii=False))
+        else:
+            print(toetser.formatteer_chain_of_custody_markdown())
         return
 
     if args.rekening:

@@ -282,6 +282,22 @@ class TestKetengrootboekSluiting(unittest.TestCase):
             self.assertIn("dagen_resterend", k)
             self.assertIn("klok_status", k)
 
+    def test_cryptografische_chain_of_custody(self):
+        """Test 8: Verifieert de onveranderlijke append-only hash chain over alle feiten in Boek 1 (FRE 803(6) / Art. 8:29 Awb)."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            jsonl_pad = Path(tmpdir) / "test_chain.jsonl"
+            receipts = self.toetser.bouw_chain_of_custody(jsonl_pad)
+            self.assertGreaterEqual(len(receipts), 5)
+            self.assertTrue(jsonl_pad.is_file())
+
+            # Verifieer ononderbroken hash-koppeling
+            vorige = "0" * 64
+            for r in receipts:
+                self.assertEqual(r["vorige_hash"], vorige)
+                self.assertTrue(len(r["receipt_hash"]) == 64)
+                self.assertIn(r["status_vordering"], ("betwist", "vastgesteld"))
+                vorige = r["receipt_hash"]
+
 
 if __name__ == "__main__":
     unittest.main()

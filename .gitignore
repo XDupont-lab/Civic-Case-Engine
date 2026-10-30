@@ -30,6 +30,7 @@ Ketengrootboek/boek2_journaal.json
 Ketengrootboek/ketengrootboek.json
 Ketengrootboek/saldo.json
 Ketengrootboek/tafel_besluiten.json
+Ketengrootboek/chain_of_custody.jsonl
 Ketengrootboek/*.beancount
 
 # Dynamische inkomende en uitgaande post (alleen templates en .gitkeep blijven getrackt)

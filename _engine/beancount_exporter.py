@@ -398,10 +398,24 @@ def export_ketengrootboek_to_beancount(
         mat_ok = t_res.get("materieel_vereffend", False)
         flag = "*" if mat_ok else "!"
         diag = t_res.get("keten_diagnose", "")
-        tag_diag = f" #{diag.lower()}" if diag else ""
+        # Bepaal of de vordering formeel betwist is (Laag 3 interpretatie of ketenbreuk)
+        anker_obj = feiten.get(anker_id, {})
+        tegen_obj = feiten.get(tegen_id, {})
+        is_betwist = any(ip.get("betwist") for ip in anker_obj.get("interpretatie_historie", [])) or \
+                     any(ip.get("betwist") for ip in tegen_obj.get("interpretatie_historie", [])) or \
+                     ("niet gesloten" in str(diag).lower() or "ketenbreuk" in str(diag).lower())
+        vordering_status = "betwist" if is_betwist else "vastgesteld"
+
+        tags = []
+        if diag:
+            tags.append(f"#{diag.lower().replace(' ', '_').replace('/', '_')}")
+        if is_betwist:
+            tags.append("#betwist")
+        tag_diag = f" {' '.join(tags)}" if tags else ""
 
         lines.append(f'{datum} {flag} "{post.get("debet_rekening", "")}" "{pnaam}"{tag_diag}')
         lines.append(f'  post_id: "{pid}"')
+        lines.append(f'  vordering_status: "{vordering_status}"')
         if anker_id:
             lines.append(f'  anker_feit: "{anker_id}"')
         if tegen_id:

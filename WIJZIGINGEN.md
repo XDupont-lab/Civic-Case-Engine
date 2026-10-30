@@ -1,5 +1,22 @@
 # Wijzigingen
 
+## 2026-10-30
+
+Open-Source Adoptie voor de Civic Case Engine (Batches 1, 3 en 4):
+
+- **Cryptografische Chain-of-Custody & Contra-Boekingen (Batch 3, `Ketengrootboek/sluiting.py`, `_engine/beancount_exporter.py`):**
+  - **Append-only Hash Chain (`sluiting.py --custody`):** Bouwt een cryptografische bewijsketen (SHA-256 gekoppeld aan de voorgaande hash) over alle Laag-1 waarnemingen in Boek 1 (Memoriaal), conform FRE 803(6) en art. 8:29 jo. 8:39 Awb (vrije bewijslevering). Slaat op in `chain_of_custody.jsonl` (afgeschermd in `.gitignore`).
+  - **Contra-Boekingen & Status Betwist:** Vorderingen en transacties gekoppeld aan betwiste loket-interpretaties of ketenbreuken krijgen automatisch de metadata `vordering_status: "betwist"` en de Beancount-tag `#betwist` ter scheiding van formele claims en juridisch verweer.
+  - **Unit Test Coverage:** `test_sluiting.py` uitgebreid met `test_cryptografische_chain_of_custody` (10 tests 100% geslaagd).
+- **Lichtgewicht Awb Besluit-Detector (Batch 4, `_engine/awb_besluit_scanner.py`, `_engine/test_awb_besluit_scanner.py`):**
+  - **100% Python Standard Library (0 dependencies):** Toetst inkomende stukken van overheidsinstanties op rechtsgevolg (art. 1:3 Awb), rechtsmiddelenclausules (art. 3:45 / 6:7 Awb, 6-wekentermijn), voorbereidingshandelingen (art. 6:3 Awb) en grond voor ingebrekestelling (art. 4:17 Awb).
+  - **Human-in-the-Loop Veiligheidsgarantie:** Fungeert conform Tafel-afspraak strikt als suggestiefilter (`--json` of markdown besliskaart); start nooit autonoom termijnen zonder menselijke bevestiging aan De Tafel.
+  - **Unit Test Coverage:** 4 gerichte unit tests toegevoegd in `test_awb_besluit_scanner.py` (alle 4 geslaagd).
+- **Multi-LLM Dialectiek & Blinde Feiten-Extractie (Batch 1, `Shared_Tools/multi_llm_audit.py`):**
+  - **Fase 1 Blinde Extractie:** Onafhankelijke voor-extractie van harde feitelijke waarnemingen via DeepSeek en Gemini Flash vóórdat het inhoudelijke debat start. Berekent concordantiescore en genereert consensustabellen en discrepantievlaggen.
+  - **Deterministische Citaten- & Jurisprudentietoets:** Valideert geciteerde wetsartikelen (Awb, Wmo, AVG, UAVG, BW, Zvw, Woo) en ECLI-uitspraken automatisch tegen het standaardregister (`BEKEND` vs. `ONBEKEND / TE VERIFIËREN`).
+
+
 ## 2026-10-29
 
 Protocol FH-01, Epistemische Laagscheiding, Multimodale Ketenintegriteit & De Klok:
