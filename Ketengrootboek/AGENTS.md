@@ -39,25 +39,25 @@ Elke overdracht én elke loketrekening wordt getoetst op **drie afzonderlijke bo
 ### A. Via de Command Line (CLI)
 ```powershell
 # 1. Volledige proefbalans draaien en saldo.json bijwerken
-python E:\LLM_Workspace\CivicHelper\Ketengrootboek\sluiting.py ALL
+python Ketengrootboek\sluiting.py ALL
 
 # 2. Volledig 3-Boeken Ketenintegriteitsrapport (Grootboek + Journaal 9 velden + Memoriaal Laag 1/3)
-python E:\LLM_Workspace\CivicHelper\Ketengrootboek\sluiting.py --integriteit
+python Ketengrootboek\sluiting.py --integriteit
 
 # 3. Eén specifiek loket vanuit het Grootboek terugwaarts herleiden naar Journaal & Memoriaal
-python E:\LLM_Workspace\CivicHelper\Ketengrootboek\sluiting.py --rekening wmo
+python Ketengrootboek\sluiting.py --rekening wmo
 
 # 4. Alle 8 regressie- en ketenintegriteitstests draaien
-python E:\LLM_Workspace\CivicHelper\Ketengrootboek\test_sluiting.py -v
+python Ketengrootboek\test_sluiting.py -v
 
 # 5. Bank Audit (CSV & CAMT.053 XML) en Beancount-Export draaien
-python E:\LLM_Workspace\CivicHelper\_engine\bank_audit.py [bestand]
+python _engine\bank_audit.py [bestand]
 
 # 6. Institutioneel Ketengrootboek & Bank exporteren naar Beancount (.beancount)
-E:\LLM_Workspace\CivicHelper\EXPORT_BEANCOUNT.cmd
+EXPORT_BEANCOUNT.cmd
 
 # 7. Bank audit & Beancount testsuite draaien
-python E:\LLM_Workspace\CivicHelper\_engine\test_bank_audit.py -v
+python _engine\test_bank_audit.py -v
 ```
 
 ### B. Via Python (`SluitingsToetser`)
