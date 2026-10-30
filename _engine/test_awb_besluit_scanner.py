@@ -43,7 +43,7 @@ class TestAwbBesluitScanner(unittest.TestCase):
     def test_feitelijke_mededeling_en_ingebrekestelling_flag(self):
         tekst = """
         Gemeente Voorbeeldstad
-        Geachte heer Dupont,
+        Geachte burger,
         Hierbij sturen wij u ter informatie de ontvangstbevestiging van uw brief d.d. 5 oktober.
         Wij hebben uw verzoek in goede orde ontvangen.
         """

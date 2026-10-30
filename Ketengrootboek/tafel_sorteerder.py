@@ -215,14 +215,12 @@ class BoekhoudSorteerder:
             al_geboekt = primair_rel.lower() in bestaande_paden
             inst_low = instantie.lower()
             ond_low = onderwerp.lower()
-            if "voorbeeld" in ond_low and "werkbedrijf" in inst_low:
-                al_geboekt = True  # Gedekt door POST-WERKBEDRIJF-HERBEREKENING-006
-            elif "vektis" in inst_low:
-                al_geboekt = True  # Gedekt door POST-VEKTIS-UAVG-008 & POST-VEKTIS-VERZEKERAAR-004
-            elif "voorbeeldstad" in inst_low and "overdracht" in ond_low:
-                al_geboekt = True  # Gedekt door POST-GEMEENTE-WOO-007 (Zaak 2031-007)
-            elif "deurwaarder" in inst_low:
-                al_geboekt = True  # Gedekt door POST-DEURWAARDER-AVG-009
+            if not al_geboekt:
+                for p in posten_lijst:
+                    p_str = json.dumps(p, ensure_ascii=False).lower()
+                    if inst_low and inst_low.split()[0] in p_str and any(k in p_str for k in ond_low.split() if len(k) > 5):
+                        al_geboekt = True
+                        break
 
             start_iso = parse_nl_datum(start_str) or "2026-10-01"
             verval_iso = parse_nl_datum(verval_str) or start_iso

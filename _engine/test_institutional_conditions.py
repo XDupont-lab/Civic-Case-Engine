@@ -26,7 +26,7 @@ class TestInstitutionalConditions(unittest.TestCase):
 
     def test_lastenverplaatsing_detection(self):
         tekst = """
-        Geachte heer Dupont,
+        Geachte burger,
         Wij hebben uw gegevens nog niet aangetroffen in ons zaaksysteem.
         Kunt u ons alsnog een kopie toezenden van de salarisspecificaties over 2017?
         Met vriendelijke groet,
@@ -90,7 +90,7 @@ class TestInstitutionalConditions(unittest.TestCase):
         ctx = {
             "medische_urgentie_verhoogd": True,
             "spoed_afgewezen": True,
-            "behandelaar": "Dr. Oosterhoff",
+            "behandelaar": "Dr. De Vries",
             "datum_diagnose": "28 oktober 2026"
         }
         matches = self.analyzer.scan_tekst(tekst, context=ctx)
