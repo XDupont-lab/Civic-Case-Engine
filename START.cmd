@@ -15,23 +15,28 @@ echo.
 echo  --- Gereedschap en Toetsen ---
 echo  [1] Briefketen en Dialectische Audit (AUDIT_DRAFT.cmd)
 echo  [2] Forensische Tijdlijn en Hashes (WEAVE_TIMELINE.cmd)
-echo  [3] Termijnklokken nakijken (CHECK_TERMIJNEN.cmd)
-echo  [4] Ketengrootboek en Overdrachtstoets (Ketengrootboek\sluiting.py ALL)
-echo  [5] Bank-CSV Auditen op inhoudingen en huur (AUDIT_BANK_CSV.cmd)
+echo  [3] Termijnklokken & Keten-Klok nakijken (CHECK_TERMIJNEN.cmd / sluiting.py --klok)
+echo  [4] Ketengrootboek & 3-Boeken Integriteitsrapport (Ketengrootboek\sluiting.py --integriteit)
+echo  [5] Bank-CSV / CAMT.053 Auditen & Beancount (AUDIT_BANK_CSV.cmd)
 echo  [6] Procesbundel Exporteren met SHA-256 (EXPORT_BUNDEL.cmd)
 echo  [7] Alle Unit- en Invariantentests draaien (TEST_INVARIANTS.cmd)
+echo  [A] Awb Besluit-, Bezwaarclausule- & Dwangsom-Scanner (_engine\awb_besluit_scanner.py)
 echo  [8] Werkmap openen in Verkenner
 echo  [9] Afsluiten
 echo.
-set /p opt="Kies een optie (C, T, 0-9): "
+set /p opt="Kies een optie (C, T, A, 0-9): "
 
 if /i "%opt%"=="C" call CivicHelper.cmd
 if /i "%opt%"=="T" call CivicHelper.cmd --tafel
+if /i "%opt%"=="A" python _engine\awb_besluit_scanner.py
 if "%opt%"=="0" python ontkiem.py --check
 if "%opt%"=="1" call AUDIT_DRAFT.cmd
 if "%opt%"=="2" call WEAVE_TIMELINE.cmd
-if "%opt%"=="3" call CHECK_TERMIJNEN.cmd
-if "%opt%"=="4" python Ketengrootboek\sluiting.py ALL
+if "%opt%"=="3" (
+    call CHECK_TERMIJNEN.cmd
+    python Ketengrootboek\sluiting.py --klok
+)
+if "%opt%"=="4" python Ketengrootboek\sluiting.py --integriteit
 if "%opt%"=="5" call AUDIT_BANK_CSV.cmd
 if "%opt%"=="6" call EXPORT_BUNDEL.cmd
 if "%opt%"=="7" call TEST_INVARIANTS.cmd

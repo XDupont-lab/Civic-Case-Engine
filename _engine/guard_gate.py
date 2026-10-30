@@ -103,7 +103,7 @@ DISPATCH_RULES = {
         "message": ("ATTRACTOR_LOCK: de actor is intern vloeiend maar ontkoppeld "
                     "(dysexecutieve verstarring / gevel-masking)."),
         "suggestion": ("Escaleer naar Kamer 2: formele procesvertegenwoordiging "
-                       "(bijv. Prakken d'Oliveira) of rust. Forceer geen uitgaande "
+                       "(bijv. gespecialiseerd sociaal advocaat) of rust. Forceer geen uitgaande "
                        "handeling."),
     },
     2: {

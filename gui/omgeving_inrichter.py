@@ -24,7 +24,8 @@ from datetime import datetime
 from pathlib import Path
 
 _HERE = Path(__file__).resolve().parent
-WORKSPACE = Path(r"E:\LLM_Workspace") if Path(r"E:\LLM_Workspace").exists() else _HERE.parent
+_CANDIDATE_WS = _HERE.parent.parent if (_HERE.parent.parent / "agy_werk").exists() else _HERE.parent
+WORKSPACE = Path(os.environ.get("CIVIC_WORKSPACE", str(_CANDIDATE_WS)))
 CASE_ROOT = WORKSPACE / "CivicHelper" if (WORKSPACE / "CivicHelper").exists() else _HERE.parent
 AGY_WERK = WORKSPACE / "agy_werk" if (WORKSPACE / "agy_werk").exists() else (CASE_ROOT / "werk")
 TAFEL_MD = AGY_WERK / "TAFEL.md" if (WORKSPACE / "agy_werk").exists() else (CASE_ROOT / "TAFEL.md")

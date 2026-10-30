@@ -263,11 +263,20 @@ def _entity_hint(text_lower: str) -> str:
         ("westerwolde", "Gemeente Westerwolde"),
         ("oldambt", "Gemeente Oldambt"),
         ("menzis", "Menzis Zorgverzekeraar"),
-        ("groninger huis", "Woningcorporatie Groninger Huis"),
+        ("woningcorporatie", "Woningcorporatie"),
         ("uwv", "UWV"),
     ):
         if needle in text_lower:
             return name
+    loketten_pad = ROOT_DIR / "werk" / "loketten.json"
+    if loketten_pad.is_file():
+        try:
+            import json
+            for label, keys in json.loads(loketten_pad.read_text(encoding="utf-8")).get("islands", []):
+                if any(k in text_lower for k in keys):
+                    return label
+        except Exception:
+            pass
     return "onbekend"
 
 

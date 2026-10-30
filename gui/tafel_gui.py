@@ -45,12 +45,13 @@ from PyQt6.QtWidgets import (
 
 # Paden (werkt zowel vanuit Shared_Tools/ als vanuit CivicHelper/gui/)
 _HERE = Path(__file__).resolve().parent
-WORKSPACE = Path(os.environ.get("CIVIC_WORKSPACE", r"E:\LLM_Workspace" if Path(r"E:\LLM_Workspace").exists() else _HERE.parent))
+_CANDIDATE_WS = _HERE.parent.parent if (_HERE.parent.parent / "agy_werk").exists() else _HERE.parent
+WORKSPACE = Path(os.environ.get("CIVIC_WORKSPACE", str(_CANDIDATE_WS)))
 CASE_ROOT = WORKSPACE / "CivicHelper" if (WORKSPACE / "CivicHelper").exists() else _HERE.parent
 AGY_WERK = WORKSPACE / "agy_werk" if (WORKSPACE / "agy_werk").exists() else (CASE_ROOT / "werk")
 TAFEL_MD = AGY_WERK / "TAFEL.md" if (AGY_WERK / "TAFEL.md").exists() else (CASE_ROOT / "TAFEL.md")
 SHARED_TOOLS = WORKSPACE / "Shared_Tools" if (WORKSPACE / "Shared_Tools").exists() else _HERE
-CHAT_DISPATCH = SHARED_TOOLS / "tafel_chat.py" if (SHARED_TOOLS / "tafel_chat.py").exists() else (_HERE / "tafel_chat.py")
+CHAT_DISPATCH = (_HERE / "tafel_chat.py") if (_HERE / "tafel_chat.py").exists() else (SHARED_TOOLS / "tafel_chat.py")
 INDEX_PATH = AGY_WERK / "TAFEL_INDEX.json"
 for _p in (str(SHARED_TOOLS), str(_HERE)):
     if _p not in sys.path:
@@ -303,7 +304,7 @@ def structuur_markdown() -> str:
     return "\n".join(lines)
 
 
-PYTHON_EXE = r"C:\Users\Gebruiker\AppData\Local\Programs\Python\Python312\python.exe"
+PYTHON_EXE = sys.executable
 GROK_STARTER = WORKSPACE / "start-grok.cmd"
 DEEPSEEK_STARTER = WORKSPACE / "start-deepseek.cmd"
 ARGON_STARTER = WORKSPACE / "start-gemini-argon.cmd"
@@ -1320,6 +1321,21 @@ class TafelWindow(QMainWindow):
                 "Haalt vertragende standaardzinnen en kastje-naar-de-muur patronen uit een brief van een instantie",
                 [py, str(engine / "systeem_clash_sentiment.py")],
             ),
+            (
+                "awb_scanner",
+                "zaak",
+                "9. Awb Besluit-, Bezwaarclausule- & Dwangsom-Scanner",
+                "Toetst inkomende post op rechtsgevolg (art. 1:3 Awb), 6-weken bezwaarclausule (art. 6:7 Awb) en niet-tijdig beslissen (art. 4:17 Awb)",
+                [py, str(engine / "awb_besluit_scanner.py")],
+            ),
+            (
+                "keten_klok",
+                "zaak",
+                "10. Keten-Klok & Wettelijke Vervaldata (Boek 2 & 3)",
+                "Toont alle lopende en verstreken wettelijke termijnen rechtstreeks uit het Ketengrootboek",
+                [py, str(CASE_ROOT / "Ketengrootboek" / "sluiting.py"), "--klok"],
+            ),
+            ),
         ]
         return base
 
@@ -1545,6 +1561,19 @@ class TafelWindow(QMainWindow):
             for v in res.get("veto", []):
                 if not v.get("passed", True):
                     uitleg += f"\n\n• [{v.get('severity')}] {v.get('rule')}:\n  {v.get('message')}\n  Tip: {v.get('suggestion')}"
+            try:
+                from sbar_protocol import SBARProtocol
+                fh01 = SBARProtocol.validate_fh01_transform(tekst)
+                fh_status = "✅ OK" if fh01.passed else "⚠️ Aandachtspunt"
+                uitleg += (
+                    f"\n\n--- Protocol FH-01 IJkcontroles ({fh_status}) ---\n"
+                    f"• 1. Inhoudscontrole: {'Behouden' if fh01.inhoud_behouden else 'Doel ontbreekt'}\n"
+                    f"• 2. Taalhandelingcontrole: {'Zuiver' if fh01.taalhandeling_zuiver else 'Dictaat gedetecteerd'}\n"
+                    f"• 3. Ruimtecontrole: {'Professionele ruimte intact' if fh01.ruimte_intact else 'Geschonden'}\n"
+                    f"• Negatieve Invarianten: {'Geen Agency Inversion / Geen Demonisering' if (fh01.geen_agency_inversion and fh01.geen_sussen_of_demoniseren) else 'Geschonden'}"
+                )
+            except Exception:
+                pass
             QMessageBox.information(self, f"Briefpoort — {pad.name}", uitleg)
         except Exception as exc:
             QMessageBox.warning(self, "Briefpoort", f"Kon poorttoets niet uitvoeren: {exc}")
