@@ -79,6 +79,93 @@ TEGENSTRIJDIGE_FEIT_TYPES = {
 
 ONVERANDERLIJKE_LAAG1_VELDEN = ("id", "datum", "type", "actor", "omschrijving", "bewijsstuk", "sha256")
 
+# Openbare Voorbeeldstad-waarnemingen (Boek 1 fallback voor een verse GitHub-clone zonder eigen memoriaal.json)
+_VOORBEELDSTAD_MEMORIAAL: List[Dict[str, Any]] = [
+    {
+        "id": "EVT-CORP-20260715",
+        "datum": "2026-07-15",
+        "type": "noodsignaal_woningcorporatie",
+        "actor": "Woningcorporatie Voorbeeldstad",
+        "omschrijving": "Schriftelijk noodsignaal woningcorporatie aan Wmo na zorgval in de woning",
+        "bewijsstuk": "Dossier_Templates/01_Zorg_en_Gezondheid.template.md",
+    },
+    {
+        "id": "EVT-WMO-20260717",
+        "datum": "2026-07-17",
+        "type": "ontkenning_ontvangst_wmo",
+        "actor": "Gemeente Voorbeeldstad (Slot Wmo)",
+        "omschrijving": "Loket ontkent wetenschap van stopzetting huishoudelijke ondersteuning",
+        "bewijsstuk": "Dossier_Templates/04_Bestuursrecht_en_Besluiten.template.md",
+    },
+    {
+        "id": "EVT-CAK-20260101",
+        "datum": "2026-01-01",
+        "type": "bronheffing_wanbetalers",
+        "actor": "CAK / Zorgverzekeraar",
+        "omschrijving": "Maandelijkse bronheffing ex art. 18d Zvw op uitkering",
+        "bewijsstuk": "Dossier_Templates/03_Financien_en_Bestaanszekerheid.template.md",
+        "betwist": True,
+    },
+    {
+        "id": "EVT-SOZAWE-20260115",
+        "datum": "2026-01-15",
+        "type": "stilzitten_schuldhulpverlening",
+        "actor": "Sociale Dienst Voorbeeldstad",
+        "omschrijving": "Inhouding doorgevoerd zonder herberekening beslagvrije voet of minimapolis-aanbod",
+        "bewijsstuk": "Dossier_Templates/03_Financien_en_Bestaanszekerheid.template.md",
+    },
+    {
+        "id": "EVT-WMO-20260317",
+        "datum": "2026-03-17",
+        "type": "feitelijke_stopzetting_zonder_besluit",
+        "actor": "Gemeente Voorbeeldstad (Slot Wmo)",
+        "omschrijving": "Stille beëindiging ondersteuning zonder intrekking ex art. 2.3.10 Wmo",
+        "bewijsstuk": "Dossier_Templates/02_Huisvesting_en_Wonen.template.md",
+    },
+    {
+        "id": "EVT-SYNCOPE-20260925",
+        "datum": "2026-09-25",
+        "type": "intake_en_actie",
+        "actor": "Externe Zorgaanbieder",
+        "omschrijving": "Losstaande intake bij externe aanbieder (sluit geen andere ketenpost)",
+        "bewijsstuk": "Dossier_Templates/01_Zorg_en_Gezondheid.template.md",
+    },
+    {
+        "id": "EVT-TOESLAGEN-VEKTIS-20261020",
+        "datum": "2026-10-20",
+        "type": "vektis_status_n_uitsluiting",
+        "actor": "Uitvoeringsorgaan Toeslagen / Vektis",
+        "omschrijving": "Registratie Status N (onverzekerd) als grondslag terugvordering zorgtoeslag",
+        "bewijsstuk": "Dossier_Templates/03_Financien_en_Bestaanszekerheid.template.md",
+        "betwist": True,
+    },
+    {
+        "id": "EVT-MENZIS-PREMIE-20261001",
+        "datum": "2026-10-01",
+        "type": "betwisting_onverzekerdheid_polisoverzicht",
+        "actor": "Zorgverzekeraar Polisadministratie",
+        "omschrijving": "Polis- en premieoverzicht bevestigt doorlopende Zvw-verzekering in dezelfde periode",
+        "bewijsstuk": "Dossier_Templates/03_Financien_en_Bestaanszekerheid.template.md",
+    },
+    {
+        "id": "EVT-DACAS-MAINFRAME-20261020",
+        "datum": "2026-10-20",
+        "type": "dacas_mainframe_journaalboeking",
+        "actor": "Uitvoeringsorgaan Verrekeningsadministratie",
+        "omschrijving": "Interne mainframe-verrekeningsboeking zonder onderliggende beschikking",
+        "bewijsstuk": "Dossier_Templates/10_Banken_en_BKR.template.md",
+        "betwist": True,
+    },
+    {
+        "id": "EVT-BANK-ING-20261023",
+        "datum": "2026-10-23",
+        "type": "bancaire_kasstroom_nulstand",
+        "actor": "Bankadministratie Burger",
+        "omschrijving": "Forensische bankaudit toont EUR 0,00 uitbetaling in het gestelde verrekeningsjaar",
+        "bewijsstuk": "Dossier_Templates/10_Banken_en_BKR.template.md",
+    },
+]
+
 
 class SluitingsToetser:
     def __init__(self, root_dir: Optional[Path] = None):
@@ -97,6 +184,12 @@ class SluitingsToetser:
             kandidaat = basis / rel_pad
             if kandidaat.is_file():
                 return kandidaat
+        if rel_pad.startswith("Dossier/") and rel_pad.endswith(".md"):
+            tpl_naam = Path(rel_pad).stem + ".template.md"
+            for basis in (self.workspace_root, self.keten_dir.parent):
+                kt = basis / "Dossier_Templates" / tpl_naam
+                if kt.is_file():
+                    return kt
         return None
 
     def _boek1_paden(self) -> Tuple[Path, Path]:
@@ -131,6 +224,8 @@ class SluitingsToetser:
         if memoriaal_pad.is_file():
             with open(memoriaal_pad, "r", encoding="utf-8") as f:
                 feiten_lijst = json.load(f)
+        else:
+            feiten_lijst = [dict(item) for item in _VOORBEELDSTAD_MEMORIAAL]
 
         if not journaal_pad.is_file():
             raise FileNotFoundError("Boek 2 (boek2_journaal.json of grootboek.json) niet gevonden")
@@ -249,6 +344,13 @@ class SluitingsToetser:
                 "locus": ("C_onbekend", post_id, "Poort_onbekend"),
                 "ontbrekend": ["anker_bewijsstuk"],
                 "termijn_info": self.bereken_termijn_status(post.get("termijn"), False, peildatum),
+                "rekenkundig_sluitend": True,
+                "procedureel_gesloten": False,
+                "materieel_vereffend": False,
+                "keten_diagnose": "UITSTAANDE_OVERDRACHT",
+                "werklexicon_code": "MENIS_ONVEREFFEND_RESTANT",
+                "werklexicon_toelichting": "Ankerbewijs ontbreekt op schijf.",
+                "overdracht_velden": {},
                 "anker": anker,
                 "tegen": tegen,
             }

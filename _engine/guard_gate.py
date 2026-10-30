@@ -79,7 +79,10 @@ except ImportError:
             return 2, REGIMES[2]
         return 0, REGIMES[0]
 
-    def evaluate(G, D, I, lam_min=None):
+    def evaluate(G, D, I, lam_min=None, D_available=True, i_witness="attention_head_weight_variance", **kwargs):
+        if not D_available:
+            return {"G": G, "D": D, "I": I, "lambda_min": lam_min or 0.0,
+                    "regime": 3, "label": REGIMES[3]}
         if lam_min is None:
             lam_min = 1.0 - (G / 1.4648) ** 2 - (D / 23.4589) ** 2 - (I / 0.5591) ** 2
         regime, label = classify(G, D, I, lam_min)

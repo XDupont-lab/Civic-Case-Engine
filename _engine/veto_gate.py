@@ -118,6 +118,21 @@ class VetoGate:
             except Exception:
                 pass
 
+        keten_boek2 = keten_dir / "grootboek.json"
+        if keten_boek2.exists():
+            try:
+                posten = json.loads(keten_boek2.read_text(encoding="utf-8"))
+                for p in posten:
+                    if not p.get("termijn"):
+                        continue
+                    rec_str = f"{p.get('debet_rekening', '')} {p.get('credit_rekening', '')} {p.get('naam', '')}".lower()
+                    if auth_low in rec_str or any(tok in rec_str for tok in auth_tokens):
+                        pid = str(p.get("post_id", "GROOTBOEK_KLOK"))
+                        if pid not in active_ids:
+                            active_ids.append(pid)
+            except Exception:
+                pass
+
         return active_ids
 
     def check_draft(self, text, slot_metadata=None, has_local_discours=False):
