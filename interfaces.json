@@ -330,7 +330,7 @@
       ],
       "interface_witnesses": [
         {
-          "id": "W_brieven_van_arnhem_en_bult_wasmann",
+          "id": "W_brieven_oogheelkunde_ziekenhuis",
           "description": "Specialistenbrieven ziekenhuis A en ziekenhuis B Oogheelkunde",
           "witness_file": "lokaal/buiten-git.md",
           "verified": true
@@ -339,7 +339,7 @@
     }
   },
   {
-    "id": "IF-MED-WASSIEE-GATE-005",
+    "id": "IF-MED-HUISARTS-GATE-005",
     "kind": "horizontal",
     "from_chart": {
       "id": "chart_client_zorgvraag",
@@ -529,7 +529,7 @@
       "description": "Neuro-inflammatoire cytokinebelasting blokkeert frontale compensatiereserves ('Sickness Behavior') en maakt dysexecutief functioneren chronisch",
       "date": "2026-09-14",
       "witness_file": "lokaal/buiten-git.md",
-      "target_formal_intake": "BEATRIXOORD_ZD209275546"
+      "target_formal_intake": "REVALIDATIE_ZD001"
     },
     "shared_constraint_carrier": "Biologische energiehuishouding en neuro-inflammatoire belastbaarheid",
     "translation": {
@@ -584,7 +584,7 @@
     }
   },
   {
-    "id": "IF-MED-BEATRIXOORD-INTAKE-008",
+    "id": "IF-MED-REVALIDATIE-INTAKE-008",
     "kind": "horizontal",
     "from_chart": {
       "id": "chart_patient_biologisch_letsel",
@@ -612,7 +612,7 @@
       "description": "Revalidatiearts weigert lichamelijk onderzoek ('nu geen indicatie voor'), wijst beeldvorming af, dateert schedelletsel op intake (2026-10) en muteert colonstoma naar dunne darm",
       "date": "2026-10-12",
       "witness_file": "lokaal/buiten-git.md",
-      "target_formal_intake": "BEATRIXOORD_ZD209275546"
+      "target_formal_intake": "REVALIDATIE_ZD001"
     },
     "shared_constraint_carrier": "Neuro-anatomische integriteit en fysiologische belastbaarheid",
     "translation": {
@@ -663,7 +663,7 @@
       ],
       "interface_witnesses": [
         {
-          "id": "W_brief_oosterhoff_20261012",
+          "id": "W_brief_revalidatiearts_20261012",
           "description": "Brief de revalidatiearts d.d. 12-10-2026 in Brief_Revalidatiearts_de revalidatiearts_12_oktober_2026.md",
           "witness_file": "lokaal/buiten-git.md",
           "verified": true
@@ -672,7 +672,7 @@
     }
   },
   {
-    "id": "IF-MED-KELDER-IMMUNO-009",
+    "id": "IF-MED-CHIRURGIE-IMMUNO-009",
     "kind": "horizontal",
     "from_chart": {
       "id": "chart_martini_chirurgie_ic",
@@ -750,7 +750,7 @@
       ],
       "interface_witnesses": [
         {
-          "id": "W_ontslagbrief_kelder_2016",
+          "id": "W_ontslagbrief_heelkunde_2016",
           "description": "Ontslagbrief Heelkunde d.d. 23-05-2016 (het ontslagstuk) in het lokale dossier",
           "witness_file": "lokaal/buiten-git.md",
           "verified": true

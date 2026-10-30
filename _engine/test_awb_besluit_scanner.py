@@ -16,7 +16,7 @@ from awb_besluit_scanner import scan_tekst
 class TestAwbBesluitScanner(unittest.TestCase):
     def test_formeel_besluit_met_clausule(self):
         tekst = """
-        College van Burgemeester en Wethouders van Gemeente Midden-Groningen
+        College van Burgemeester en Wethouders van Gemeente Voorbeeldstad
         Besluit:
         Wij wijzen uw aanvraag voor een maatwerkvoorziening Wmo af.
         Bent u het niet eens met dit besluit? Dan kunt u binnen zes weken na de verzenddatum van deze brief een bezwaarschrift indienen.
@@ -42,8 +42,8 @@ class TestAwbBesluitScanner(unittest.TestCase):
 
     def test_feitelijke_mededeling_en_ingebrekestelling_flag(self):
         tekst = """
-        Gemeente Groningen
-        Geachte heer Dupont,
+        Gemeente Voorbeeldstad
+        Geachte burger,
         Hierbij sturen wij u ter informatie de ontvangstbevestiging van uw brief d.d. 5 oktober.
         Wij hebben uw verzoek in goede orde ontvangen.
         """

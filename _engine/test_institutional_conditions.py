@@ -26,13 +26,13 @@ class TestInstitutionalConditions(unittest.TestCase):
 
     def test_lastenverplaatsing_detection(self):
         tekst = """
-        Geachte heer Dupont,
+        Geachte burger,
         Wij hebben uw gegevens nog niet aangetroffen in ons zaaksysteem.
         Kunt u ons alsnog een kopie toezenden van de salarisspecificaties over 2017?
         Met vriendelijke groet,
         Afdeling Personeel & Financiën
         """
-        matches = self.analyzer.scan_tekst(tekst, context={"datum": "14 september 2026", "kenmerk": "ZK-1724925"})
+        matches = self.analyzer.scan_tekst(tekst, context={"datum": "14 september 2026", "kenmerk": "ZK-VOORBEELD-001"})
         codes_nl = [m.code for m in matches]
         codes_en = [m.code_en for m in matches]
         self.assertIn("LASTENVERPLAATSING", codes_nl)
@@ -41,7 +41,7 @@ class TestInstitutionalConditions(unittest.TestCase):
         m_burden = next(m for m in matches if m.code == "LASTENVERPLAATSING")
         self.assertGreaterEqual(m_burden.confidence, 0.70)
         self.assertIn("Om u zoekwerk in het archief te besparen", m_burden.polder_handreiking)
-        self.assertIn("ZK-1724925", m_burden.polder_handreiking)
+        self.assertIn("ZK-VOORBEELD-001", m_burden.polder_handreiking)
 
     def test_loketomleiding_detection(self):
         tekst = """
@@ -90,7 +90,7 @@ class TestInstitutionalConditions(unittest.TestCase):
         ctx = {
             "medische_urgentie_verhoogd": True,
             "spoed_afgewezen": True,
-            "behandelaar": "Dr. Oosterhoff",
+            "behandelaar": "Dr. De Vries",
             "datum_diagnose": "28 oktober 2026"
         }
         matches = self.analyzer.scan_tekst(tekst, context=ctx)
