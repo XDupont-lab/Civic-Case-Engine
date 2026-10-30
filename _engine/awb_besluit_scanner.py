@@ -26,6 +26,16 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+_ENGINE_DIR = Path(__file__).resolve().parent
+if str(_ENGINE_DIR) not in sys.path:
+    sys.path.insert(0, str(_ENGINE_DIR))
+
+try:
+    from institutional_conditions import InstitutionalConditionsAnalyzer
+    _HAS_CONDITIONS = True
+except ImportError:
+    _HAS_CONDITIONS = False
+
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 if hasattr(sys.stderr, "reconfigure"):
@@ -160,6 +170,14 @@ def scan_tekst(tekst: str, bestandsnaam: str = "Inkomend document") -> Dict[str,
         any("ontvangstbevestiging" in f["type"].lower() for f in feit_gevonden)
     )
 
+    condities = []
+    if _HAS_CONDITIONS:
+        try:
+            condities_matches = InstitutionalConditionsAnalyzer().scan_tekst(tekst_schoon)
+            condities = [m.to_dict() for m in condities_matches]
+        except Exception:
+            condities = []
+
     return {
         "document": bestandsnaam,
         "classificatie": classificatie,
@@ -169,6 +187,7 @@ def scan_tekst(tekst: str, bestandsnaam: str = "Inkomend document") -> Dict[str,
         "bezwaarclausule_aanwezig": heeft_bezwaarclausule,
         "termijn_weken": 6 if heeft_bezwaarclausule else None,
         "ingebrekestelling_relevant": ingebrekestelling_relevant,
+        "institutionele_condities": condities,
         "details": {
             "bestuursorganen": list(set(bestuursorganen_gevonden)),
             "rechtsgevolg_markers": rechtsgevolg_gevonden,
@@ -216,6 +235,14 @@ def formatteer_scanner_markdown(scan_res: Dict[str, Any]) -> str:
         md.append("**Gevonden Bezwaar/Beroep-clausules:**")
         for m in details["bezwaar_markers"]:
             md.append(f"- *{m['type']}:* `\"{m['fragment']}\"`")
+        md.append("")
+
+    condities = scan_res.get("institutionele_condities", [])
+    if condities:
+        md.append("**Interne Conditie-Diagnose (Civic Engine / Protocol FH-01):**")
+        for c in condities:
+            md.append(f"- **{c['code']}** ({c['name_nl']}): {c['polder_principe']}")
+            md.append(f"  *Polder-handreiking:* \"{c['polder_handreiking'][:160]}...\"")
         md.append("")
 
     return "\n".join(md)
