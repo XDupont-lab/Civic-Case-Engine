@@ -450,12 +450,18 @@ class TafelWindow(QMainWindow):
         tb_layout.addWidget(lbl_chan)
         tb_layout.addStretch()
 
-        btn_setup_env = QPushButton("🛠️ Omgeving Inrichten")
+        btn_setup_env = QPushButton("🔌 Verbind Omgeving")
         btn_setup_env.setObjectName("btn-action-gold")
         btn_setup_env.setCursor(Qt.CursorShape.PointingHandCursor)
         btn_setup_env.setToolTip("Richt de lokale werkomgeving en Python-tools in en open het begeleide stappenplan (Waarom & Doel).")
-        btn_setup_env.clicked.connect(self.action_setup_environment)
+        btn_setup_env.clicked.connect(self.action_connect_environment)
         tb_layout.addWidget(btn_setup_env)
+        btn_build_dossiers = QPushButton("📂 Bouw Dossiers")
+        btn_build_dossiers.setObjectName("btn-action-gold")
+        btn_build_dossiers.setCursor(Qt.CursorShape.PointingHandCursor)
+        btn_build_dossiers.setToolTip("Standaard-prompt voor de CLI-agent (+agy): bouw stapsgewijs je dossiers op (Prompts/PROMPT_BOUW_DOSSIERS.md).")
+        btn_build_dossiers.clicked.connect(self.action_build_dossiers)
+        tb_layout.addWidget(btn_build_dossiers)
 
         btn_start_all = QPushButton("🚀 Start Allen")
         btn_start_all.setObjectName("btn-action")
@@ -2333,6 +2339,53 @@ class TafelWindow(QMainWindow):
     def toggle_sound(self):
         self.sound_enabled = not self.sound_enabled
         self.btn_sound.setText("🔔 Geluid: AAN" if self.sound_enabled else "🔕 Geluid: UIT")
+
+    def _dispatch_standard_prompt(self, titel: str, prompt_tekst: str):
+        months_nl = ("jan", "feb", "mrt", "apr", "mei", "jun", "jul", "aug", "sep", "okt", "nov", "dec")
+        now_dt = datetime.now()
+        now_str = f"{now_dt.day} {months_nl[now_dt.month - 1]} {now_dt.year}, {now_dt:%H:%M}"
+        entry = (
+            f"\n\n---\n\n## Xander ({now_str}) — {titel}\n\n"
+            f"**Aangesproken:** @agy\n**Stok:** agy\n\n"
+            f"{prompt_tekst}\n"
+        )
+        TAFEL_MD.parent.mkdir(parents=True, exist_ok=True)
+        with open(TAFEL_MD, "a", encoding="utf-8") as f:
+            f.write(entry)
+        self.address_seat("agy")
+        ensure_chat_dispatch()
+        self.check_and_refresh_tafel()
+
+    def action_connect_environment(self):
+        try:
+            from omgeving_inrichter import voer_inrichting_uit
+            voer_inrichting_uit()
+        except Exception:
+            pass
+        prompt = (
+            "Verbind en controleer mijn omgeving stap voor stap volgens `Prompts/PROMPT_VERBIND_OMGEVING.md`:\n"
+            "1. Controleer op de achtergrond de lokale mappen, het persoonsmasker (`gui/pii_mask.py`), mijn e-mailprogramma, "
+            "de actieve AI-controleurs (`gui/model_bus.py`) en of er een telefoon of microfoon verbonden is.\n"
+            "2. Geef hier aan Tafel een kort overzicht met vinkjes in gewone taal en stel mij maar één eenvoudige vervolgvraag tegelijk."
+        )
+        self._dispatch_standard_prompt("🔌 Standaard-Prompt: Verbind Omgeving", prompt)
+
+    def action_build_dossiers(self):
+        try:
+            from omgeving_inrichter import voer_inrichting_uit
+            voer_inrichting_uit()
+        except Exception:
+            pass
+        prompt = (
+            "Help mij stap voor stap mijn dossiers op te bouwen volgens `Prompts/PROMPT_BOUW_DOSSIERS.md`:\n"
+            "1. Kijk zelf of er in `Incoming_Letters/`, `werk/binnen/` of mijn `Downloads`-map al een digitaal bankoverzicht (CSV/XML/PDF) "
+            "of brieven van instanties klaarstaan.\n"
+            "2. Lees aanwezige stukken direct in met `_engine/bank_audit.py`, `_engine/awb_besluit_scanner.py` en `Ketengrootboek/sluiting.py` "
+            "(met SHA-256 in Boek 1 Memoriaal en termijncontrole in Boek 3 De Klok).\n"
+            "3. Vertel in gewone taal welke loketten en termijnen je ziet (of leg in 3 klikjes uit hoe ik mijn bankoverzicht download) "
+            "en stel telkens maar één eenvoudige vraag tegelijk om via AVG/WGBO de achterliggende dossiers op te vragen."
+        )
+        self._dispatch_standard_prompt("📂 Standaard-Prompt: Bouw Dossiers", prompt)
 
     def action_setup_environment(self):
         """Richt de lokale omgeving in, toont het stappenplan met Waarom & Doel en start de agent-begeleiding."""
