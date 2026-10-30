@@ -197,6 +197,12 @@ class GlueChecker:
         p1 = self.engine_dir / rel_path
         if p1.is_file():
             return p1
+        if rel_path.startswith("Dossier/") and rel_path.endswith(".md"):
+            tpl_name = Path(rel_path).stem + ".template.md"
+            for base in (self.engine_dir, self.workspace_root):
+                pt = base / "Dossier_Templates" / tpl_name
+                if pt.is_file():
+                    return pt
         p2 = self.workspace_root / rel_path
         if p2.is_file():
             return p2
