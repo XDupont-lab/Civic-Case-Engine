@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Unit tests voor institutional_conditions.py
-Toetst de detectie van de 5 institutionele condities en de Fluwelen Handschoen / Polder-vertaling.
+Toetst de detectie van de 5 Nederlandse institutionele condities en de Fluwelen Handschoen / Polder-vertaling.
 """
 
 from pathlib import Path
@@ -16,6 +16,7 @@ from institutional_conditions import (
     InstitutionalConditionsAnalyzer,
     CONDITIES_TAXONOMIE,
     ConditionMatch,
+    NEDERLANDSE_TERMEN,
 )
 
 
@@ -23,7 +24,7 @@ class TestInstitutionalConditions(unittest.TestCase):
     def setUp(self):
         self.analyzer = InstitutionalConditionsAnalyzer()
 
-    def test_transfer_of_burden_detection(self):
+    def test_lastenverplaatsing_detection(self):
         tekst = """
         Geachte heer Dupont,
         Wij hebben uw gegevens nog niet aangetroffen in ons zaaksysteem.
@@ -32,15 +33,17 @@ class TestInstitutionalConditions(unittest.TestCase):
         Afdeling Personeel & Financiën
         """
         matches = self.analyzer.scan_tekst(tekst, context={"datum": "14 september 2026", "kenmerk": "ZK-1724925"})
-        codes = [m.code for m in matches]
-        self.assertIn("TRANSFER_OF_BURDEN", codes)
+        codes_nl = [m.code for m in matches]
+        codes_en = [m.code_en for m in matches]
+        self.assertIn("LASTENVERPLAATSING", codes_nl)
+        self.assertIn("TRANSFER_OF_BURDEN", codes_en)
         
-        m_burden = next(m for m in matches if m.code == "TRANSFER_OF_BURDEN")
+        m_burden = next(m for m in matches if m.code == "LASTENVERPLAATSING")
         self.assertGreaterEqual(m_burden.confidence, 0.70)
         self.assertIn("Om u zoekwerk in het archief te besparen", m_burden.polder_handreiking)
         self.assertIn("ZK-1724925", m_burden.polder_handreiking)
 
-    def test_procedural_deflection_detection(self):
+    def test_loketomleiding_detection(self):
         tekst = """
         Geachte burger,
         Wij zijn niet bevoegd om dit verzoek te behandelen.
@@ -48,14 +51,16 @@ class TestInstitutionalConditions(unittest.TestCase):
         Daarom verwijzen wij u door naar het algemene loket.
         """
         matches = self.analyzer.scan_tekst(tekst, context={"onderwerp": "Wmo indicatie", "doel_loket": "Sociaal Team"})
-        codes = [m.code for m in matches]
-        self.assertIn("PROCEDURAL_DEFLECTION", codes)
+        codes_nl = [m.code for m in matches]
+        codes_en = [m.code_en for m in matches]
+        self.assertIn("LOKETOMLEIDING", codes_nl)
+        self.assertIn("PROCEDURAL_DEFLECTION", codes_en)
 
-        m_deflect = next(m for m in matches if m.code == "PROCEDURAL_DEFLECTION")
+        m_deflect = next(m for m in matches if m.code == "LOKETOMLEIDING")
         self.assertIn("Dank voor uw toelichting over de interne bevoegdheidsverdeling", m_deflect.polder_handreiking)
         self.assertIn("Sociaal Team", m_deflect.polder_handreiking)
 
-    def test_institutional_delay_and_repeated_contact(self):
+    def test_termijnoverschrijding_and_dossier_amnesie(self):
         tekst = """
         Geachte betrokkene,
         Wegens grote achterstanden en drukke werkzaamheden hebben wij nog geen beslissing kunnen nemen.
@@ -69,9 +74,30 @@ class TestInstitutionalConditions(unittest.TestCase):
             "datum_voorstel": "10 november 2026"
         }
         matches = self.analyzer.scan_tekst(tekst, context=ctx)
-        codes = [m.code for m in matches]
-        self.assertIn("INSTITUTIONAL_DELAY", codes)
-        self.assertIn("REPEATED_CONTACT_WITHOUT_RESOLUTION", codes)
+        codes_nl = [m.code for m in matches]
+        codes_en = [m.code_en for m in matches]
+        self.assertIn("TERMIJNOVERSCHRIJDING", codes_nl)
+        self.assertIn("INSTITUTIONAL_DELAY", codes_en)
+        self.assertIn("DOSSIER_AMNESIE", codes_nl)
+        self.assertIn("REPEATED_CONTACT_WITHOUT_RESOLUTION", codes_en)
+
+    def test_urgentiekloof_detection(self):
+        tekst = """
+        Geachte betrokkene,
+        Uw melding volgt de normale procedure en staat op de wachtlijst.
+        Er is geen voorrang mogelijk.
+        """
+        ctx = {
+            "medische_urgentie_verhoogd": True,
+            "spoed_afgewezen": True,
+            "behandelaar": "Dr. Oosterhoff",
+            "datum_diagnose": "28 oktober 2026"
+        }
+        matches = self.analyzer.scan_tekst(tekst, context=ctx)
+        codes_nl = [m.code for m in matches]
+        codes_en = [m.code_en for m in matches]
+        self.assertIn("URGENTIEKLOOF", codes_nl)
+        self.assertIn("ESCALATION_WITHOUT_RESPONSE", codes_en)
 
     def test_polder_phrasing_strictly_avoids_adversarial_words(self):
         """Controleert dat de Polder-vertaling 100% vrij is van strijdbare/demoniserende taal."""
@@ -88,12 +114,20 @@ class TestInstitutionalConditions(unittest.TestCase):
             self.assertNotIn("schuld", handreiking)
             self.assertNotIn("tegenstander", handreiking)
 
+    def test_nederlandse_glossarium_termen(self):
+        """Controleert dat alle analytische signaalbegrippen netjes in het Nederlands vertaald zijn."""
+        self.assertEqual(NEDERLANDSE_TERMEN["Evidence Strength"], "Bewijskracht")
+        self.assertEqual(NEDERLANDSE_TERMEN["Deadline Pressure"], "Termijndruk")
+        self.assertEqual(NEDERLANDSE_TERMEN["Escalation Readiness"], "Escalatierijpheid")
+        self.assertEqual(NEDERLANDSE_TERMEN["Case Momentum"], "Dossierdynamiek")
+        self.assertEqual(NEDERLANDSE_TERMEN["TRANSFER_OF_BURDEN"], "Lastenverplaatsing")
+
     def test_report_generation(self):
         tekst = "Kunt u ons alsnog een kopie toezenden van het formulier?"
         matches = self.analyzer.scan_tekst(tekst)
         rapport = self.analyzer.genereer_diagnose_rapport(matches, document_naam="brief.md")
         self.assertIn("Interne Conditie-Diagnose: `brief.md`", rapport)
-        self.assertIn("TRANSFER_OF_BURDEN", rapport)
+        self.assertIn("LASTENVERPLAATSING", rapport)
         self.assertIn("Fluwelen Handschoen", rapport)
 
 
