@@ -7,7 +7,7 @@ Diagnoses, uitslagen, datums en briefteksten blijven staan.
 import re
 
 _BSN = re.compile(
-    r"(?i)(?:\bburgerservicenummer\b|\bbsn\b)\s*[:\-]?\s*(\d{8,9}|\d{3}[\.\s]?\d{3}[\.\s]?\d{3})"
+    r"(?i)(?:\bburgerservicenummer\b|\bbsn\b)\s*(?:is\b|[:\-])?\s*(\d{8,9}|\d{3}[\.\s]?\d{3}[\.\s]?\d{3})"
     r"|(?<!\d)(\d{3}[\.\s]\d{3}[\.\s]\d{3})(?!\d)"
 )
 _IBAN = re.compile(

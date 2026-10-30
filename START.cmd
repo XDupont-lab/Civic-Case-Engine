@@ -14,20 +14,22 @@ echo  [T] De Tafel — Multi-Agent Beraadslaging (gui\tafel_gui.py)
 echo  [0] Ontkiemen en Zelftest Startvoorwaarden (ontkiem.py --check)
 echo.
 echo  --- Gereedschap en Toetsen ---
+echo  [S] Schone-Machine Reconstructie- & Hersteltest (TEST_SCHONE_MACHINE.cmd)
+echo  [7] Alle Poort- en Invariantentests draaien (TEST_INVARIANTS.cmd)
 echo  [1] Briefketen en Dialectische Audit (AUDIT_DRAFT.cmd)
 echo  [2] Forensische Tijdlijn en Hashes (WEAVE_TIMELINE.cmd)
 echo  [3] Termijnklokken & Keten-Klok nakijken (CHECK_TERMIJNEN.cmd / sluiting.py --klok)
 echo  [4] Ketengrootboek & 3-Boeken Integriteitsrapport (Ketengrootboek\sluiting.py --integriteit)
 echo  [5] Bank-CSV / CAMT.053 Auditen & Beancount (AUDIT_BANK_CSV.cmd)
 echo  [6] Procesbundel Exporteren met SHA-256 (EXPORT_BUNDEL.cmd)
-echo  [7] Alle Unit- en Invariantentests draaien (TEST_INVARIANTS.cmd)
 echo  [A] Awb Besluit-, Bezwaarclausule- & Dwangsom-Scanner (_engine\awb_besluit_scanner.py)
 echo  [8] Werkmap openen in Verkenner
 echo  [9] Afsluiten
 echo.
-set /p opt="Kies een optie (I, C, T, A, 0-9): "
+set /p opt="Kies een optie (I, S, C, T, A, 0-9): "
 
 if /i "%opt%"=="I" call INSTAP_WINDOWS.cmd
+if /i "%opt%"=="S" call TEST_SCHONE_MACHINE.cmd
 if /i "%opt%"=="C" call CivicHelper.cmd
 if /i "%opt%"=="T" call CivicHelper.cmd --tafel
 if /i "%opt%"=="A" python _engine\awb_besluit_scanner.py
