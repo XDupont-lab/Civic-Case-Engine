@@ -8,6 +8,7 @@ echo =======================================================================
 echo              CIVIC HELPER — WERKOMGEVING & BOUWERSMENU
 echo =======================================================================
 echo.
+echo  [I] 2-Stages Instap & Omgeving Inrichten (INSTAP_WINDOWS.cmd)
 echo  [C] Civic Helper Navigatievenster (hulp\venster.py)
 echo  [T] De Tafel — Multi-Agent Beraadslaging (gui\tafel_gui.py)
 echo  [0] Ontkiemen en Zelftest Startvoorwaarden (ontkiem.py --check)
@@ -24,8 +25,9 @@ echo  [A] Awb Besluit-, Bezwaarclausule- & Dwangsom-Scanner (_engine\awb_besluit
 echo  [8] Werkmap openen in Verkenner
 echo  [9] Afsluiten
 echo.
-set /p opt="Kies een optie (C, T, A, 0-9): "
+set /p opt="Kies een optie (I, C, T, A, 0-9): "
 
+if /i "%opt%"=="I" call INSTAP_WINDOWS.cmd
 if /i "%opt%"=="C" call CivicHelper.cmd
 if /i "%opt%"=="T" call CivicHelper.cmd --tafel
 if /i "%opt%"=="A" python _engine\awb_besluit_scanner.py
