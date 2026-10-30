@@ -20,6 +20,7 @@ import json
 import shutil
 import subprocess
 import sys
+import os
 from datetime import datetime
 from pathlib import Path
 
@@ -35,25 +36,26 @@ for _p in (str(_HERE), str(WORKSPACE / "Shared_Tools"), str(CASE_ROOT / "gui")):
         sys.path.insert(0, _p)
 
 
-def voer_inrichting_uit() -> dict:
+def voer_inrichting_uit(doel_root: Path | None = None) -> dict:
     """Voert de technische controle en map-inrichting uit en geeft een statusdict terug."""
     # 1. Maak alle lokale mappen aan (buiten git)
+    target_root = Path(doel_root) if doel_root else CASE_ROOT
     mappen = [
-        CASE_ROOT / "werk",
-        CASE_ROOT / "werk" / "binnen",
-        CASE_ROOT / "werk" / "takken",
-        CASE_ROOT / "werk" / "archief",
-        CASE_ROOT / "Dossier",
-        CASE_ROOT / "Incoming_Letters",
-        CASE_ROOT / "Outgoing_Drafts",
-        CASE_ROOT / "Landschap",
-        CASE_ROOT / "Ketengrootboek",
+        target_root / "werk",
+        target_root / "werk" / "binnen",
+        target_root / "werk" / "takken",
+        target_root / "werk" / "archief",
+        target_root / "Dossier",
+        target_root / "Incoming_Letters",
+        target_root / "Outgoing_Drafts",
+        target_root / "Landschap",
+        target_root / "Ketengrootboek",
     ]
     for m in mappen:
         m.mkdir(parents=True, exist_ok=True)
 
-    kompas = CASE_ROOT / "werk" / "00_Kompas.md"
-    if not kompas.exists():
+    kompas = target_root / "werk" / "00_Kompas.md"
+    if not kompas.exists() or kompas.stat().st_size == 0:
         kompas.write_text("# Kompas\n\nWie: de persoon aan dit venster.\nOpen: eerste inrichting.\n", encoding="utf-8")
 
     # 2. Controleer Python tools in _engine en Ketengrootboek

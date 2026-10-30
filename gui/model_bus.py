@@ -8,6 +8,7 @@ De sleutel blijft in de omgeving. Elke tekst wordt lokaal gemaskeerd via pii_mas
 
 import json
 import os
+import re
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -125,6 +126,20 @@ def available():
     return status
 
 
+def _scrub_tokens(text: str, *known_keys) -> str:
+    if not text:
+        return text
+    cleaned = str(text)
+    for k in known_keys:
+        if k and isinstance(k, str) and len(k) > 6:
+            cleaned = cleaned.replace(k, "[VERBORGEN_SLEUTEL]")
+    cleaned = re.sub(r"(\?key=)[^&\s\"\']+", r"\1[VERBORGEN_SLEUTEL]", cleaned)
+    cleaned = re.sub(r'(Bearer\s+)[A-Za-z0-9_\-\.]{8,}', r'\1[VERBORGEN_SLEUTEL]', cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r'nvapi-[A-Za-z0-9_\-]{8,}', '[VERBORGEN_SLEUTEL]', cleaned)
+    cleaned = re.sub(r'AIza[0-9A-Za-z-_]{20,}', '[VERBORGEN_SLEUTEL]', cleaned)
+    cleaned = re.sub(r'sk-[A-Za-z0-9_\-]{20,}', '[VERBORGEN_SLEUTEL]', cleaned)
+    return cleaned
+
 def complete(house, system, user, model=None, temperature=0.2, max_tokens=2048):
     """Stuur system en user naar één huis. Antwoord is lokaal hersteld."""
     name = (house or "").strip().lower()
@@ -199,7 +214,7 @@ def complete(house, system, user, model=None, temperature=0.2, max_tokens=2048):
                 return restore(text, vault_holder["v"])
             except Exception:
                 pass
-        return f"[FOUT {name}]: {exc}"
+        return f"[FOUT {name}]: {_scrub_tokens(str(exc), key, nv_key)}"
     return restore(text, vault_holder["v"])
 
 
@@ -217,4 +232,5 @@ def _post(url, payload, bearer):
             return json.loads(resp.read().decode("utf-8"))
     except urllib.error.HTTPError as exc:
         body = exc.read().decode("utf-8", errors="replace")[:300]
-        raise RuntimeError(f"HTTP {exc.code}: {body}") from None
+        clean_body = _scrub_tokens(body, bearer)
+        raise RuntimeError(f"HTTP {exc.code}: {clean_body}") from None
