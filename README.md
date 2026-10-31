@@ -175,3 +175,10 @@ Civic_Helper/
 De deur staat hierboven, onder Begin. `START.cmd` blijft het menu voor wie aan de motor bouwt.
 
 Een brief gaat pas weg nadat de persoon de tekst heeft gelezen en het sein heeft gegeven. De toets of de andere kant de overdracht heeft ingeboekt, is het ketengrootboek. Twee groene balies zonder tegenboeking zijn nog geen sluiting.
+
+---
+
+## 5. Attributie & Verwante Projecten
+
+- **Civic Decision Engine** ([civicdecisionengine.ie](https://civicdecisionengine.ie), Nick Moloney):
+  De vijf structurele institutionele condities (`TRANSFER_OF_BURDEN`, `PROCEDURAL_DEFLECTION`, `REPEATED_CONTACT_WITHOUT_RESOLUTION`, `INSTITUTIONAL_DELAY`, `ESCALATION_WITHOUT_RESPONSE`) in `_engine/institutional_conditions.py` zijn overgenomen uit de civiele patroontaxonomie van de Civic Decision Engine (v13.0 door Nick Moloney). Civic Case Engine hanteert deze taxonomie als interne diagnostische filters, gekoppeld aan Simon Stevin ketenboekhouden en het Fluwelen Handschoen protocol (FH-01) voor het Nederlandse bestuursrecht.
