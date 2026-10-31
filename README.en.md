@@ -37,3 +37,10 @@ Whether a handover closes is tested by `Ketengrootboek/sluiting.py`. If the coun
 | `werk/` | The person's case. Git ignores it. |
 
 A local case folder can be pointed at with the environment variable `CCE_DOSSIER`. The program does not ship a path to one.
+
+---
+
+## Attribution & Related Work
+
+- **Civic Decision Engine** ([civicdecisionengine.ie](https://civicdecisionengine.ie), Nick Moloney):
+  The five structural institutional conditions (`TRANSFER_OF_BURDEN`, `PROCEDURAL_DEFLECTION`, `REPEATED_CONTACT_WITHOUT_RESOLUTION`, `INSTITUTIONAL_DELAY`, `ESCALATION_WITHOUT_RESPONSE`) implemented in `_engine/institutional_conditions.py` are adopted from the civil pattern taxonomy developed by Nick Moloney in the Civic Decision Engine (v13.0). Civic Case Engine implements these patterns as internal diagnostic signals combined with Simon Stevin double-entry chain bookkeeping and the Velvet Glove de-escalation protocol (FH-01) for continental administrative law.
