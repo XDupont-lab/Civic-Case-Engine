@@ -144,7 +144,8 @@ class TestKetengrootboekSluiting(unittest.TestCase):
         self.assertTrue(res["rekenkundig_sluitend"])
         self.assertTrue(res["procedureel_gesloten"])
         self.assertTrue(res["materieel_vereffend"])
-        self.assertEqual(res["keten_diagnose"], "MATERIEEL_VEREFFEND")
+        self.assertEqual(res["keten_diagnose"], "VEREFFEND")
+        self.assertEqual(res["status"], "DICHT")
 
     def test_doorverwijzing_zonder_uitvoering_geeft_schijnsluiting(self):
         """Test 2: Doorverwijzing zonder aantoonbare uitvoering is procedureel gesloten,
@@ -165,7 +166,7 @@ class TestKetengrootboekSluiting(unittest.TestCase):
         self.assertTrue(res["procedureel_gesloten"])
         self.assertFalse(res["materieel_vereffend"])
         self.assertEqual(res["keten_diagnose"], "SCHIJNSLUITING")
-        self.assertEqual(res["werklexicon_code"], "ATE_LOKALE_AFSLUITING_ZONDER_KETENVERVOLG")
+        self.assertEqual(res["status"], "OPEN")
 
     def test_niet_overschrijvings_invariant_laag1_vs_laag3(self):
         """Test 4: Een latere interpretatie (Laag 3) mag de oorspronkelijke waarneming (Laag 1)
@@ -214,7 +215,7 @@ class TestKetengrootboekSluiting(unittest.TestCase):
         self.assertTrue(res["procedureel_gesloten"])
         self.assertFalse(res["materieel_vereffend"])
         self.assertEqual(res["keten_diagnose"], "TEGENSTRIJDIGE_REGISTRATIE")
-        self.assertEqual(res["werklexicon_code"], "STASIS_TEGENSTRIJDIGE_WERKELIJKHEID")
+        self.assertEqual(res["status"], "BETWIST")
 
     def test_drie_boeken_rekeningen_grootboek_en_terugwaartse_herleidbaarheid(self):
         """Test 6: Boek 3 (Grootboek per Rekening) reconstrueert de positie per loket

@@ -12,7 +12,7 @@ Dit draaiboek voer je uit zodra de persoon aan tafel op **`📂 Bouw Dossiers`**
 
 Voordat je de gebruiker laat typen, kijk je zelf wat er al aanwezig is:
 
-1. Controleer `Incoming_Letters/`, `werk/binnen/`, `Dossier/` én kijk naar recente relevante bestanden in de map `Downloads` van de gebruiker (zoals `.csv`, `.xml` of `.pdf` bankafschriften van ING, Rabobank, ABN AMRO, SNS, of brieven van gemeente, verhuurder, zorgverzekeraar, CAK of Belastingdienst).
+1. Controleer **eerst de vaste bronmap voor financiën** `Zorgdossier/Financien/` (naast de Civic Helper-map), daarna `Incoming_Letters/`, `werk/binnen/`, `Dossier/` én kijk naar recente relevante bestanden in de map `Downloads` van de gebruiker (zoals `.csv`, `.xml` of `.pdf` bankafschriften van ING, Rabobank, ABN AMRO, SNS, of brieven van gemeente, verhuurder, zorgverzekeraar, CAK of Belastingdienst).
 2. **Als je al bankbestanden of brieven ziet staan:**
    Noem ze bij naam en vraag eenvoudig:
    *"Ik zie in je Downloads-map al [bestandsnaam] staan. Zal ik die voor je inlezen en in het kasboek zetten?"*
@@ -27,8 +27,10 @@ Zodra er een bankoverzicht of brief beschikbaar is, voer je direct zelf deze ger
 
 1. **Bij een bankoverzicht (CSV / CAMT.053 XML):**
    ```powershell
-   python _engine/bank_audit.py "<pad_naar_bankbestand>"
+   python _engine/bank_audit.py
    ```
+   - Zonder argument pakt de auditor automatisch het eerste CSV/XML-bestand (alfabetisch) in `Zorgdossier/Financien/`, en anders in `Incoming_Letters/`.
+   - **Graceful Degradation:** vindt hij géén bankbestand of géén parseerbare mutaties, dan meldt hij `FINANCE_STATUS: PENDING / NO_DATA` en crasht hij niet. Bouw dan de overige pijlers (medisch, Woo, Twee Klokken) gewoon af en geef voor financiën een statusvinkje "in afwachting van reconciliatie" mee.
    - Haal uit de uitvoer automatisch welke loketten bij haar spelen (woningcorporatie/verhuurder, gemeente/uitkering, zorgverzekeraar, CAK, deurwaarder/incasso + dossierkenmerken) en vul daarmee `werk/loketten.json`.
 2. **Bij elke binnengekomen brief of mail:**
    ```powershell

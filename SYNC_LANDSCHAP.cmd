@@ -5,11 +5,10 @@ echo   CIVIC HELPER -- REALTIME LANDSCAPE SYNCHRONIZER
 echo ========================================================
 echo.
 
-if exist "%~dp0.venv_bu\Scripts\python.exe" (
-    set "PY_BIN=%~dp0.venv_bu\Scripts\python.exe"
-) else (
-    set "PY_BIN=python"
-)
+rem Venv-keuze: eerst BROWSER_VENV_PATH (machine-eigen), dan de oude .venv_bu, dan gewoon python.
+set "PY_BIN=python"
+if exist "%~dp0.venv_bu\Scripts\python.exe" set "PY_BIN=%~dp0.venv_bu\Scripts\python.exe"
+if defined BROWSER_VENV_PATH if exist "%BROWSER_VENV_PATH%\Scripts\python.exe" set "PY_BIN=%BROWSER_VENV_PATH%\Scripts\python.exe"
 
 echo [1/2] Scannen van actieve dossiers op actoren, functies en detacheerders...
 "%PY_BIN%" "%~dp0_engine\sync_landscape.py" --scan

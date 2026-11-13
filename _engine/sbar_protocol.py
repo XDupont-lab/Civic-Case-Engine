@@ -25,6 +25,7 @@ Componenten van Protocol FH-01 (§7):
 - Drie IJkcontroles: 1. Inhoudscontrole, 2. Taalhandelingcontrole, 3. Ruimtecontrole.
 - Twee Negatieve Invarianten: 1. Geen manipulatieve Agency Inversion,
   2. Sussen noch Demoniseren (verbod op adaptief overdrijven).
+- Anti-zelfinperking (AGENTS.md, afspraak 5): validate_avg_reikwijdte() op AVG/WGBO-verzoeken.
 """
 
 from __future__ import annotations
@@ -107,6 +108,23 @@ class FH01Report:
             "demonisering_termen": self.demonisering_termen,
             "agency_inversion_treffers": self.agency_inversion_treffers,
             "speech_act_breakdown": self.speech_act_breakdown,
+            "warnings": self.warnings,
+        }
+
+
+@dataclass
+class ReikwijdteReport:
+    """Resultaat van de anti-zelfinperkingstoets op een AVG/WGBO-verzoek."""
+    is_avg_verzoek: bool
+    passed: bool
+    treffers: Dict[str, List[str]]
+    warnings: List[str]
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "is_avg_verzoek": self.is_avg_verzoek,
+            "passed": self.passed,
+            "treffers": self.treffers,
             "warnings": self.warnings,
         }
 
@@ -336,6 +354,103 @@ class SBARProtocol:
             speech_act_breakdown=speech_acts,
             warnings=warnings,
         )
+
+    # Anti-zelfinperking (AGENTS.md, afspraak 5): herkenning van een AVG/WGBO-inzageverzoek
+    AVG_VERZOEK_PATTERNS = [
+        r"\bavg\b", r"\bwgbo\b", r"\binzageverzoek\b", r"\brecht\s+op\s+inzage\b",
+        r"\bart(?:ikel|\.)?\s*15\b", r"\b7:456\s*bw\b",
+    ]
+    # (a) zelfopgelegde begin- of eindjaren in een verzoekzin
+    JAARGRENS_PATTERNS = [
+        r"\b(?:vanaf|sinds|met\s+ingang\s+van)\s+(?:\d{1,2}\s+[a-z]+\s+)?(?:19|20)\d{2}\b",
+        r"\b(?:tot\s+en\s+met|t/m)\s+(?:\d{1,2}\s+[a-z]+\s+)?(?:19|20)\d{2}\b",
+        r"\b(?:19|20)\d{2}\s*(?:-|\u2013|tot)\s*(?:19|20)\d{2}\b",
+        r"\bover\s+de\s+periode\b",
+    ]
+    VERZOEK_WOORDEN = r"\b(?:verzoek|vraag|opvra|inzage|afschrift|kopie|gegevens|dossier|stukken)"
+    # (b) open opsomming
+    OPEN_OPSOMMING_PATTERNS = [
+        r"\b(?:inclusief|waaronder)\s+(?:maar\s+)?niet\s+beperkt\s+tot\b",
+        r"\bwaaronder\s+in\s+ieder\s+geval\b",
+    ]
+    GESLOTEN_LIJST_PATTERNS = [
+        r"\b(?:te\s+weten|namelijk)\b", r"\b(?:uitsluitend|alleen)\s+de\s+volgende\b",
+    ]
+    # (c) vooraf aangeboden weglakruimte of papier/portaal-uitweg
+    CONCESSIE_PATTERNS = [
+        r"\bart(?:ikel|\.)?\s*15\s*,?\s*lid\s*4\b",
+        r"\bweglak\w*", r"\bonleesbaar\s+(?:te\s+)?maken\b",
+        r"\brechten\s+(?:en\s+vrijheden\s+)?van\s+(?:derden|anderen)\b",
+    ]
+    UITWEG_PATTERNS = [
+        r"\b(?:op|per)\s+papier\b", r"\bpapieren\s+(?:versie|kopie|afschrift|exemplaar)\b",
+        r"\bper\s+(?:post|brief)\b", r"\bportaal\b", r"\binloggen\b",
+    ]
+    # (d) zachte toon die de wettelijke termijn inslikt
+    TERMIJN_INSLIKKEN_PATTERNS = [
+        r"\bgeen\s+haast\b", r"\bwanneer\s+het\s+u\s+uitkomt\b",
+        r"\bzodra\s+u\s+(?:er\s+)?tijd\s+(?:voor\s+)?heeft\b", r"\bniet\s+te\s+veel\s+moeite\b",
+    ]
+    NEGATIE = r"\b(?:niet|geen|zonder|nooit)\b[^.!?\n]{0,25}$"
+
+    @classmethod
+    def validate_avg_reikwijdte(cls, text: str) -> ReikwijdteReport:
+        """
+        Deterministische anti-zelfinperkingstoets op een AVG/WGBO-verzoek:
+        (a) ongevraagde begin-/eindjaren, (b) gesloten opsomming zonder 'inclusief maar niet beperkt tot',
+        (c) vooraf erkende art. 15 lid 4-weglakruimte of papier/portaal-uitweg, (d) termijn inslikken.
+        Een niet-AVG/WGBO-tekst slaagt altijd.
+        """
+        tekst = text or ""
+        low = tekst.lower()
+        treffers: Dict[str, List[str]] = {"a_jaargrens": [], "b_gesloten_lijst": [], "c_concessie_of_uitweg": [], "d_termijn_ingeslikt": []}
+        is_avg = any(re.search(p, low) for p in cls.AVG_VERZOEK_PATTERNS)
+        if not is_avg:
+            return ReikwijdteReport(False, True, treffers, [])
+
+        def niet_ontkend(m: "re.Match[str]") -> bool:
+            return not re.search(cls.NEGATIE, low[max(0, m.start() - 40):m.start()])
+
+        zinnen = [z.strip() for z in re.split(r"(?<=[.!?])\s+|\n+", low) if z.strip()]
+        for zin in zinnen:
+            if re.search(cls.VERZOEK_WOORDEN, zin):
+                for p in cls.JAARGRENS_PATTERNS:
+                    m = re.search(p, zin)
+                    if m:
+                        treffers["a_jaargrens"].append(m.group(0))
+
+        heeft_open = any(re.search(p, low) for p in cls.OPEN_OPSOMMING_PATTERNS)
+        lijstregels = [r for r in low.splitlines() if re.match(r"\s*(?:[-*\u2022]|\d+[.)]|[a-z][.)])\s+\S", r)]
+        if not heeft_open:
+            if len(lijstregels) >= 2:
+                treffers["b_gesloten_lijst"].append(f"{len(lijstregels)} lijstregels")
+            for p in cls.GESLOTEN_LIJST_PATTERNS:
+                m = re.search(p, low)
+                if m:
+                    treffers["b_gesloten_lijst"].append(m.group(0))
+
+        for p in cls.CONCESSIE_PATTERNS + cls.UITWEG_PATTERNS:
+            for m in re.finditer(p, low):
+                if niet_ontkend(m):
+                    treffers["c_concessie_of_uitweg"].append(m.group(0))
+                    break
+
+        for p in cls.TERMIJN_INSLIKKEN_PATTERNS:
+            m = re.search(p, low)
+            if m:
+                treffers["d_termijn_ingeslikt"].append(m.group(0))
+
+        uitleg = {
+            "a_jaargrens": "ongevraagd begin- of eindjaar; vraag vanaf aanvang registratie tot heden",
+            "b_gesloten_lijst": "gesloten opsomming; voeg 'inclusief maar niet beperkt tot' toe",
+            "c_concessie_of_uitweg": "vooraf aangeboden weglakruimte (art. 15 lid 4 AVG) of papier/portaal-uitweg; laat die aan de verwerker",
+            "d_termijn_ingeslikt": "zachte toon slikt de wettelijke termijn in; noem de termijn",
+        }
+        warnings = [
+            f"Anti-zelfinperking ({k[0]}): {uitleg[k]} [{', '.join(v)}]."
+            for k, v in treffers.items() if v
+        ]
+        return ReikwijdteReport(True, not warnings, treffers, warnings)
 
     @classmethod
     def build_fh01_intake_prompts(

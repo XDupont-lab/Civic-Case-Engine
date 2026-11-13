@@ -1,6 +1,6 @@
 # Deur — Omgevingshandleiding voor CLI-agenten (Civic Helper)
 
-Dit bestand laadt vanzelf voor lokale CLI-agenten (`agy`, `grok`, `claude`, `gemini`, `deepseek`). Houd het kort (<100 regels).
+Dit bestand laadt vanzelf voor lokale CLI-agenten (`agy`, `grok`, `claude`, `gemini`, `deepseek`). Dit bestand blijft onder de 100 regels.
 Open pas een ander document als de beurt erom vraagt.
 
 ## Rol aan tafel
@@ -21,12 +21,13 @@ Jij bewaakt de overdrachten *tussen* die vakjes via het drie-boekenstelsel (`Ket
    - `procedureel_gesloten` (processtap afgerond), én
    - `materieel_vereffend` (de zorg, het besluit of het bedrag is feitelijk geleverd met bewijs op schijf).
 
-## Vier harde afspraken
+## Vijf harde afspraken
 
 1. **Geen sleutels in bestanden.** API-sleutels en wachtwoorden blijven in de omgeving.
 2. **Eerst de tekst in de chat.** Er gaat nooit een e-mail of externe actie uit zonder dat de persoon de tekst in de chat heeft gelezen en akkoord heeft gegeven.
 3. **Gewone e-mail en rustige toon.** Geen telefoon- of portaaldwang accepteren. Zolang een gesprek met een loket open is, gaat er geen ingebrekestelling weg en noem je geen dwangsom.
 4. **Scheiding van zaak en motor.** Persoonlijke stukken (`werk/`, `Incoming_Letters/`, `Outgoing_Drafts/`, `memoriaal.json`) blijven strikt buiten git.
+5. **Reikwijdte uitvragen (anti-zelfinperking).** Kort en orthogonaal geldt de toelichting, nooit de vraag of het recht van de burger. Bij AVG/WGBO-verzoeken: geen ongevraagde begin- of eindjaren (altijd vanaf aanvang registratie tot heden), geen gesloten lijstjes (altijd "inclusief maar niet beperkt tot"), en vooraf geen weglak-concessies (art. 15 lid 4 AVG) of papieren/portaal-uitwegen aanbieden. Een zachte toon betekent geen weggegooide rechtsgrond of termijn. `veto_gate.py` toetst dit (Veto 7).
 
 ## Zoeken
 
@@ -47,7 +48,7 @@ python Ketengrootboek/sluiting.py --klok
 # 3. Relaties en ketenbreuken toetsen
 python _engine/glue_check.py ALL
 
-# 4. Conceptbrief toetsen op de 6 Veto-poorten & Protocol FH-01 vóórdat hij in de chat komt
+# 4. Conceptbrief toetsen op de 7 Veto-poorten & Protocol FH-01 vóórdat hij in de chat komt
 python _engine/veto_gate.py --draft <pad> --dossier-dir Dossier
 python _engine/audit_engine.py --draft <pad>
 ```

@@ -11,6 +11,8 @@ Implementeert de deterministische Veto-Keten (Stappen B, C, D) van de Cybernetis
 4. Veto 4 (Oordeel & Loopbaan): loopbaan, CV of bureau in uitgaande brieftekst -> REJECT
 5. Veto 5 (Dubbele Klok): tweede t=0 of nieuw narratief terwijl klok loopt (termijnen.json of Ketengrootboek) -> REJECT
 6. Veto 6 (Protocol FH-01): demoniseren/sussen, professioneel dictaat of manipulatieve agency inversion -> REJECT
+7. Veto 7 (Anti-zelfinperking): AVG/WGBO-verzoek met ongevraagde jaargrens, gesloten lijst,
+   vooraf erkende art. 15 lid 4-weglakruimte of papier/portaal-uitweg -> REJECT
 """
 
 import os
@@ -137,7 +139,7 @@ class VetoGate:
 
     def check_draft(self, text, slot_metadata=None, has_local_discours=False):
         """
-        Toetst een concepttekst aan alle 6 cybernetische en FH-01 veto-regels.
+        Toetst een concepttekst aan alle 7 cybernetische, FH-01 en reikwijdte-veto-regels.
         slot_metadata: dict met o.a. 'name', 'type', 'ingest_capacity' (list van strings), 'required_goals'
         has_local_discours: bool, of er een actief L2-discours document aanwezig is
         """
@@ -243,6 +245,18 @@ class VetoGate:
                 message=" | ".join(fh01.warnings),
                 severity="REJECT",
                 suggestion="Pas Protocol FH-01 toe: behoud alle ketendoelen (geen sussen), vermijd vijandtaal (geen demoniseren), en laat de professionele beoordelingsruimte van de ontvanger intact."
+            ))
+
+        # VETO 7: Anti-zelfinperking (reikwijdte van AVG/WGBO-verzoeken)
+        reikwijdte = SBARProtocol.validate_avg_reikwijdte(text)
+        if not reikwijdte.passed:
+            results.append(VetoResult(
+                passed=False,
+                rule="VETO_7_ANTI_ZELFINPERKING",
+                message=" | ".join(reikwijdte.warnings),
+                severity="REJECT",
+                suggestion="Vraag vanaf aanvang registratie tot heden, 'inclusief maar niet beperkt tot', uitsluitend digitaal, "
+                           "en laat uitzonderingen (art. 15 lid 4 AVG) aan de verwerker. De toon mag zacht, de reikwijdte niet."
             ))
 
         all_passed = all(r.passed or r.severity == "WARN" for r in results)

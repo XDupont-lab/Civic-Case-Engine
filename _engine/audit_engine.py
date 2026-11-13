@@ -296,6 +296,18 @@ def run_fh01_incoming_intake(incoming_path: Path):
     return intake_report
 
 
+# Anti-zelfinperking: de Fluwelen Handschoen geldt toon en de-escalatie, nooit inhoudelijke
+# versmalling van het recht of de informatievraag van de burger (zie AGENTS.md, afspraak 5).
+ANTI_ZELFINPERKING_TOETS = (
+    "ANTI-ZELFINPERKING (valkuil 'behapbaar maken'): wijs het aan als het concept rechten of informatievergaring "
+    "ongevraagd versmalt om de wederpartij te ontzien: "
+    "(a) zelfopgelegde begin- of eindjaren (bv. 'vanaf 20xx' in plaats van vanaf aanvang registratie tot heden); "
+    "(b) gesloten opsommingen zonder 'inclusief maar niet beperkt tot'; "
+    "(c) vooraf geboden uitzonderingen of uitwegen (zelf art. 15 lid 4 AVG-weglakruimte erkennen, of papier/portaal naast digitaal aanbieden); "
+    "(d) een zachte toon die noodzakelijke rechtsgronden of termijnen inslikt."
+)
+
+
 def run_constructive_audit(draft_path, is_critical=False):
     root_dir = ROOT_DIR
     draft_path = Path(draft_path)
@@ -346,6 +358,7 @@ def run_constructive_audit(draft_path, is_critical=False):
         "2. Feitelijke consistentie met het onderliggende dossier en de chronologie. "
         "3. Protocol FH-01: 100% behoud van ketendoelen (geen sussen), geen vijandtaal (geen demoniseren), "
         "en professionele ruimte van de ontvanger intact laten. "
+        f"4. {ANTI_ZELFINPERKING_TOETS} "
         "Geen beleefdheidsfrutsels of filler words; wees scherp, direct en constructief."
     )
     user_deepseek = (
@@ -363,11 +376,12 @@ def run_constructive_audit(draft_path, is_critical=False):
         "1. De machtsdynamiek met bureaucratieën (voorkom dat ambtenaren of artsen in de weerstand schieten). "
         "2. 'The Velvet Glove' & FH-01: ontwapenend, hoffelijk, waardig, inhoudelijk 100% behouden, maar zonder "
         "de professionele bevoegdheid van de ontvanger te dicteren en zonder manipulatieve Agency Inversion. "
+        f"3. {ANTI_ZELFINPERKING_TOETS} De Fluwelen Handschoen geldt de toon, nooit de reikwijdte van het verzoek. "
         "Geen robot-steno, gewone Nederlandse zinnen, scherpe kern."
     )
     user_grok = (
         f"CONCEPTBRIEF TER BEOORDELING ({draft_path.name}):\n\"\"\"\n{draft_voor_model}\n\"\"\"\n\n"
-        "Toets deze conceptbrief scherp op machtsdynamiek, Protocol FH-01 en The Velvet Glove. "
+        "Toets deze conceptbrief scherp op machtsdynamiek, Protocol FH-01, The Velvet Glove en anti-zelfinperking. "
         "Geef direct 3 concrete verbeterpunten en formuleringen in gewone zinnen."
     )
 
@@ -409,6 +423,8 @@ def run_constructive_audit(draft_path, is_critical=False):
         "2. Taalhandeling- & Ruimtecontrole: formuleer als helder verzoek en feitelijke overdracht, "
         "zonder de professionele beslissing van de ontvanger als voldongen feit te dicteren. "
         "3. De wetsartikelen en escalatiedreigingen blijven in het auditrapport; zet ze niet in deze brief. "
+        "4. Anti-zelfinperking: versmal de reikwijdte van een verzoek niet (geen ongevraagde jaartallen, geen gesloten "
+        "lijstjes zonder 'inclusief maar niet beperkt tot', geen vooraf aangeboden weglak-, papier- of portaaluitwegen). "
         "Lever uitsluitend de brieftekst, zonder inleiding."
     )
     user_refine = (

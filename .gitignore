@@ -32,6 +32,7 @@ Ketengrootboek/saldo.json
 Ketengrootboek/tafel_besluiten.json
 Ketengrootboek/chain_of_custody.jsonl
 Ketengrootboek/*.beancount
+DESCENT_TYPECHECK_AUDIT.md
 
 # Dynamische inkomende en uitgaande post (alleen templates en .gitkeep blijven getrackt)
 Incoming_Letters/*

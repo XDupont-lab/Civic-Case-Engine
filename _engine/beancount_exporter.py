@@ -427,7 +427,7 @@ def export_ketengrootboek_to_beancount(
             lines.append(f'  procedureel_gesloten: "{"Ja" if t_res.get("procedureel_gesloten") else "Nee"}"')
             lines.append(f'  materieel_vereffend: "{"Ja" if mat_ok else "Nee"}"')
             lines.append(f'  keten_diagnose: "{diag}"')
-            lines.append(f'  werklexicon_code: "{t_res.get("werklexicon_code", "")}"')
+            lines.append(f'  status: "{t_res.get("status", "")}"')
 
         # 1 eenheid ketenverplichting (EUR 1.00 nomineel of sluitend)
         lines.append(f"  {deb:45}  1.00 EUR")

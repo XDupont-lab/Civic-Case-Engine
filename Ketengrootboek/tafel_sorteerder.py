@@ -347,11 +347,12 @@ class BoekhoudSorteerder:
             self.bouw_tafel_besluitregister()
             return (0, 0)
 
-        b1_prim, b1_leg = self.toetser._boek1_paden()
-        b2_prim, b2_leg = self.toetser._boek2_paden()
+        # Eén bron per boek; de publieke sample (grootboek.json) wordt nooit beschreven.
+        b1_pad = self.toetser._boek1_pad()
+        b2_pad = self.toetser.keten_dir / "boek2_journaal.json"
 
-        memoriaal_lijst = json.loads(b1_prim.read_text(encoding="utf-8"))
-        journaal_lijst = json.loads(b2_prim.read_text(encoding="utf-8"))
+        memoriaal_lijst = json.loads(b1_pad.read_text(encoding="utf-8"))
+        journaal_lijst = json.loads(b2_pad.read_text(encoding="utf-8"))
 
         bestaande_feit_ids = {f["id"] for f in memoriaal_lijst}
         bestaande_post_ids = {p["post_id"] for p in journaal_lijst}
@@ -435,12 +436,10 @@ class BoekhoudSorteerder:
                 geboekte_posten += 1
 
         b1_tekst = json.dumps(memoriaal_lijst, indent=2, ensure_ascii=False)
-        b1_prim.write_text(b1_tekst, encoding="utf-8")
-        b1_leg.write_text(b1_tekst, encoding="utf-8")
+        b1_pad.write_text(b1_tekst, encoding="utf-8")
 
         b2_tekst = json.dumps(journaal_lijst, indent=2, ensure_ascii=False)
-        b2_prim.write_text(b2_tekst, encoding="utf-8")
-        b2_leg.write_text(b2_tekst, encoding="utf-8")
+        b2_pad.write_text(b2_tekst, encoding="utf-8")
 
         self.toetser.draai_proefbalans()
         self.bouw_tafel_besluitregister()

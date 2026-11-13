@@ -166,10 +166,20 @@ def analyze_bank_file(file_path: str, export_beancount: bool = True, custom_out:
     """
     Voert forensische audit uit op bankbestand (CSV of CAMT.053 XML)
     en exporteert direct een sluitend Beancount grootboekbestand.
+
+    Graceful Degradation: ontbreekt het bankbestand, dan crasht de module niet
+    maar meldt zij FINANCE_STATUS: PENDING / NO_DATA, zodat de dossierbouwer
+    de overige pijlers (medisch, Woo, Twee Klokken) gewoon kan compileren.
     """
     if not os.path.exists(file_path):
-        print(f"[FOUT] Bestand niet gevonden: {file_path}")
-        sys.exit(1)
+        print("=" * 78)
+        print("CIVIC HELPER — FORENSISCHE BANK AUDITOR & KETENGROOTBOEK BRIDGE")
+        print("=" * 78)
+        print(f"[*] Bankbestand niet gevonden: {file_path}")
+        print("FINANCE_STATUS: PENDING / NO_DATA")
+        print("  - Geen bankmutaties beschikbaar; financiële reconciliatie staat open.")
+        print("  - Overige dossierpijlers kunnen ongehinderd worden gecompileerd.")
+        return None
 
     print("=" * 78)
     print("CIVIC HELPER — FORENSISCHE BANK AUDITOR & KETENGROOTBOEK BRIDGE")
@@ -191,7 +201,9 @@ def analyze_bank_file(file_path: str, export_beancount: bool = True, custom_out:
     total_tx = len(transactions)
     if total_tx == 0:
         print("[!] Geen transacties gevonden in bestand.")
-        return
+        print("FINANCE_STATUS: PENDING / NO_DATA")
+        print("  - Bestand aanwezig maar zonder parseerbare mutaties; reconciliatie open.")
+        return None
 
     dates = [t["datum"] for t in transactions if t.get("datum")]
     date_min = min(dates) if dates else "Onbekend"
@@ -335,22 +347,39 @@ def main():
             i += 1
 
     if not target_file:
-        # Zoek in Incoming_Letters naar .csv of .xml
-        incoming_dir = os.path.join(os.path.dirname(__file__), "..", "Incoming_Letters")
-        if os.path.exists(incoming_dir):
-            candidates = [
-                os.path.join(incoming_dir, f) for f in os.listdir(incoming_dir)
-                if f.lower().endswith(".csv") or f.lower().endswith(".xml")
-            ]
-            if candidates:
-                target_file = candidates[0]
+        # Vaste bronpaden voor financiën (δ3-correctie), eerste CSV/XML (alfabetisch) wint:
+        #   1) ../Zorgdossier/Financien/ (vaste map naast de Civic Helper-map)
+        #   2) Incoming_Letters/          (inloopmap voor verse exporten)
+        engine_dir = os.path.dirname(__file__)                       # .../CivicHelper/_engine
+        case_root = os.path.abspath(os.path.join(engine_dir, ".."))  # .../CivicHelper
+        finance_dir = os.path.abspath(os.path.join(case_root, "..", "Zorgdossier", "Financien"))
+        incoming_dir = os.path.join(case_root, "Incoming_Letters")
+
+        candidates: List[str] = []
+
+        def _scan(dir_path: str) -> None:
+            if not os.path.isdir(dir_path):
+                return
+            for f in sorted(os.listdir(dir_path)):
+                if f.lower().endswith(".csv") or f.lower().endswith(".xml"):
+                    candidates.append(os.path.join(dir_path, f))
+
+        _scan(finance_dir)
+        _scan(incoming_dir)
+
+        if candidates:
+            target_file = candidates[0]
 
     if target_file:
         analyze_bank_file(target_file, export_beancount=True, custom_out=custom_beancount)
     else:
-        print("Gebruik:")
-        print("  python bank_audit.py <pad_naar_bestand.csv_of_camt.xml> [--out output.beancount]")
-        print("Of plaats een bank .csv of .xml bestand in de map 'Incoming_Letters'.")
+        # Graceful Degradation: geen bankbestand -> vlag meegeven, niet crashen.
+        print("CIVIC HELPER — FORENSISCHE BANK AUDITOR & KETENGROOTBOEK BRIDGE")
+        print("FINANCE_STATUS: PENDING / NO_DATA")
+        print("  - Geen bank-CSV/XML aangetroffen in Zorgdossier/Financien of Incoming_Letters.")
+        print("  - Gebruik:")
+        print("      python bank_audit.py <pad_naar_bestand.csv_of_camt.xml> [--out output.beancount]")
+        print("  - Of plaats een bank .csv/.xml in Zorgdossier/Financien of Incoming_Letters.")
 
 if __name__ == "__main__":
     main()

@@ -10,9 +10,9 @@ Het registratiesysteem scheidt **waarneming**, **overdracht** en **toestand** in
 
 | Boek | Bestand / Functie | Wat erin staat | Harde Invariant |
 | :--- | :--- | :--- | :--- |
-| **Boek 1: Het Memoriaal** *(Laag 1 + Laag 3)* | `memoriaal.json` *(spiegel: `journaal.json`)* | **Laag 1 (Multimodale Waarneming):** `id`, `datum`, `type`, `modaliteit`, `actor`, `omschrijving`, `bewijsstuk`, `extra_bewijsstukken` (WAV/PDF/MD/CSV + SHA-256).<br>**Laag 3 (Interpretaties):** `interpretatie_historie` (hoe een loket het feit later classificeerde, met `betwist: true/false`). | **Niet-Overschrijvingsregel:** Een latere interpretatie of afwijzing (Laag 3) mag een oorspronkelijke waarneming (Laag 1) **nooit** wijzigen, verwijderen of vervangen. |
-| **Boek 2: Het Journaal** *(Laag 2)* | `boek2_journaal.json` *(spiegel: `grootboek.json`)* | De gekoppelde overdrachten (`POST-...`) tussen Zender (`debet_rekening`) en Ontvanger (`credit_rekening`), inclusief `tafel_besluit` (kwalificatie/autorisatie aan de Tafel), `termijn` (`verval_datum`, `uiterste_datum`) en de controlevelden (`overdracht_velden`). | Een ontvangstbevestiging, automatische melding of doorverwijzing zonder uitvoering (`NIET_SLUITENDE_TYPES`) sluit **nooit** een overdrachtspost. |
-| **Boek 3: Het Ketengrootboek & De Klok** | `ketengrootboek.json` *(spiegel: `saldo.json`)* | 100% automatisch afgeleide positie per rekening/loket (`rekeningen_grootboek`), de afgeleide **Klok** (`openstaande_termijnen`), en **terugwaartse herleidbaarheid** (`Rekening -> Post_ID -> Tafel_Besluit -> Feit_ID + SHA-256`). | Elke open verplichting én elke lopende termijn blijft zichtbaar op het loket tot er materieel sluitingsbewijs op schijf ligt. |
+| **Boek 1: Het Memoriaal** *(Laag 1 + Laag 3)* | `memoriaal.json` | **Laag 1 (Multimodale Waarneming):** `id`, `datum`, `type`, `modaliteit`, `actor`, `omschrijving`, `bewijsstuk`, `extra_bewijsstukken` (WAV/PDF/MD/CSV + SHA-256).<br>**Laag 3 (Interpretaties):** `interpretatie_historie` (hoe een loket het feit later classificeerde, met `betwist: true/false`). | **Niet-Overschrijvingsregel:** Een latere interpretatie of afwijzing (Laag 3) mag een oorspronkelijke waarneming (Laag 1) **nooit** wijzigen, verwijderen of vervangen. |
+| **Boek 2: Het Journaal** *(Laag 2)* | `boek2_journaal.json` *(publieke sample: `grootboek.json`)* | De gekoppelde overdrachten (`POST-...`) tussen Zender (`debet_rekening`) en Ontvanger (`credit_rekening`), inclusief `tafel_besluit` (kwalificatie/autorisatie aan de Tafel), `termijn` (`verval_datum`, `uiterste_datum`) en de controlevelden (`overdracht_velden`). | Een ontvangstbevestiging, automatische melding of doorverwijzing zonder uitvoering (`NIET_SLUITENDE_TYPES`) sluit **nooit** een overdrachtspost. |
+| **Boek 3: Het Ketengrootboek & De Klok** | `ketengrootboek.json` | 100% automatisch afgeleide positie per rekening/loket (`rekeningen_grootboek`), de afgeleide **Klok** (`openstaande_termijnen`), en **terugwaartse herleidbaarheid** (`Rekening -> Post_ID -> Tafel_Besluit -> Feit_ID + SHA-256`). | Elke open verplichting én elke lopende termijn blijft zichtbaar op het loket tot er materieel sluitingsbewijs op schijf ligt. |
 
 ---
 
@@ -25,10 +25,10 @@ Elke overdracht én elke loketrekening wordt getoetst op **drie afzonderlijke bo
 3. **`materieel_vereffend` (`True/False`):** Is de onderliggende verplichting daadwerkelijk geleverd (`FASE_3_FEITELIJKE_REALISATIE`) met een bestaand bewijsbestand + SHA-256 op schijf?
 
 ### Afgeleide Keten-diagnoses & Onderbouwde Werklexicon-codes
-- `(True, True, True)` $\rightarrow$ **`MATERIEEL_VEREFFEND`** (`KATHARSIS_VEREFFEND`)
-- `(True, True, False)` $\rightarrow$ **`SCHIJNSLUITING`** (`ATE_LOKALE_AFSLUITING_ZONDER_KETENVERVOLG`: loket sluit procedure af, maar ketenverplichting staat materieel open)
-- `(False, True, False)` $\rightarrow$ **`TEGENSTRIJDIGE_REGISTRATIE`** (`STASIS_TEGENSTRIJDIGE_WERKELIJKHEID`: twee administraties sluiten elk intern, maar boeken onverenigbare feiten)
-- `(True, False, False)` $\rightarrow$ **`UITSTAANDE_OVERDRACHT`** (`MENIS_ONVEREFFEND_RESTANT`)
+- `(True, True, True)` $\rightarrow$ **`VEREFFEND`** (status `DICHT`; alleen met een afzonderlijk wederpartijfeit, een zelf-gesloten post is geen vereffening)
+- `(True, True, False)` $\rightarrow$ **`SCHIJNSLUITING`** (status `OPEN`: loket sluit procedure af, maar ketenverplichting staat materieel open)
+- `(False, True, False)` $\rightarrow$ **`TEGENSTRIJDIGE_REGISTRATIE`** (status `BETWIST`: twee administraties sluiten elk intern, maar boeken onverenigbare feiten)
+- `(True, False, False)` $\rightarrow$ **`OPENSTAAND`** (status `OPEN`)
 
 *Let op:* Gebruik Griekse Werklexicon-termen (`PROSOPON`, `STASIS`, `ATE`, `MENIS`) nooit als losse beschuldiging in een brief naar een loket, maar uitsluitend als onderbouwde analysecode in het dossier die verwijst naar een concreet Laag-1 bewijsstuk.
 
@@ -38,7 +38,7 @@ Elke overdracht én elke loketrekening wordt getoetst op **drie afzonderlijke bo
 
 ### A. Via de Command Line (CLI)
 ```powershell
-# 1. Volledige proefbalans draaien en saldo.json bijwerken
+# 1. Volledige proefbalans draaien en ketengrootboek.json bijwerken
 python Ketengrootboek\sluiting.py ALL
 
 # 2. Volledig 3-Boeken Ketenintegriteitsrapport (Grootboek + Journaal 9 velden + Memoriaal Laag 1/3)

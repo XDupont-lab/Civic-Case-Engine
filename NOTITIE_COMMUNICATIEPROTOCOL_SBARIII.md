@@ -156,3 +156,17 @@ Elke uitgaande transformatie wordt getoetst op drie onafhankelijke criteria:
    De Fluwelen Handschoen is geen techniek om de ander ongemerkt in een vooraf vastgelegde fuik te manoeuvreren onder de schijn dat het zijn eigen idee was. Waar een grens of wettelijke eis hard is, blijft deze nuchter, hoffelijk en expliciet op tafel liggen.
 2. **Verbod op adaptief overdrijven (Sussen noch Demoniseren):**  
    Een agent mag niet meebewegen met de sociale golf van het gesprek. Een nuchtere professionele afbakening van een arts mag noch worden gesust ("kruip in je schulp en geef je doelen op"), noch worden gedemoniseerd tot een vijandig instituut ("klerkenreflex, gildebaas, EPD-rampen"). Het signaal wordt geregistreerd in zijn exacte, onopgesmukte omvang.
+
+
+### 7.5 De Wiskundige Toets op Orthogonale Domeinzuiverheid & Kanaalcapaciteit
+
+Elk uitgaand communicatiestuk wordt vóór verzending wiskundig getoetst op twee parameters:
+
+1. **Orthogonale Mandaat-Projectie ($\Pi_{\mathcal{V}_k}$):**
+   - Bevat het bericht uitsluitend variabelen en actievragen die vallen binnen de wettelijke bevoegdheidsruimte $\mathcal{V}_k$ van de ontvangende instantie?
+   - Formele eis: $\langle \vec{S}_k, \vec{v}_j \rangle = 0$ voor alle $j \ne k$.
+   - *Verbod op cross-domein besmetting:* Confronteer Loket A (bijv. sociale dienst) nimmer met gegevens of vorderingen die behoren tot Loket B (bijv. gerechtsdeurwaarder of zorgverzekeraar). Residuen blijven in de backoffice.
+2. **Kanaalcapaciteit & Bounded Complexity ($C(L_k)$):**
+   - Het aantal expliciete actieverzoeken per bericht is strikt enkelvoudig: $|A(\vec{S}_k)| = 1$ (hoogstens 2 elementaire stappen).
+   - De verwerkingscomplexiteit moet strikt binnen het cognitieve/tijdsbudget van de behandelend functionaris blijven ($K(\vec{S}_k) \le C(L_k)$).
+   - Verwijzingen naar context geschieden zuiver indicatief/scalair (*"gegevens reeds bij u bekend"*), waardoor de administratieve verwerkingsentropie naar nul convergeert ($H \to 0$).

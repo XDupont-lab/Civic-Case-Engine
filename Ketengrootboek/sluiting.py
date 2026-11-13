@@ -4,18 +4,18 @@ CIVIC HELPER — SLUITING, PROEFBALANS & DRIE-BOEKENSTELSEL (Ketengrootboek v2.0
 Pure Python Standard Library (Zero External Dependencies).
 
 Implementeert het Drie-Boekenstelsel van Simon Stevin gekoppeld aan De Tafel:
-  - Boek 1 (Het Memoriaal)      : memoriaal.json      (spiegel: journaal.json)
+  - Boek 1 (Het Memoriaal)      : memoriaal.json
       Multimodale Laag-1 waarnemingen (PDF, WAV/MP3, e-mail, bank-CSV, zorgdossier) + SHA-256
       én Laag-3 loket-interpretaties (betwist/onbetwist).
-  - Boek 2 (Het Journaal)       : boek2_journaal.json (spiegel: grootboek.json)
+  - Boek 2 (Het Journaal)       : boek2_journaal.json
       Gekoppelde ketenoverdrachten (POST-...) van Debet (Zender) naar Credit (Ontvanger),
       inclusief Tafel-besluitreferentie (`tafel_besluit`) en wettelijke termijn (`termijn`).
-  - Boek 3 (Het Ketengrootboek) : ketengrootboek.json (spiegel: saldo.json)
+  - Boek 3 (Het Ketengrootboek) : ketengrootboek.json
       100% automatisch afgeleide rekeningbalans per ketenpartij + De Klok (`openstaande_termijnen`).
 
 Aanroep:
   python sluiting.py <post_id>     -> Toetst één specifieke journaalpost
-  python sluiting.py ALL           -> Draait de volledige PROEFBALANS en ververst ketengrootboek.json & saldo.json
+  python sluiting.py ALL           -> Draait de volledige PROEFBALANS en ververst ketengrootboek.json
   python sluiting.py --klok        -> Toont de automatisch afgeleide Klok (openstaande termijnen & vervaldata)
   python sluiting.py --integriteit -> Print het volledige 3-Boeken Ketenintegriteitsrapport (Markdown)
   python sluiting.py --rekening X  -> Herleidt één rekening vanuit het Grootboek terug naar Journaal & Memoriaal
@@ -192,33 +192,24 @@ class SluitingsToetser:
                     return kt
         return None
 
-    def _boek1_paden(self) -> Tuple[Path, Path]:
-        """Geeft (primair memoriaal.json, legacy spiegel journaal.json) terug."""
-        return self.keten_dir / "memoriaal.json", self.keten_dir / "journaal.json"
+    def _boek1_pad(self) -> Path:
+        """Boek 1 (Het Memoriaal): één enkel bronbestand."""
+        return self.keten_dir / "memoriaal.json"
 
-    def _boek2_paden(self) -> Tuple[Path, Path]:
-        """Geeft (primair boek2_journaal.json, legacy spiegel grootboek.json) terug."""
-        return self.keten_dir / "boek2_journaal.json", self.keten_dir / "grootboek.json"
+    def _boek2_pad(self) -> Path:
+        """Boek 2 (Het Journaal): privé bestand; een verse clone zonder eigen data
+        valt terug op de publieke Voorbeeldstad-sample (grootboek.json)."""
+        prim = self.keten_dir / "boek2_journaal.json"
+        return prim if prim.is_file() else (self.keten_dir / "grootboek.json")
 
-    def _boek3_paden(self) -> Tuple[Path, Path]:
-        """Geeft (primair ketengrootboek.json, legacy spiegel saldo.json) terug."""
-        return self.keten_dir / "ketengrootboek.json", self.keten_dir / "saldo.json"
-
-    def synchroniseer_spiegelbestanden(self) -> None:
-        """Houdt Boek 1 (memoriaal.json -> journaal.json) synchroon (zonder publiek grootboek.json te overschrijven)."""
-        b1_prim, b1_leg = self._boek1_paden()
-        if b1_prim.is_file():
-            inhoud = b1_prim.read_text(encoding="utf-8")
-            if not b1_leg.is_file() or b1_leg.read_text(encoding="utf-8") != inhoud:
-                b1_leg.write_text(inhoud, encoding="utf-8")
+    def _boek3_pad(self) -> Path:
+        """Boek 3 (Het Ketengrootboek): één enkel bronbestand."""
+        return self.keten_dir / "ketengrootboek.json"
 
     def laad_boeken(self) -> Tuple[Dict[str, Dict[str, Any]], List[Dict[str, Any]]]:
         """Laadt Boek 1 (Memoriaal) en Boek 2 (Journaal) in met multimodale SHA-256 verificatie."""
-        b1_prim, b1_leg = self._boek1_paden()
-        b2_prim, b2_leg = self._boek2_paden()
-
-        memoriaal_pad = b1_prim if b1_prim.is_file() else b1_leg
-        journaal_pad = b2_prim if b2_prim.is_file() else b2_leg
+        memoriaal_pad = self._boek1_pad()
+        journaal_pad = self._boek2_pad()
 
         feiten_lijst = []
         if memoriaal_pad.is_file():
@@ -228,7 +219,7 @@ class SluitingsToetser:
             feiten_lijst = [dict(item) for item in _VOORBEELDSTAD_MEMORIAAL]
 
         if not journaal_pad.is_file():
-            raise FileNotFoundError("Boek 2 (boek2_journaal.json of grootboek.json) niet gevonden")
+            raise FileNotFoundError("Boek 2 (boek2_journaal.json / grootboek.json) niet gevonden")
 
         with open(journaal_pad, "r", encoding="utf-8") as f:
             posten_lijst = json.load(f)
@@ -347,8 +338,9 @@ class SluitingsToetser:
                 "rekenkundig_sluitend": True,
                 "procedureel_gesloten": False,
                 "materieel_vereffend": False,
-                "keten_diagnose": "UITSTAANDE_OVERDRACHT",
-                "werklexicon_code": "MENIS_ONVEREFFEND_RESTANT",
+                "keten_diagnose": "OPENSTAAND",
+                "status": "OPEN",
+                "toelichting": "Ankerbewijs ontbreekt op schijf.",
                 "werklexicon_toelichting": "Ankerbewijs ontbreekt op schijf.",
                 "overdracht_velden": {},
                 "anker": anker,
@@ -437,30 +429,35 @@ class SluitingsToetser:
             bronpoort.get("voldaan", False)
             or (tegen is not None and tegen.get("bestand_gevonden", False))
         )
-        materieel_vereffend = bool(sluit_ok and fase == FASE_3_FEITELIJKE_REALISATIE)
+        # Werklexicon (nuchter): één heldere vereffeningsregel + drie beslisbare uitkomsten.
+        # Alleen een AFZONDERLIJK wederpartijfeit (tegen_feit != anker_feit) telt als vereffening.
+        # Een zelf-gesloten post (tegen_feit == anker_feit) is "dossier ontvangen", geen vereffening.
+        materieel_vereffend = bool(
+            sluit_ok
+            and fase == FASE_3_FEITELIJKE_REALISATIE
+            and anker_id != tegen_id
+        )
 
         if materieel_vereffend:
-            keten_diagnose = "MATERIEEL_VEREFFEND"
-            werklexicon_code = "KATHARSIS_VEREFFEND"
-            werklexicon_toelichting = "Verplichting aantoonbaar vervuld met geldig sluitingsbewijs."
+            status = "DICHT"
+            keten_diagnose = "VEREFFEND"
+            toelichting = "Verplichting vereffend met een afzonderlijk wederpartijfeit en geldig sluitingsbewijs."
         elif not rekenkundig_sluitend:
+            status = "BETWIST"
             keten_diagnose = "TEGENSTRIJDIGE_REGISTRATIE"
-            werklexicon_code = "STASIS_TEGENSTRIJDIGE_WERKELIJKHEID"
-            werklexicon_toelichting = (
-                f"Twee administraties boeken onderling onverenigbare feiten ({anker_id} vs. {tegen_id}), "
-                "ook al sluit elke deeladministratie afzonderlijk."
+            toelichting = (
+                f"Twee administraties boeken onderling onverenigbare feiten ({anker_id} vs. {tegen_id})."
             )
-        elif procedureel_gesloten and not materieel_vereffend:
+        elif procedureel_gesloten:
+            status = "OPEN"
             keten_diagnose = "SCHIJNSLUITING"
-            werklexicon_code = "ATE_LOKALE_AFSLUITING_ZONDER_KETENVERVOLG"
-            werklexicon_toelichting = (
-                "Het loket heeft zijn procedure of melding afgerond, maar de onderliggende verplichting "
-                "is materieel niet vervuld."
-            )
+            toelichting = "Procedureel afgerond, maar materieel niet vereffend (geen afzonderlijk wederpartijfeit)."
         else:
-            keten_diagnose = "UITSTAANDE_OVERDRACHT"
-            werklexicon_code = "MENIS_ONVEREFFEND_RESTANT"
-            werklexicon_toelichting = "Overdracht staat zowel procedureel als materieel nog open."
+            status = "OPEN"
+            keten_diagnose = "OPENSTAAND"
+            toelichting = "Overdracht staat zowel procedureel als materieel nog open."
+
+        werklexicon_toelichting = toelichting
 
         termijn_info = self.bereken_termijn_status(post.get("termijn"), materieel_vereffend, peildatum)
 
@@ -501,7 +498,7 @@ class SluitingsToetser:
             "procedureel_gesloten": procedureel_gesloten,
             "materieel_vereffend": materieel_vereffend,
             "keten_diagnose": keten_diagnose,
-            "werklexicon_code": werklexicon_code,
+            "status": status,
             "werklexicon_toelichting": werklexicon_toelichting,
             "termijn_info": termijn_info,
             "overdracht_velden": overdracht_velden,
@@ -564,11 +561,10 @@ class SluitingsToetser:
         """Boek 1 (Memoriaal — Laag 1): Registreert een nieuwe feitelijke multimodale waarneming met SHA-256.
         Weigert een bestaand Laag-1 feit te overschrijven als de inhoud afwijkt.
         """
-        b1_prim, b1_leg = self._boek1_paden()
-        lees_pad = b1_prim if b1_prim.is_file() else b1_leg
+        b1_pad = self._boek1_pad()
         feiten_lijst: List[Dict[str, Any]] = []
-        if lees_pad.is_file():
-            with open(lees_pad, "r", encoding="utf-8") as f:
+        if b1_pad.is_file():
+            with open(b1_pad, "r", encoding="utf-8") as f:
                 feiten_lijst = json.load(f)
 
         bestaand = next((item for item in feiten_lijst if item.get("id") == feit_id), None)
@@ -598,8 +594,7 @@ class SluitingsToetser:
             opslag_kopie = {k: v for k, v in nieuw_feit.items() if k not in ("sha256", "bestand_gevonden")}
             feiten_lijst.append(opslag_kopie)
             tekst = json.dumps(feiten_lijst, indent=2, ensure_ascii=False)
-            b1_prim.write_text(tekst, encoding="utf-8")
-            b1_leg.write_text(tekst, encoding="utf-8")
+            b1_pad.write_text(tekst, encoding="utf-8")
         return nieuw_feit
 
     def registreer_interpretatie_op_feit(
@@ -616,9 +611,8 @@ class SluitingsToetser:
         """Boek 1 (Laag 3 bovenop Laag 1): Hangt een latere loket-interpretatie onder een waarneming
         zonder de oorspronkelijke waarneming in Laag 1 aan te tasten.
         """
-        b1_prim, b1_leg = self._boek1_paden()
-        lees_pad = b1_prim if b1_prim.is_file() else b1_leg
-        with open(lees_pad, "r", encoding="utf-8") as f:
+        b1_pad = self._boek1_pad()
+        with open(b1_pad, "r", encoding="utf-8") as f:
             feiten_lijst = json.load(f)
 
         gevonden_idx = next((i for i, item in enumerate(feiten_lijst) if item.get("id") == feit_id), None)
@@ -640,8 +634,7 @@ class SluitingsToetser:
 
         if opslaan:
             tekst = json.dumps(feiten_lijst, indent=2, ensure_ascii=False)
-            b1_prim.write_text(tekst, encoding="utf-8")
-            b1_leg.write_text(tekst, encoding="utf-8")
+            b1_pad.write_text(tekst, encoding="utf-8")
         return bijgewerkt
 
     def bouw_openstaande_klok(self, peildatum: Optional[date] = None) -> List[Dict[str, Any]]:
@@ -713,7 +706,7 @@ class SluitingsToetser:
                 "procedureel_gesloten": r["procedureel_gesloten"],
                 "materieel_vereffend": r["materieel_vereffend"],
                 "keten_diagnose": r["keten_diagnose"],
-                "werklexicon_code": r["werklexicon_code"],
+                "status": r["status"],
                 "anker_feit": (r.get("anker") or {}).get("id"),
                 "tegen_feit": (r.get("tegen") or {}).get("id"),
                 "termijn_info": r.get("termijn_info"),
@@ -815,8 +808,7 @@ class SluitingsToetser:
         return "\n".join(lines)
 
     def draai_proefbalans(self) -> str:
-        """Draait de volledige proefbalans over alle journaalposten en schrijft ketengrootboek.json én saldo.json."""
-        self.synchroniseer_spiegelbestanden()
+        """Draait de volledige proefbalans over alle journaalposten en schrijft ketengrootboek.json."""
         feiten_index, posten_lijst = self.laad_boeken()
         resultaten = [self.toets_post(p, feiten_index) for p in posten_lijst]
 
@@ -845,7 +837,7 @@ class SluitingsToetser:
         lines.append(f"KETENSALDO: {sluit_niet_aantal} post(en) sluiten niet | {sluit_wel_aantal} post(en) sluiten | Regime: {regime}")
         lines.append("=" * 120)
 
-        # Werk Boek 3 bij: ketengrootboek.json én legacy spiegel saldo.json
+        # Werk Boek 3 bij: ketengrootboek.json
         rekeningen_gb = self.bouw_rekeningen_grootboek()
         overzicht = self.ketenstatus_overzicht()
         openstaande_klok = self.bouw_openstaande_klok()
@@ -861,6 +853,7 @@ class SluitingsToetser:
                 "rekenkundig_sluitend": overzicht["rekenkundig_sluitend"],
                 "procedureel_gesloten": overzicht["procedureel_gesloten"],
                 "materieel_vereffend": overzicht["materieel_vereffend"],
+                "materieel_vereffend_aantal": overzicht["materieel_vereffend_aantal"],
                 "schijnsluitingen": overzicht["schijnsluitingen"],
                 "tegenstrijdigheden": overzicht["tegenstrijdigheden"],
             },
@@ -879,10 +872,9 @@ class SluitingsToetser:
             ),
         }
 
-        b3_prim, b3_leg = self._boek3_paden()
+        b3_pad = self._boek3_pad()
         tekst = json.dumps(saldo_data, indent=2, ensure_ascii=False)
-        b3_prim.write_text(tekst, encoding="utf-8")
-        b3_leg.write_text(tekst, encoding="utf-8")
+        b3_pad.write_text(tekst, encoding="utf-8")
 
         return "\n".join(lines)
 
@@ -928,10 +920,39 @@ class SluitingsToetser:
             f"- **Materieel vereffend:** **{mat_str}**",
             "",
         ]
+
         if overzicht["schijnsluitingen"] or overzicht["tegenstrijdigheden"]:
             md.append("> **⚠️ Schijnsluiting & Tegenstrijdige Registratie gedetecteerd:**")
             md.append("> De betrokken loketten hebben hun eigen processtap beëindigd, maar de onderliggende verplichtingen zijn materieel niet vervuld of spreken elkaar tussen loketten tegen.")
             md.append("> **Actie:** Openstaande overdracht behouden en bewijs van feitelijke uitvoering of rectificatie verlangen.")
+            md.append("")
+
+        # Afgezwakte bewijsregel (ChatGPT-correctie): rekenkundig kloppen ≠ feitelijk kloppen.
+        md.extend([
+            "> **Bewijsregel (afgezwakt):** De aggregatielogica en de onderlinge telverhoudingen zijn expliciet gemaakt. "
+            "De juistheid en volledigheid van de onderliggende bewijsclassificaties moeten afzonderlijk worden gecontroleerd. "
+            "Of het bankbestand (`Zorgdossier/Financien/`) een corresponderende transactie bevat, wordt afzonderlijk nagegaan; "
+            "eventuele verrekeningen via derden of administratieve inhoudingen vereisen nadere verificatie.",
+            "",
+        ])
+
+        # δ2: de inter-loket tegenstrijdigheden expliciet benoemen (datum + bron, zonder hardcoded bedragen te verzinnen).
+        if overzicht["tegenstrijdigheden"]:
+            md.extend([
+                "## Tegenstrijdige Registraties (inter-loket, op postniveau)",
+                "",
+                "| Post ID | Ankerfeit | Tegenfeit | Kern van de tegenspraak |",
+                "| :--- | :--- | :--- | :--- |",
+            ])
+            for r in overzicht["resultaten"]:
+                if r.get("keten_diagnose") != "TEGENSTRIJDIGE_REGISTRATIE":
+                    continue
+                anker = r.get("anker") or {}
+                tegen = r.get("tegen") or {}
+                md.append(
+                    f"| `{r['post_id']}` | `{anker.get('id')}` ({anker.get('datum')}) | "
+                    f"`{tegen.get('id')}` ({tegen.get('datum')}) | {r.get('naam', '')} |"
+                )
             md.append("")
 
         # AFGELEIDE KLOK-VIEW UIT BOEK 3
@@ -978,7 +999,7 @@ class SluitingsToetser:
             v = r["overdracht_velden"]
             md.extend([
                 f"### {r['post_id']} — {r['naam']}",
-                f"- **Diagnose:** `{r['keten_diagnose']}` · **Analysecode:** `{r['werklexicon_code']}` · **Tafel-besluit:** `{r['tafel_besluit']}`",
+                f"- **Status:** `{r['status']}` · **Diagnose:** `{r['keten_diagnose']}` · **Tafel-besluit:** `{r['tafel_besluit']}`",
                 f"- **Toelichting:** {r['werklexicon_toelichting']}",
                 "",
                 "| Veld | Waarde |",
@@ -1019,9 +1040,8 @@ class SluitingsToetser:
             if interps:
                 for idx, ip in enumerate(interps, 1):
                     status_lbl = "🔴 BETWISTE LOKET-INTERPRETATIE" if ip.get("betwist") else "🟢 ERKENDE INTERPRETATIE"
-                    code_lbl = f" · `{ip['werklexicon_code']}`" if ip.get("werklexicon_code") else ""
                     md.append(
-                        f"- **Laag 3 Interpretatie #{idx} ({status_lbl}{code_lbl}):** "
+                        f"- **Laag 3 Interpretatie #{idx} ({status_lbl}):** "
                         f"*{ip.get('actor', '')} ({ip.get('datum', '')}):* \"{ip.get('classificatie', '')}\""
                     )
                     if ip.get("grondslag_betwisting"):
@@ -1112,10 +1132,18 @@ def main():
     parser.add_argument("--integriteit", action="store_true", help="Print het volledige 3-Boeken Ketenintegriteitsrapport (Markdown)")
     parser.add_argument("--custody", "--chain", action="store_true", help="Genereer en print de cryptografische Chain-of-Custody (append-only hash chain)")
     parser.add_argument("--klok", action="store_true", help="Print de automatisch afgeleide Klok (openstaande termijnen)")
+    parser.add_argument("--typecheck", action="store_true", help="Voer de Descent Type-Check uit (Stack-Runtime v2.0)")
     parser.add_argument("--rekening", type=str, default="", help="Reconstrueer een specifieke rekening vanuit het Grootboek terug naar Memoriaal")
     args = parser.parse_args()
 
     toetser = SluitingsToetser()
+
+    if args.typecheck:
+        from descent_type_checker import DescentTypeChecker
+        dtc = DescentTypeChecker()
+        dtc.check_all()
+        dtc.print_report()
+        return
 
     if args.klok:
         if args.json:
