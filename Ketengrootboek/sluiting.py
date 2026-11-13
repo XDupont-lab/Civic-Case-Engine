@@ -323,6 +323,10 @@ class SluitingsToetser:
 
         # 1. Toets op aanwezigheid en integriteit van het ankerbewijs (Debet-opening)
         if not anker or not anker.get("bestand_gevonden"):
+            termijn_info_0 = self.bereken_termijn_status(post.get("termijn"), False, peildatum)
+            vaste_omschr_0 = "; ".join(
+                c.get("omschrijving", c.get("id", "")) for c in post.get("vaste_posten", [])
+            ) or post.get("naam", "")
             return {
                 "post_id": post_id,
                 "naam": post.get("naam", ""),
@@ -334,7 +338,7 @@ class SluitingsToetser:
                 "reden": f"Ankerbewijs ontbreekt of bestand niet op schijf ({anker_id})",
                 "locus": ("C_onbekend", post_id, "Poort_onbekend"),
                 "ontbrekend": ["anker_bewijsstuk"],
-                "termijn_info": self.bereken_termijn_status(post.get("termijn"), False, peildatum),
+                "termijn_info": termijn_info_0,
                 "rekenkundig_sluitend": True,
                 "procedureel_gesloten": False,
                 "materieel_vereffend": False,
@@ -342,7 +346,23 @@ class SluitingsToetser:
                 "status": "OPEN",
                 "toelichting": "Ankerbewijs ontbreekt op schijf.",
                 "werklexicon_toelichting": "Ankerbewijs ontbreekt op schijf.",
-                "overdracht_velden": {},
+                "overdracht_velden": {
+                    "bron_en_bewijs": f"{anker_id} (ankerbewijs ontbreekt op schijf)",
+                    "zender_naar_ontvanger": f"{post.get('debet_rekening', '')} -> {post.get('credit_rekening', '')}",
+                    "tafel_besluit": tafel_besluit,
+                    "verplichting": vaste_omschr_0,
+                    "aanvaarding": f"Nee ({FASE_0_UITSTAAND})",
+                    "uitvoering": "Niet gerealiseerd (ankerbewijs ontbreekt)",
+                    "rekenkundige_status": "Ja",
+                    "procedurele_status": "Nee",
+                    "materiele_status": "Nee",
+                    "termijn_status": (
+                        f"{termijn_info_0['klok_status']} (vervalt {termijn_info_0['verval_datum']}, {termijn_info_0['dagen_resterend']} dgn)"
+                        if termijn_info_0
+                        else "Geen actieve klok"
+                    ),
+                    "sluitingsbewijs": None,
+                },
                 "anker": anker,
                 "tegen": tegen,
             }
@@ -996,25 +1016,26 @@ class SluitingsToetser:
             "",
         ])
         for r in overzicht["resultaten"]:
-            v = r["overdracht_velden"]
+            v = r.get("overdracht_velden") or {}
+            o = "onbekend"
             md.extend([
-                f"### {r['post_id']} — {r['naam']}",
-                f"- **Status:** `{r['status']}` · **Diagnose:** `{r['keten_diagnose']}` · **Tafel-besluit:** `{r['tafel_besluit']}`",
-                f"- **Toelichting:** {r['werklexicon_toelichting']}",
+                f"### {r.get('post_id', o)} — {r.get('naam', '')}",
+                f"- **Status:** `{r.get('status', 'OPEN')}` · **Diagnose:** `{r.get('keten_diagnose', o)}` · **Tafel-besluit:** `{r.get('tafel_besluit', o)}`",
+                f"- **Toelichting:** {r.get('werklexicon_toelichting') or r.get('toelichting', '')}",
                 "",
                 "| Veld | Waarde |",
                 "| :--- | :--- |",
-                f"| **Bron en bewijs (Laag 1 Memoriaal)** | `{v['bron_en_bewijs']}` |",
-                f"| **Zender → ontvanger (Laag 2 Journaal)** | {v['zender_naar_ontvanger']} |",
-                f"| **Tafel-kwalificatie / Autorisatie** | `{v['tafel_besluit']}` |",
-                f"| **Verplichting** | {v['verplichting']} |",
-                f"| **Aanvaarding** | {v['aanvaarding']} |",
-                f"| **Uitvoering** | {v['uitvoering']} |",
-                f"| **Rekenkundige status** | **{v['rekenkundige_status']}** |",
-                f"| **Procedurele status** | **{v['procedurele_status']}** |",
-                f"| **Materiële status** | **{v['materiele_status']}** |",
-                f"| **Termijn / Klok** | {v['termijn_status']} |",
-                f"| **Sluitingsbewijs** | `{v['sluitingsbewijs'] or 'Ontbreekt — post blijft open'}` |",
+                f"| **Bron en bewijs (Laag 1 Memoriaal)** | `{v.get('bron_en_bewijs', o)}` |",
+                f"| **Zender → ontvanger (Laag 2 Journaal)** | {v.get('zender_naar_ontvanger', o)} |",
+                f"| **Tafel-kwalificatie / Autorisatie** | `{v.get('tafel_besluit', o)}` |",
+                f"| **Verplichting** | {v.get('verplichting', o)} |",
+                f"| **Aanvaarding** | {v.get('aanvaarding', o)} |",
+                f"| **Uitvoering** | {v.get('uitvoering', o)} |",
+                f"| **Rekenkundige status** | **{v.get('rekenkundige_status', o)}** |",
+                f"| **Procedurele status** | **{v.get('procedurele_status', o)}** |",
+                f"| **Materiële status** | **{v.get('materiele_status', o)}** |",
+                f"| **Termijn / Klok** | {v.get('termijn_status', o)} |",
+                f"| **Sluitingsbewijs** | `{v.get('sluitingsbewijs') or 'Ontbreekt — post blijft open'}` |",
                 "",
             ])
 

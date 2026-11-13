@@ -12,7 +12,7 @@ Implementeert de deterministische Veto-Keten (Stappen B, C, D) van de Cybernetis
 5. Veto 5 (Dubbele Klok): tweede t=0 of nieuw narratief terwijl klok loopt (termijnen.json of Ketengrootboek) -> REJECT
 6. Veto 6 (Protocol FH-01): demoniseren/sussen, professioneel dictaat of manipulatieve agency inversion -> REJECT
 7. Veto 7 (Anti-zelfinperking): AVG/WGBO-verzoek met ongevraagde jaargrens, gesloten lijst,
-   vooraf erkende art. 15 lid 4-weglakruimte of papier/portaal-uitweg -> REJECT
+   vooraf erkende art. 15 lid 4-weglakruimte of papier/portaal-uitweg -> WARN (patroontoets)
 """
 
 import os
@@ -254,7 +254,7 @@ class VetoGate:
                 passed=False,
                 rule="VETO_7_ANTI_ZELFINPERKING",
                 message=" | ".join(reikwijdte.warnings),
-                severity="REJECT",
+                severity="WARN",
                 suggestion="Vraag vanaf aanvang registratie tot heden, 'inclusief maar niet beperkt tot', uitsluitend digitaal, "
                            "en laat uitzonderingen (art. 15 lid 4 AVG) aan de verwerker. De toon mag zacht, de reikwijdte niet."
             ))

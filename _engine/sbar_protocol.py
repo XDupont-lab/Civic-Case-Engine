@@ -360,18 +360,20 @@ class SBARProtocol:
         r"\bavg\b", r"\bwgbo\b", r"\binzageverzoek\b", r"\brecht\s+op\s+inzage\b",
         r"\bart(?:ikel|\.)?\s*15\b", r"\b7:456\s*bw\b",
     ]
-    # (a) zelfopgelegde begin- of eindjaren in een verzoekzin
+    # (a) zelfopgelegde begin- of eindjaren die de reikwijdte van het verzoek begrenzen.
+    #     'sinds <jaar>' als achtergrond en een losse toelichtende periode tellen niet.
     JAARGRENS_PATTERNS = [
-        r"\b(?:vanaf|sinds|met\s+ingang\s+van)\s+(?:\d{1,2}\s+[a-z]+\s+)?(?:19|20)\d{2}\b",
-        r"\b(?:tot\s+en\s+met|t/m)\s+(?:\d{1,2}\s+[a-z]+\s+)?(?:19|20)\d{2}\b",
-        r"\b(?:19|20)\d{2}\s*(?:-|\u2013|tot)\s*(?:19|20)\d{2}\b",
+        r"\b(?:vanaf|met\s+ingang\s+van)\s+(?:\d{1,2}\s+[a-z]+\s+)?(?:19|20)\d{2}\b",
+        r"\b(?:tot\s+en\s+met|t/m|tot)\s+(?:\d{1,2}\s+[a-z]+\s+)?(?:19|20)\d{2}\b",
+        r"\bin\s+de\s+jaren\s+(?:19|20)\d{2}\b",
         r"\bover\s+de\s+periode\b",
     ]
+    VOLLEDIGE_REIKWIJDTE = r"\baanvang\s+(?:van\s+de\s+)?registratie\b.*\btot\s+heden\b"
     VERZOEK_WOORDEN = r"\b(?:verzoek|vraag|opvra|inzage|afschrift|kopie|gegevens|dossier|stukken)"
     # (b) open opsomming
     OPEN_OPSOMMING_PATTERNS = [
         r"\b(?:inclusief|waaronder)\s+(?:maar\s+)?niet\s+beperkt\s+tot\b",
-        r"\bwaaronder\s+in\s+ieder\s+geval\b",
+        r"\bwaaronder\b", r"\bonder\s+meer\b", r"\bonder\s+andere\b", r"\bo\.a\.",
     ]
     GESLOTEN_LIJST_PATTERNS = [
         r"\b(?:te\s+weten|namelijk)\b", r"\b(?:uitsluitend|alleen)\s+de\s+volgende\b",
@@ -411,9 +413,14 @@ class SBARProtocol:
         def niet_ontkend(m: "re.Match[str]") -> bool:
             return not re.search(cls.NEGATIE, low[max(0, m.start() - 40):m.start()])
 
+        def zin_ontkend(m: "re.Match[str]") -> bool:
+            # Uitwegen (papier/post/portaal): een ontkenning eerder in dezelfde zin(sdeel) telt.
+            begin = max(low.rfind(t, 0, m.start()) for t in (".", "!", "?", "\n", ",", ";", ":")) + 1
+            return bool(re.search(r"\b(?:niet|geen|zonder|nooit)\b", low[begin:m.start()]))
+
         zinnen = [z.strip() for z in re.split(r"(?<=[.!?])\s+|\n+", low) if z.strip()]
         for zin in zinnen:
-            if re.search(cls.VERZOEK_WOORDEN, zin):
+            if re.search(cls.VERZOEK_WOORDEN, zin) and not re.search(cls.VOLLEDIGE_REIKWIJDTE, zin):
                 for p in cls.JAARGRENS_PATTERNS:
                     m = re.search(p, zin)
                     if m:
@@ -429,9 +436,14 @@ class SBARProtocol:
                 if m:
                     treffers["b_gesloten_lijst"].append(m.group(0))
 
-        for p in cls.CONCESSIE_PATTERNS + cls.UITWEG_PATTERNS:
+        for p in cls.CONCESSIE_PATTERNS:
             for m in re.finditer(p, low):
                 if niet_ontkend(m):
+                    treffers["c_concessie_of_uitweg"].append(m.group(0))
+                    break
+        for p in cls.UITWEG_PATTERNS:
+            for m in re.finditer(p, low):
+                if not zin_ontkend(m):
                     treffers["c_concessie_of_uitweg"].append(m.group(0))
                     break
 

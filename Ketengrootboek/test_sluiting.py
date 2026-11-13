@@ -299,6 +299,39 @@ class TestKetengrootboekSluiting(unittest.TestCase):
                 self.assertIn(r["status_vordering"], ("betwist", "vastgesteld"))
                 vorige = r["receipt_hash"]
 
+    def test_integriteitsrapport_zonder_ankerbewijs_en_zonder_templates(self):
+        """Regressie: ontbreekt het ankerbewijs (en de templates), dan crasht het
+        integriteitsrapport niet en blijft de post OPEN."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            keten_dir = Path(tmpdir) / "repo" / "Ketengrootboek"
+            keten_dir.mkdir(parents=True)
+            (keten_dir / "memoriaal.json").write_text(json.dumps([{
+                "id": "EVT-ANKER-20310101",
+                "datum": "2031-01-01",
+                "type": "schriftelijk_verzoek_of_inzage",
+                "actor": "Afzender",
+                "omschrijving": "Verzoek waarvan het bewijsstuk ontbreekt",
+                "bewijsstuk": "Dossier/ontbrekend_bewijs.md",
+            }]), encoding="utf-8")
+            (keten_dir / "boek2_journaal.json").write_text(json.dumps([{
+                "post_id": "POST-TEST-ANKER-001",
+                "naam": "Post zonder ankerbewijs",
+                "debet_rekening": "Burger",
+                "credit_rekening": "Loket X",
+                "anker_feit": "EVT-ANKER-20310101",
+                "tegen_feit": None,
+                "tafel_besluit": "TAFEL-TEST",
+                "vaste_posten": [],
+                "vereiste_velden": [],
+                "geboekte_velden": [],
+                "poorten": {"bronpoort": {"voldaan": False}, "doelpoort": {"voldaan": False}},
+            }]), encoding="utf-8")
+            toetser = SluitingsToetser(root_dir=keten_dir)
+            md = toetser.formatteer_ketenintegriteit_markdown()
+            self.assertIn("POST-TEST-ANKER-001", md)
+            self.assertIn("**Status:** `OPEN`", md)
+            self.assertIn("ankerbewijs ontbreekt", md)
+
 
 if __name__ == "__main__":
     unittest.main()

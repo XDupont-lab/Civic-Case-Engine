@@ -71,12 +71,48 @@ class TestAvgReikwijdte(unittest.TestCase):
         rep = SBARProtocol.validate_avg_reikwijdte(SCHOON + " Er is overigens geen haast bij.")
         self.assertTrue(rep.treffers["d_termijn_ingeslikt"])
 
-    def test_veto_7_in_veto_gate(self):
+    def test_veto_7_in_veto_gate_is_waarschuwing(self):
         tekst = "Op grond van de AVG verzoek ik uitsluitend schriftelijk om inzage in mijn gegevens vanaf 2031."
         rapport = VetoGate().check_draft(tekst)
-        regels = [r["rule"] for r in rapport["results"]]
-        self.assertIn("VETO_7_ANTI_ZELFINPERKING", regels)
-        self.assertTrue(rapport["has_rejections"])
+        v7 = [r for r in rapport["results"] if r["rule"] == "VETO_7_ANTI_ZELFINPERKING"]
+        self.assertEqual(len(v7), 1)
+        self.assertEqual(v7[0]["severity"], "WARN")
+
+    # Vals-alarmgevallen uit Agy's review
+    def test_fp_a_achtergrondjaar_sinds(self):
+        rep = SBARProtocol.validate_avg_reikwijdte(
+            "Op grond van art. 15 AVG verzoek ik om alle gegevens die betrekking hebben op mijn situatie sinds 2031, "
+            "vanaf aanvang registratie tot heden, inclusief maar niet beperkt tot notities.")
+        self.assertFalse(rep.treffers["a_jaargrens"])
+
+    def test_fp_a_achtergrondjaar_zonder_volledige_reikwijdte(self):
+        rep = SBARProtocol.validate_avg_reikwijdte(
+            "Op grond van art. 15 AVG verzoek ik om afschriften van alle stukken die betrekking hebben op mijn situatie sinds 2031.")
+        self.assertFalse(rep.treffers["a_jaargrens"])
+
+    def test_fp_b_toelichtende_periode(self):
+        rep = SBARProtocol.validate_avg_reikwijdte(
+            "Op grond van art. 15 AVG verzoek ik om al mijn gegevens vanaf aanvang registratie tot heden "
+            "(de kern van de zaak ligt in 2029-2031), inclusief maar niet beperkt tot notities.")
+        self.assertFalse(rep.treffers["a_jaargrens"])
+        self.assertTrue(rep.passed, rep.warnings)
+
+    def test_fp_c_onder_meer_is_open(self):
+        for open_woord in ("onder meer", "onder andere", "waaronder"):
+            rep = SBARProtocol.validate_avg_reikwijdte(
+                f"Op grond van art. 15 AVG verzoek ik om alle gegevens, {open_woord}:\n- het dossier\n- de e-mails\n")
+            self.assertFalse(rep.treffers["b_gesloten_lijst"], open_woord)
+
+    def test_fp_d_lange_ontkenning_voor_portaal(self):
+        rep = SBARProtocol.validate_avg_reikwijdte(
+            SCHOON + " Ik maak geen gebruik van uw digitale berichtenbox of online portaal.")
+        self.assertFalse(rep.treffers["c_concessie_of_uitweg"])
+        self.assertTrue(rep.passed, rep.warnings)
+
+    def test_a_in_de_jaren_en_tot_jaar_blijven_positief(self):
+        for zin in ("Ik verzoek op grond van de AVG om mijn gegevens in de jaren 2029 en 2030.",
+                    "Ik verzoek op grond van de AVG om mijn gegevens tot 2031."):
+            self.assertTrue(SBARProtocol.validate_avg_reikwijdte(zin).treffers["a_jaargrens"], zin)
 
     def test_veto_7_niet_bij_schoon_verzoek(self):
         rapport = VetoGate().check_draft(SCHOON)
