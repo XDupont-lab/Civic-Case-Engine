@@ -455,7 +455,9 @@ class SBARProtocol:
         uitleg = {
             "a_jaargrens": "ongevraagd begin- of eindjaar; vraag vanaf aanvang registratie tot heden",
             "b_gesloten_lijst": "gesloten opsomming; voeg 'inclusief maar niet beperkt tot' toe",
-            "c_concessie_of_uitweg": "vooraf aangeboden weglakruimte (art. 15 lid 4 AVG) of papier/portaal-uitweg; laat die aan de verwerker",
+            "c_concessie_of_uitweg": ("vooraf aangeboden weglakruimte (art. 15 lid 4 AVG; laat die aan de verwerker) of papier/portaal-uitweg "
+                                      "(art. 15 lid 3 AVG: een elektronisch ingediend verzoek wordt in gangbare elektronische vorm "
+                                      "beantwoord; dat is een plicht van de verwerker, geen keuze om vooraf weg te geven)"),
             "d_termijn_ingeslikt": "zachte toon slikt de wettelijke termijn in; noem de termijn",
         }
         warnings = [

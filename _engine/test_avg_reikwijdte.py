@@ -62,6 +62,8 @@ class TestAvgReikwijdte(unittest.TestCase):
         rep = SBARProtocol.validate_avg_reikwijdte(
             SCHOON + " Lukt digitaal niet, dan ontvang ik het ook graag op papier.")
         self.assertTrue(rep.treffers["c_concessie_of_uitweg"])
+        # De waarschuwing noemt de wettelijke grond: digitaal afschrift is een plicht, geen keuze.
+        self.assertTrue(any("art. 15 lid 3 AVG" in w for w in rep.warnings))
 
     def test_c_ontkende_uitweg_slaagt(self):
         rep = SBARProtocol.validate_avg_reikwijdte(SCHOON + " Ik wens de stukken niet via een portaal te ontvangen.")

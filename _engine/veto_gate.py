@@ -255,7 +255,8 @@ class VetoGate:
                 rule="VETO_7_ANTI_ZELFINPERKING",
                 message=" | ".join(reikwijdte.warnings),
                 severity="WARN",
-                suggestion="Vraag vanaf aanvang registratie tot heden, 'inclusief maar niet beperkt tot', uitsluitend digitaal, "
+                suggestion="Vraag vanaf aanvang registratie tot heden, 'inclusief maar niet beperkt tot', uitsluitend digitaal "
+                           "(art. 15 lid 3 AVG: elektronisch verzoek, elektronisch afschrift), "
                            "en laat uitzonderingen (art. 15 lid 4 AVG) aan de verwerker. De toon mag zacht, de reikwijdte niet."
             ))
 
