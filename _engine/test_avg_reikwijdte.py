@@ -128,6 +128,22 @@ class TestAvgReikwijdte(unittest.TestCase):
         rapport = VetoGate().check_draft(SCHOON + " Ik maak geen gebruik van uw digitale berichtenbox of online portaal.")
         self.assertNotIn("VETO_7_DIGITAAL_AFSCHRIFT", [r["rule"] for r in rapport["results"]])
 
+    def test_veto_7_verwijzing_of_afwijzing_is_geen_uitweg(self):
+        for zin in ("Naar aanleiding van uw reactie per post verzoek ik u alles digitaal te sturen.",
+                    "U verwees mij naar uw portaal.",
+                    "Een papieren versie volstaat niet.",
+                    "Ik weiger toegang via uw portaal.",
+                    "In plaats van toezending per brief ontvang ik alles per e-mail."):
+            rep = SBARProtocol.validate_avg_reikwijdte(SCHOON + " " + zin)
+            self.assertFalse(rep.treffers["e_niet_digitaal"], zin)
+
+    def test_veto_7_voorwaardelijke_terugval_blijft_uitweg(self):
+        for zin in ("Lukt digitaal niet, dan graag op papier.",
+                    "Mocht dat niet lukken dan ontvang ik het graag per post.",
+                    "U mag het ook per post sturen."):
+            rep = SBARProtocol.validate_avg_reikwijdte(SCHOON + " " + zin)
+            self.assertTrue(rep.treffers["e_niet_digitaal"], zin)
+
     def test_veto_7_niet_bij_schoon_verzoek(self):
         rapport = VetoGate().check_draft(SCHOON)
         regels = [r["rule"] for r in rapport["results"]]

@@ -417,9 +417,24 @@ class SBARProtocol:
             return not re.search(cls.NEGATIE, low[max(0, m.start() - 40):m.start()])
 
         def zin_ontkend(m: "re.Match[str]") -> bool:
-            # Uitwegen (papier/post/portaal): een ontkenning eerder in dezelfde zin(sdeel) telt.
-            begin = max(low.rfind(t, 0, m.start()) for t in (".", "!", "?", "\n", ",", ";", ":")) + 1
-            return bool(re.search(r"\b(?:niet|geen|zonder|nooit)\b", low[begin:m.start()]))
+            # Uitwegen (papier/post/portaal) tellen alleen als de burger ze zelf aanbiedt. Niet als uitweg telt:
+            # een directe ontkenning ('niet per post'), een afwijzing in het zinsdeel ('weiger', 'in plaats van',
+            # 'volstaat niet') of een verwijzing naar een eerder stuk of eerdere handelwijze van het loket.
+            # Een voorwaardelijke terugval ('lukt digitaal niet, dan op papier') blijft wel een uitweg.
+            grens = (".", "!", "?", "\n", ",", ";", ":")
+            begin = max(low.rfind(t, 0, m.start()) for t in grens) + 1
+            eindes = [i for i in (low.find(t, m.end()) for t in grens) if i != -1]
+            eind = min(eindes) if eindes else len(low)
+            voor, na = low[begin:m.start()], low[m.end():eind]
+            if re.search(r"\b(?:niet|geen|zonder|nooit)\b(?:(?!\b(?:dan|lukt|lukken|mogelijk|kan|kunt|anders)\b)[^.!?\n])*$", voor):
+                return True
+            if re.search(r"\b(?:weiger\w*|afwijz\w*|zie\s+af|afzien|in\s+plaats\s+van|liever\s+niet)\b", voor):
+                return True
+            if re.search(r"\b(?:verwe(?:es|zen)|ontv(?:ing|angen)|stuurde|gestuurd|verzond\w*|verstuurd\w*|reactie|"
+                         r"naar\s+aanleiding|eerder|vorige)\b", voor):
+                return True
+            return bool(re.search(r"^[^.!?\n]{0,40}?\b(?:volsta(?:at|an)|voldo(?:et|en)|is|zijn|wil|wens)\s+(?:ik\s+)?(?:niet|geen)\b"
+                                  r"|\bniet\s+(?:gewenst|nodig|akkoord|aanvaardbaar|voldoende)\b", na))
 
         zinnen = [z.strip() for z in re.split(r"(?<=[.!?])\s+|\n+", low) if z.strip()]
         for zin in zinnen:
