@@ -56,18 +56,18 @@ class TestAvgReikwijdte(unittest.TestCase):
         rep = SBARProtocol.validate_avg_reikwijdte(
             SCHOON + " Ik begrijp dat u op grond van art. 15 lid 4 AVG gegevens van derden mag weglakken.")
         self.assertFalse(rep.passed)
-        self.assertTrue(rep.treffers["c_concessie_of_uitweg"])
+        self.assertTrue(rep.treffers["c_concessie"])
 
     def test_c_papieren_uitweg(self):
         rep = SBARProtocol.validate_avg_reikwijdte(
             SCHOON + " Lukt digitaal niet, dan ontvang ik het ook graag op papier.")
-        self.assertTrue(rep.treffers["c_concessie_of_uitweg"])
+        self.assertTrue(rep.treffers["e_niet_digitaal"])
         # De waarschuwing noemt de wettelijke grond: digitaal afschrift is een plicht, geen keuze.
         self.assertTrue(any("art. 15 lid 3 AVG" in w for w in rep.warnings))
 
     def test_c_ontkende_uitweg_slaagt(self):
         rep = SBARProtocol.validate_avg_reikwijdte(SCHOON + " Ik wens de stukken niet via een portaal te ontvangen.")
-        self.assertFalse(rep.treffers["c_concessie_of_uitweg"])
+        self.assertFalse(rep.treffers["e_niet_digitaal"])
 
     def test_d_termijn_ingeslikt(self):
         rep = SBARProtocol.validate_avg_reikwijdte(SCHOON + " Er is overigens geen haast bij.")
@@ -108,7 +108,7 @@ class TestAvgReikwijdte(unittest.TestCase):
     def test_fp_d_lange_ontkenning_voor_portaal(self):
         rep = SBARProtocol.validate_avg_reikwijdte(
             SCHOON + " Ik maak geen gebruik van uw digitale berichtenbox of online portaal.")
-        self.assertFalse(rep.treffers["c_concessie_of_uitweg"])
+        self.assertFalse(rep.treffers["e_niet_digitaal"])
         self.assertTrue(rep.passed, rep.warnings)
 
     def test_a_in_de_jaren_en_tot_jaar_blijven_positief(self):
@@ -116,10 +116,23 @@ class TestAvgReikwijdte(unittest.TestCase):
                     "Ik verzoek op grond van de AVG om mijn gegevens tot 2031."):
             self.assertTrue(SBARProtocol.validate_avg_reikwijdte(zin).treffers["a_jaargrens"], zin)
 
+    def test_veto_7_papieren_uitweg_wordt_geweigerd(self):
+        rapport = VetoGate().check_draft(SCHOON + " Lukt digitaal niet, dan graag op papier.")
+        v7 = [r for r in rapport["results"] if r["rule"] == "VETO_7_DIGITAAL_AFSCHRIFT"]
+        self.assertEqual(len(v7), 1)
+        self.assertEqual(v7[0]["severity"], "REJECT")
+        self.assertTrue(rapport["has_rejections"])
+        self.assertNotIn("VETO_7_ANTI_ZELFINPERKING", [r["rule"] for r in rapport["results"]])
+
+    def test_veto_7_ontkende_uitweg_wordt_niet_geweigerd(self):
+        rapport = VetoGate().check_draft(SCHOON + " Ik maak geen gebruik van uw digitale berichtenbox of online portaal.")
+        self.assertNotIn("VETO_7_DIGITAAL_AFSCHRIFT", [r["rule"] for r in rapport["results"]])
+
     def test_veto_7_niet_bij_schoon_verzoek(self):
         rapport = VetoGate().check_draft(SCHOON)
         regels = [r["rule"] for r in rapport["results"]]
         self.assertNotIn("VETO_7_ANTI_ZELFINPERKING", regels)
+        self.assertNotIn("VETO_7_DIGITAAL_AFSCHRIFT", regels)
 
 
 if __name__ == "__main__":

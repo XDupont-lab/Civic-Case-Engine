@@ -303,8 +303,12 @@ ANTI_ZELFINPERKING_TOETS = (
     "ongevraagd versmalt om de wederpartij te ontzien: "
     "(a) zelfopgelegde begin- of eindjaren (bv. 'vanaf 20xx' in plaats van vanaf aanvang registratie tot heden); "
     "(b) gesloten opsommingen zonder 'inclusief maar niet beperkt tot'; "
-    "(c) vooraf geboden uitzonderingen of uitwegen (zelf art. 15 lid 4 AVG-weglakruimte erkennen, of papier/portaal naast digitaal aanbieden); "
-    "(d) een zachte toon die noodzakelijke rechtsgronden of termijnen inslikt."
+    "(c) vooraf geboden uitzonderingen (zelf art. 15 lid 4 AVG-weglakruimte erkennen); "
+    "(d) een zachte toon die noodzakelijke rechtsgronden of termijnen inslikt; "
+    "(e) elke niet-digitale uitweg (papier, post of portaal naast of in plaats van een digitaal afschrift). "
+    "Art. 15 lid 3 AVG: een elektronisch ingediend verzoek wordt in gangbare elektronische vorm beantwoord; dat is een "
+    "plicht van de verwerker, geen keuze. Doel is dat alle registraties van alle loketten lokaal en digitaal binnenkomen "
+    "als basis van de eigen administratie (DOCTRINE §22); een niet-digitale uitweg is daarom altijd een fout, geen stijlpunt."
 )
 
 

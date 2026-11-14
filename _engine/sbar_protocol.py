@@ -378,12 +378,14 @@ class SBARProtocol:
     GESLOTEN_LIJST_PATTERNS = [
         r"\b(?:te\s+weten|namelijk)\b", r"\b(?:uitsluitend|alleen)\s+de\s+volgende\b",
     ]
-    # (c) vooraf aangeboden weglakruimte of papier/portaal-uitweg
+    # (c) vooraf aangeboden weglakruimte
     CONCESSIE_PATTERNS = [
         r"\bart(?:ikel|\.)?\s*15\s*,?\s*lid\s*4\b",
         r"\bweglak\w*", r"\bonleesbaar\s+(?:te\s+)?maken\b",
         r"\brechten\s+(?:en\s+vrijheden\s+)?van\s+(?:derden|anderen)\b",
     ]
+    # (e) niet-digitale uitweg (papier/post/portaal): breekt de lokale digitale basisadministratie
+    #     (DOCTRINE §22, art. 15 lid 3 AVG). Wordt door Veto 7 geweigerd, niet alleen gewaarschuwd.
     UITWEG_PATTERNS = [
         r"\b(?:op|per)\s+papier\b", r"\bpapieren\s+(?:versie|kopie|afschrift|exemplaar)\b",
         r"\bper\s+(?:post|brief)\b", r"\bportaal\b", r"\binloggen\b",
@@ -400,12 +402,13 @@ class SBARProtocol:
         """
         Deterministische anti-zelfinperkingstoets op een AVG/WGBO-verzoek:
         (a) ongevraagde begin-/eindjaren, (b) gesloten opsomming zonder 'inclusief maar niet beperkt tot',
-        (c) vooraf erkende art. 15 lid 4-weglakruimte of papier/portaal-uitweg, (d) termijn inslikken.
+        (c) vooraf erkende art. 15 lid 4-weglakruimte, (d) termijn inslikken,
+        (e) niet-digitale uitweg (papier/post/portaal) naast of in plaats van een digitaal afschrift.
         Een niet-AVG/WGBO-tekst slaagt altijd.
         """
         tekst = text or ""
         low = tekst.lower()
-        treffers: Dict[str, List[str]] = {"a_jaargrens": [], "b_gesloten_lijst": [], "c_concessie_of_uitweg": [], "d_termijn_ingeslikt": []}
+        treffers: Dict[str, List[str]] = {"a_jaargrens": [], "b_gesloten_lijst": [], "c_concessie": [], "d_termijn_ingeslikt": [], "e_niet_digitaal": []}
         is_avg = any(re.search(p, low) for p in cls.AVG_VERZOEK_PATTERNS)
         if not is_avg:
             return ReikwijdteReport(False, True, treffers, [])
@@ -439,12 +442,12 @@ class SBARProtocol:
         for p in cls.CONCESSIE_PATTERNS:
             for m in re.finditer(p, low):
                 if niet_ontkend(m):
-                    treffers["c_concessie_of_uitweg"].append(m.group(0))
+                    treffers["c_concessie"].append(m.group(0))
                     break
         for p in cls.UITWEG_PATTERNS:
             for m in re.finditer(p, low):
                 if not zin_ontkend(m):
-                    treffers["c_concessie_of_uitweg"].append(m.group(0))
+                    treffers["e_niet_digitaal"].append(m.group(0))
                     break
 
         for p in cls.TERMIJN_INSLIKKEN_PATTERNS:
@@ -455,10 +458,11 @@ class SBARProtocol:
         uitleg = {
             "a_jaargrens": "ongevraagd begin- of eindjaar; vraag vanaf aanvang registratie tot heden",
             "b_gesloten_lijst": "gesloten opsomming; voeg 'inclusief maar niet beperkt tot' toe",
-            "c_concessie_of_uitweg": ("vooraf aangeboden weglakruimte (art. 15 lid 4 AVG; laat die aan de verwerker) of papier/portaal-uitweg "
-                                      "(art. 15 lid 3 AVG: een elektronisch ingediend verzoek wordt in gangbare elektronische vorm "
-                                      "beantwoord; dat is een plicht van de verwerker, geen keuze om vooraf weg te geven)"),
+            "c_concessie": "vooraf aangeboden weglakruimte (art. 15 lid 4 AVG); laat die aan de verwerker",
             "d_termijn_ingeslikt": "zachte toon slikt de wettelijke termijn in; noem de termijn",
+            "e_niet_digitaal": ("papier/post/portaal-uitweg; art. 15 lid 3 AVG: een elektronisch ingediend verzoek wordt in "
+                                "gangbare elektronische vorm beantwoord. Dat is een plicht van de verwerker, geen keuze om vooraf "
+                                "weg te geven: een niet-digitaal afschrift past niet in de lokale basisadministratie (DOCTRINE §22)"),
         }
         warnings = [
             f"Anti-zelfinperking ({k[0]}): {uitleg[k]} [{', '.join(v)}]."

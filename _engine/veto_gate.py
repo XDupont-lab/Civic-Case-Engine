@@ -12,7 +12,8 @@ Implementeert de deterministische Veto-Keten (Stappen B, C, D) van de Cybernetis
 5. Veto 5 (Dubbele Klok): tweede t=0 of nieuw narratief terwijl klok loopt (termijnen.json of Ketengrootboek) -> REJECT
 6. Veto 6 (Protocol FH-01): demoniseren/sussen, professioneel dictaat of manipulatieve agency inversion -> REJECT
 7. Veto 7 (Anti-zelfinperking): AVG/WGBO-verzoek met ongevraagde jaargrens, gesloten lijst,
-   vooraf erkende art. 15 lid 4-weglakruimte of papier/portaal-uitweg -> WARN (patroontoets)
+   vooraf erkende art. 15 lid 4-weglakruimte of zachte termijn -> WARN (patroontoets);
+   papier/post/portaal-uitweg -> REJECT (VETO_7_DIGITAAL_AFSCHRIFT; art. 15 lid 3 AVG, DOCTRINE §22)
 """
 
 import os
@@ -248,12 +249,25 @@ class VetoGate:
             ))
 
         # VETO 7: Anti-zelfinperking (reikwijdte van AVG/WGBO-verzoeken)
+        # Niet-digitale uitwegen (e) breken de lokale digitale basisadministratie (DOCTRINE §22) en worden
+        # geweigerd; de overige inperkingen (a-d) zijn een waarschuwing, omdat herkenning op trefwoorden vals alarm kent.
         reikwijdte = SBARProtocol.validate_avg_reikwijdte(text)
-        if not reikwijdte.passed:
+        niet_digitaal = [w for w in reikwijdte.warnings if w.startswith("Anti-zelfinperking (e)")]
+        overig = [w for w in reikwijdte.warnings if not w.startswith("Anti-zelfinperking (e)")]
+        if niet_digitaal:
+            results.append(VetoResult(
+                passed=False,
+                rule="VETO_7_DIGITAAL_AFSCHRIFT",
+                message=" | ".join(niet_digitaal),
+                severity="REJECT",
+                suggestion="Vraag uitsluitend een digitaal, volledig afschrift (art. 15 lid 3 AVG) en bied geen papier-, post- "
+                           "of portaal-uitweg aan. Alle registraties van alle loketten moeten lokaal en digitaal binnenkomen."
+            ))
+        if overig:
             results.append(VetoResult(
                 passed=False,
                 rule="VETO_7_ANTI_ZELFINPERKING",
-                message=" | ".join(reikwijdte.warnings),
+                message=" | ".join(overig),
                 severity="WARN",
                 suggestion="Vraag vanaf aanvang registratie tot heden, 'inclusief maar niet beperkt tot', uitsluitend digitaal "
                            "(art. 15 lid 3 AVG: elektronisch verzoek, elektronisch afschrift), "
